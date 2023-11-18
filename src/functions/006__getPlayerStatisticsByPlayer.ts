@@ -1,0 +1,84 @@
+import * as dotenv from 'dotenv';
+import { MYSQL_DB } from '../classes/MYSQL_DB/MYSQL_DB';
+import { allSportsAPIURLs } from '../config/allSportsAPIURLs';
+import { TABLE_NAMES } from '../config/NAMES';
+import { DB__Player } from '../types/allSportsApi/Player';
+dotenv.config();
+
+export async function getPlayersStatisticsByPlayer(DB: MYSQL_DB) {
+    const funcName = `getPlayersStatisticsByPlayer`;
+    try {
+        await DB.cleanTable(TABLE_NAMES.cricketStatistics);
+        
+        let playersWithStatistics = [];
+
+        const players: DB__Player[] = await DB.SELECT<DB__Player>(
+            TABLE_NAMES.cricketPlayers
+        );
+
+        for (const player of players) {
+            try {
+                const url = allSportsAPIURLs.
+                    .replace('tournamentId',ls.tournament_id.toString())
+                    .replace('seasonId',ls.id.toString());
+                
+                //console.log(url);
+                //const url = `https://allsportsapi2.p.rapidapi.com/api/cricket/tournament/11165/season/41321/top-players`
+                const headers = {
+                    'X-RapidAPI-Key': process.env.ALLSPORTS_KEY!,
+                    'X-RapidAPI-Host': allSportsAPIURLs.hostHeader,
+                };
+
+                const axiosRequest = {
+                    method: 'GET',
+                    url,
+                    headers,
+                };
+
+                const response: AllSports__TopPlayersAPIResponse = await axios.request(axiosRequest);
+
+                if (!response || !response.data || !response.data.topPlayers) throw `!response || !response.data`;
+
+                console.log(`%cRAW: ${JSON.stringify(response.data.topPlayers)}`,'color: cyan');
+
+                const statisticsRaw = response.data.topPlayers;
+                for (let n in statisticsRaw){
+                    const key = n as AllSports__TopPlayerCategories;
+                    const bundle: AllSports__TopPlayerBundle[] = statisticsRaw[key];
+                    const stats: DB__Statistics[] = bundle.map((bundle: AllSports__TopPlayerBundle) => ({
+                        innings: bundle.statistics.innings,
+                        battingInnings: bundle.statistics.battingInnings,
+                        battingMatches: bundle.statistics.battingMatches,
+                        runsScored: bundle.statistics.runsScored,
+                        hundreds: bundle.statistics.hundreds,
+                        matches: bundle.statistics.matches,
+                        type: bundle.statistics.type,
+                        appearances: bundle.statistics.appearances,
+                        category: key,
+                        playerId: bundle.player.id,
+                        teamId: bundle.team.id,
+                        leagueSeasonId: ls.id
+                    }))
+                    if (stats.length === 0 || !stats) 
+                        throw `stats.length === 0 || !stats: ${ls.id} ${ls.name}`;
+                    
+                    const insertResult = await DB.INSERT_BATCH<DB__Statistics>(
+                        stats,
+                        TABLE_NAMES.cricketStatistics,
+                        false
+                    );
+                    if (insertResult) leaguesWithTopPlayers.push(ls);
+                }
+            } catch (e) {
+                //console.log (`%cFailed to get data for leagueSeason with error: ${e}: ${ls.id} ${ls.name}`,'color: orange');
+            }
+        }
+
+        console.log(`leaguesWithTopPlayers: ${leaguesWithTopPlayers.length}`);
+        const ids = leaguesWithTopPlayers.map(league => league.id).join(', ');
+        const names = leaguesWithTopPlayers.map(league => league.name).join(', ');
+        console.warn(ids,names);
+    } catch (e) {
+        throw `${funcName} failed: ${e}`;
+    }
+}
