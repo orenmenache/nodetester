@@ -7,26 +7,30 @@ import {
     AllSports__LeagueSeason,
     DB__LeagueSeason,
 } from '../types/allSportsApi/Seasons';
+import * as dotenv from 'dotenv';
+import { AllSports__StandingsResponse, AllSports__Team, AllSports__TeamStandings, DB__Team } from '../types/allSportsApi/Teams';
+dotenv.config();
 
 /**
- * CORE__TOURNAMENTS must be populated first
- * or run getTournamentsByCategory
+ * We get the standings for every league
+ * and with that we get the ids and info of the teams
  */
 export async function getTeamsByTournamentAndSeason(DB: MYSQL_DB) {
     const funcName = `getTeamsByTournamentAndSeason`;
     try {
-        await DB.cleanTable(TABLE_NAMES.topPlayers);
+        await DB.cleanTable(TABLE_NAMES.cricketTeams);
 
-        const tournaments: DB__Tournament[] = await DB.SELECT<DB__Tournament>(
-            TABLE_NAMES.cricketTournaments
+        let leaguesWithStandings = [];
+
+        const leagueSeasons: DB__LeagueSeason[] = await DB.SELECT<DB__LeagueSeason>(
+            TABLE_NAMES.cricketLeagueSeasons
         );
 
-        for (const tournament of tournaments) {
+        for (const ls of leagueSeasons) {
             try {
-                const url = allSportsAPIURLs.leagueseasons.replace(
-                    'tournamentId',
-                    tournament.id.toString()
-                );
+                const url = allSportsAPIURLs.standings
+                    .replace('tournamentId',ls.tournament_id.toString())
+                    .replace('seasonId',ls.id.toString());
                 const headers = {
                     'X-RapidAPI-Key': process.env.ALLSPORTS_KEY!,
                     'X-RapidAPI-Host': allSportsAPIURLs.hostHeader,
@@ -38,60 +42,61 @@ export async function getTeamsByTournamentAndSeason(DB: MYSQL_DB) {
                     headers,
                 };
 
-                const response: AxiosResponse<{
-                    seasons: AllSports__LeagueSeason[];
-                }> = await axios.request(axiosRequest);
+                const response: AllSports__StandingsResponse = await axios.request(axiosRequest);
 
-                const leagueSeasons: AllSports__LeagueSeason[] =
-                    response.data.seasons;
+                if (!response || !response.data || !response.data.standings || response.data.standings.length === 0) 
+                    throw `!response || !response.data || !response.data.standings || response.data.standings.length`;
 
-                if (leagueSeasons.length === 0 || !leagueSeasons) {
-                    console.log(
-                        `%cNo seasons for tournament: ${tournament.id} ${tournament.name}`,
-                        'color: yellow'
-                    );
-                    continue;
-                }
+                const teams: AllSports__Team[] =
+                    response.data.standings[0].rows.map((row: AllSports__TeamStandings) => row.team);
 
-                const filtered = leagueSeasons.filter(
-                    (season: AllSports__LeagueSeason) =>
-                        Number(season.year) >= thisYear
-                );
+                if (teams.length === 0 || !teams) 
+                    throw `teams.length === 0 || !teams for leagueSeason: ${ls.id} ${ls.name} ${ls.year}`;
 
-                if (filtered.length === 0) {
-                    console.warn(
-                        `No leagues THIS YEAR or NEXT YEAR for tournament: ${JSON.stringify(
-                            tournament
-                        )}`
-                    );
-                    continue;
-                }
+                // const filtered = leagueSeasons.filter(
+                //     (season: AllSports__LeagueSeason) =>
+                //         Number(season.year) >= thisYear
+                // );
 
-                const leagueSeasonsDB: DB__LeagueSeason[] = filtered.map(
-                    (leagueSeason: AllSports__LeagueSeason) => ({
-                        id: leagueSeason.id,
-                        name: leagueSeason.name,
-                        editor: leagueSeason.editor,
-                        year: Number(leagueSeason.year),
-                        tournament_id: tournament.id,
+                // if (filtered.length === 0) {
+                //     console.warn(
+                //         `No leagues THIS YEAR or NEXT YEAR for tournament: ${JSON.stringify(
+                //             tournament
+                //         )}`
+                //     );
+                //     continue;
+                // }
+
+                const dbTeams: DB__Team[] = teams.map(
+                    (team: AllSports__Team) => ({
+                        id: team.id,
+                        name: team.name,
+                        slug: team.slug,
+                        shortName: team.shortName,
+                        userCount: team.userCount,
+                        type: team.type,
+                        leagueSeasonId: ls.id
                     })
                 );
 
-                const insertResult = await DB.INSERT_BATCH<DB__LeagueSeason>(
-                    leagueSeasonsDB,
-                    TABLE_NAMES.cricketLeagueSeasons,
+                const insertResult = await DB.INSERT_BATCH<DB__Team>(
+                    dbTeams,
+                    TABLE_NAMES.cricketTeams,
                     true
                 );
                 console.log(
-                    `Insert result: ${insertResult} for tournament: ${tournament.id} ${tournament.name}`
+                    `Insert result: ${insertResult}`
                 );
+                if (insertResult){
+                    console.log(`%c${JSON.stringify(ls)}`,'color: cyan');
+                    leaguesWithStandings.push(ls);
+                }
             } catch (e) {
-                console.log(
-                    `%cFailed to get data for tournament: ${tournament.id} ${tournament.name}`,
-                    'color: orange'
-                );
+                console.log (`%cFailed to get data for leagueSeason with error: ${e}: ${ls.id} ${ls.name}`,'color: orange');
             }
+            // return;
         }
+        console.log(`%cNumber of leagues with standings: ${leaguesWithStandings.length}`,'color: yellow');
     } catch (e) {
         throw `${funcName} failed: ${e}`;
     }

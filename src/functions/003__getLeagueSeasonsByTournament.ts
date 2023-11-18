@@ -7,6 +7,8 @@ import {
     AllSports__LeagueSeason,
     DB__LeagueSeason,
 } from '../types/allSportsApi/Seasons';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 /**
  * CORE__TOURNAMENTS must be populated first
@@ -56,21 +58,22 @@ export async function getLeagueSeasonsByTournament(DB: MYSQL_DB) {
                     continue;
                 }
 
-                const filtered = leagueSeasons.filter(
-                    (season: AllSports__LeagueSeason) =>
-                        Number(season.year) >= thisYear
-                );
+                // const filtered = leagueSeasons.filter(
+                //     (season: AllSports__LeagueSeason) =>
+                //         Number(season.year) >= thisYear
+                // );
 
-                if (filtered.length === 0) {
-                    console.warn(
-                        `No leagues THIS YEAR or NEXT YEAR for tournament: ${JSON.stringify(
-                            tournament
-                        )}`
-                    );
-                    continue;
-                }
+                // if (filtered.length === 0) {
+                //     console.warn(
+                //         `No leagues THIS YEAR or NEXT YEAR for tournament: ${JSON.stringify(
+                //             tournament
+                //         )}`
+                //     );
+                //     continue;
+                // }
 
-                const leagueSeasonsDB: DB__LeagueSeason[] = filtered.map(
+                //const leagueSeasonsDB: DB__LeagueSeason[] = filtered.map(
+                const leagueSeasonsDB: DB__LeagueSeason[] = leagueSeasons.map(
                     (leagueSeason: AllSports__LeagueSeason) => ({
                         id: leagueSeason.id,
                         name: leagueSeason.name,

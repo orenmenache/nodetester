@@ -7,6 +7,8 @@ import {
     AllSports__Tournament,
     DB__Tournament,
 } from '../types/allSportsApi/UniqueTournaments';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 /**
  * CORE__CATEGORIES must be populated first

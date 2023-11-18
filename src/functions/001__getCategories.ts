@@ -3,6 +3,8 @@ import { TABLE_NAMES } from '../config/NAMES';
 import { allSportsAPIURLs } from '../config/allSportsAPIURLs';
 import { AllSports__Category, DB__Category } from '../types/allSportsApi/Cats';
 import { MYSQL_DB } from '../classes/MYSQL_DB/MYSQL_DB';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 export async function getCategories(DB: MYSQL_DB) {
     const funcName = `getCategories`;

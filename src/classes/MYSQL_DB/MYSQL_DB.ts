@@ -74,7 +74,7 @@ export class MYSQL_DB {
 
             const selectStatement = `SELECT * FROM ${tableName}`;
 
-            console.log(`whereClauseSQL:`, whereClauseSQL);
+            // console.log(`whereClauseSQL:`, whereClauseSQL);
 
             let result;
             let fullParams = [...whereClauseParams, ...likeClauseParams];
