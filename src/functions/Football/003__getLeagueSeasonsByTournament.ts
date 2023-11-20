@@ -17,13 +17,13 @@ dotenv.config();
 export async function getLeagueSeasonsByTournament__FOOTBALL(DB: MYSQL_DB) {
     const funcName = `getLeagueSeasonsByTournament__FOOTBALL`;
     try {
-        await DB.cleanTable(TABLE_NAMES.cricketLeagueSeasons);
+        await DB.cleanTable(TABLE_NAMES.footballLeagueSeasons);
 
         const now = new Date();
         const thisYear = now.getFullYear();
 
         const tournaments: DB__Tournament[] = await DB.SELECT<DB__Tournament>(
-            TABLE_NAMES.cricketTournaments
+            TABLE_NAMES.footballTournaments
         );
 
         for (const tournament of tournaments) {
@@ -58,22 +58,22 @@ export async function getLeagueSeasonsByTournament__FOOTBALL(DB: MYSQL_DB) {
                     continue;
                 }
 
-                // const filtered = leagueSeasons.filter(
-                //     (season: AllSports__LeagueSeason) =>
-                //         Number(season.year) >= thisYear
-                // );
+                const filtered = leagueSeasons.filter(
+                    (season: AllSports__LeagueSeason) =>
+                        Number(season.year) >= thisYear
+                );
 
-                // if (filtered.length === 0) {
-                //     console.warn(
-                //         `No leagues THIS YEAR or NEXT YEAR for tournament: ${JSON.stringify(
-                //             tournament
-                //         )}`
-                //     );
-                //     continue;
-                // }
+                if (filtered.length === 0) {
+                    console.warn(
+                        `No leagues THIS YEAR or NEXT YEAR for tournament: ${JSON.stringify(
+                            tournament
+                        )}`
+                    );
+                    continue;
+                }
 
-                //const leagueSeasonsDB: DB__LeagueSeason[] = filtered.map(
-                const leagueSeasonsDB: DB__LeagueSeason[] = leagueSeasons.map(
+                const leagueSeasonsDB: DB__LeagueSeason[] = filtered.map(
+                    //const leagueSeasonsDB: DB__LeagueSeason[] = leagueSeasons.map(
                     (leagueSeason: AllSports__LeagueSeason) => ({
                         id: leagueSeason.id,
                         name: leagueSeason.name,
@@ -85,7 +85,7 @@ export async function getLeagueSeasonsByTournament__FOOTBALL(DB: MYSQL_DB) {
 
                 const insertResult = await DB.INSERT_BATCH<DB__LeagueSeason>(
                     leagueSeasonsDB,
-                    TABLE_NAMES.cricketLeagueSeasons,
+                    TABLE_NAMES.footballLeagueSeasons,
                     true
                 );
                 console.log(

@@ -1,5 +1,6 @@
 import { MYSQL_DB } from './classes/MYSQL_DB/MYSQL_DB';
 import * as dotenv from 'dotenv';
+import { getTournamentsByCategory__FOOTBALL } from './functions/Football/002__getTournamentsByCategory';
 dotenv.config();
 
 async function main() {
@@ -21,6 +22,7 @@ async function main() {
          * FOOTBALL
          */
         // await getCategories__FOOTBALL(DB);
+        await getTournamentsByCategory__FOOTBALL(DB);
     } catch (e) {
         console.warn(`Failed to insert: ${e}`);
     } finally {
