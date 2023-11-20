@@ -9,6 +9,6 @@ export type DB__LeagueSeason = {
     id: number;
     name: string;
     editor: boolean;
-    year: number;
+    year: string;
     tournament_id: number;
 };

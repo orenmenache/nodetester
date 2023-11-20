@@ -1,6 +1,11 @@
 import { MYSQL_DB } from './classes/MYSQL_DB/MYSQL_DB';
 import * as dotenv from 'dotenv';
 import { getTournamentsByCategory__FOOTBALL } from './functions/Football/002__getTournamentsByCategory';
+import { getLeagueSeasonsByTournament__FOOTBALL } from './functions/Football/003__getLeagueSeasonsByTournament';
+import axios, { AxiosResponse } from 'axios';
+import { allSportsAPIURLs } from './config/allSportsAPIURLs';
+import { AllSports__LeagueSeason } from './types/allSportsApi/Seasons';
+import { getTeamsByTournamentAndSeason__FOOTBALL } from './functions/Football/004__getTeamsByTournamentAndSeason';
 dotenv.config();
 
 async function main() {
@@ -22,7 +27,9 @@ async function main() {
          * FOOTBALL
          */
         // await getCategories__FOOTBALL(DB);
-        await getTournamentsByCategory__FOOTBALL(DB);
+        // await getTournamentsByCategory__FOOTBALL(DB);
+        // await getLeagueSeasonsByTournament__FOOTBALL(DB);
+        await getTeamsByTournamentAndSeason__FOOTBALL(DB);
     } catch (e) {
         console.warn(`Failed to insert: ${e}`);
     } finally {

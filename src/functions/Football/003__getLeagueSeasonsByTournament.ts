@@ -21,6 +21,8 @@ export async function getLeagueSeasonsByTournament__FOOTBALL(DB: MYSQL_DB) {
 
         const now = new Date();
         const thisYear = now.getFullYear();
+        let dudTournaments: DB__Tournament[] = [];
+        let greenTournaments: DB__Tournament[] = [];
 
         const tournaments: DB__Tournament[] = await DB.SELECT<DB__Tournament>(
             TABLE_NAMES.footballTournaments
@@ -51,25 +53,20 @@ export async function getLeagueSeasonsByTournament__FOOTBALL(DB: MYSQL_DB) {
                     response.data.seasons;
 
                 if (leagueSeasons.length === 0 || !leagueSeasons) {
-                    console.log(
-                        `%cNo seasons for tournament: ${tournament.id} ${tournament.name}`,
-                        'color: yellow'
-                    );
-                    continue;
+                    throw `No seasons for tournament: ${tournament.id} ${tournament.name}`;
                 }
 
                 const filtered = leagueSeasons.filter(
                     (season: AllSports__LeagueSeason) =>
-                        Number(season.year) >= thisYear
+                        Number(season.year) >= thisYear ||
+                        season.year === '23/24' ||
+                        season.year === '22/23'
                 );
 
                 if (filtered.length === 0) {
-                    console.warn(
-                        `No leagues THIS YEAR or NEXT YEAR for tournament: ${JSON.stringify(
-                            tournament
-                        )}`
-                    );
-                    continue;
+                    throw `No leagues THIS YEAR or NEXT YEAR for tournament: ${JSON.stringify(
+                        tournament
+                    )}`;
                 }
 
                 const leagueSeasonsDB: DB__LeagueSeason[] = filtered.map(
@@ -78,7 +75,7 @@ export async function getLeagueSeasonsByTournament__FOOTBALL(DB: MYSQL_DB) {
                         id: leagueSeason.id,
                         name: leagueSeason.name,
                         editor: leagueSeason.editor,
-                        year: Number(leagueSeason.year),
+                        year: leagueSeason.year,
                         tournament_id: tournament.id,
                     })
                 );
@@ -91,13 +88,22 @@ export async function getLeagueSeasonsByTournament__FOOTBALL(DB: MYSQL_DB) {
                 console.log(
                     `Insert result: ${insertResult} for tournament: ${tournament.id} ${tournament.name}`
                 );
+                if (insertResult) greenTournaments.push(tournament);
+                else throw `!insertResult`;
             } catch (e) {
-                console.log(
-                    `%cFailed to get data for tournament: ${tournament.id} ${tournament.name}`,
-                    'color: orange'
-                );
+                // console.log(
+                //     `%cFailed to get data for tournament: ${tournament.id} ${tournament.name}`,
+                //     'color: orange'
+                // );
+                dudTournaments.push(tournament);
             }
         }
+
+        console.warn(
+            `#dudTournaments: ${dudTournaments.length}\n\n${dudTournaments
+                .map((dud) => dud.name + ' ' + dud.id)
+                .join('\n')}`
+        );
     } catch (e) {
         throw `${funcName} failed: ${e}`;
     }

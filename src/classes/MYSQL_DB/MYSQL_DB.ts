@@ -205,7 +205,7 @@ export class MYSQL_DB {
             // Execute the query with all the values
             await this.pool.execute(sql, values);
 
-            console.log('Data inserted successfully.');
+            //console.log('Data inserted successfully.');
             return true;
         } catch (error) {
             console.error('Error inserting data:', error);
