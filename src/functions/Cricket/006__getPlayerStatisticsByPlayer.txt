@@ -1,8 +1,8 @@
 import * as dotenv from 'dotenv';
-import { MYSQL_DB } from '../classes/MYSQL_DB/MYSQL_DB';
-import { allSportsAPIURLs } from '../config/allSportsAPIURLs';
-import { TABLE_NAMES } from '../config/NAMES';
-import { DB__Player } from '../types/allSportsApi/Player';
+import { MYSQL_DB } from '../../classes/MYSQL_DB/MYSQL_DB';
+import { allSportsAPIURLs } from '../../config/allSportsAPIURLs';
+import { TABLE_NAMES } from '../../config/NAMES';
+import { DB__Player } from '../../types/allSportsApi/Player';
 dotenv.config();
 
 export async function getPlayersStatisticsByPlayer(DB: MYSQL_DB) {

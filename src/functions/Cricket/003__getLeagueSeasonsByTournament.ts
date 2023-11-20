@@ -1,12 +1,12 @@
 import axios, { AxiosResponse } from 'axios';
-import { MYSQL_DB } from '../classes/MYSQL_DB/MYSQL_DB';
-import { TABLE_NAMES } from '../config/NAMES';
-import { allSportsAPIURLs } from '../config/allSportsAPIURLs';
-import { DB__Tournament } from '../types/allSportsApi/UniqueTournaments';
+import { MYSQL_DB } from '../../classes/MYSQL_DB/MYSQL_DB';
+import { TABLE_NAMES } from '../../config/NAMES';
+import { allSportsAPIURLs } from '../../config/allSportsAPIURLs';
+import { DB__Tournament } from '../../types/allSportsApi/UniqueTournaments';
 import {
     AllSports__LeagueSeason,
     DB__LeagueSeason,
-} from '../types/allSportsApi/Seasons';
+} from '../../types/allSportsApi/Seasons';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -14,8 +14,8 @@ dotenv.config();
  * CORE__TOURNAMENTS must be populated first
  * or run getTournamentsByCategory
  */
-export async function getLeagueSeasonsByTournament(DB: MYSQL_DB) {
-    const funcName = `getLeagueSeasonsByTournament`;
+export async function getLeagueSeasonsByTournament__CRICKET(DB: MYSQL_DB) {
+    const funcName = `getLeagueSeasonsByTournament__CRICKET`;
     try {
         await DB.cleanTable(TABLE_NAMES.cricketLeagueSeasons);
 
@@ -28,7 +28,7 @@ export async function getLeagueSeasonsByTournament(DB: MYSQL_DB) {
 
         for (const tournament of tournaments) {
             try {
-                const url = allSportsAPIURLs.leagueseasons.replace(
+                const url = allSportsAPIURLs.CRICKET.leagueseasons.replace(
                     'tournamentId',
                     tournament.id.toString()
                 );

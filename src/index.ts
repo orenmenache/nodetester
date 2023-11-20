@@ -1,11 +1,5 @@
 import { MYSQL_DB } from './classes/MYSQL_DB/MYSQL_DB';
-import { getCategories } from './functions/001__getCategories';
-import { getTournamentsByCategory } from './functions/002__getTournamentsByCategory';
 import * as dotenv from 'dotenv';
-import { getLeagueSeasonsByTournament } from './functions/003__getLeagueSeasonsByTournament';
-import { getTeamsByTournamentAndSeason } from './functions/004__getTeamsByTournamentAndSeason';
-import { getPlayersByTeam } from './functions/005a__getPlayersByTeam';
-import { getTopPlayersByLeague } from './functions/005b__getTopPlayersByLeague';
 dotenv.config();
 
 async function main() {
@@ -22,7 +16,11 @@ async function main() {
          */
         // await getTeamsByTournamentAndSeason(DB);
         // await getPlayersByTeam(DB);
-        await getTopPlayersByLeague(DB);
+        // await getTopPlayersByLeague(DB);
+        /**
+         * FOOTBALL
+         */
+        // await getCategories__FOOTBALL(DB);
     } catch (e) {
         console.warn(`Failed to insert: ${e}`);
     } finally {

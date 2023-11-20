@@ -1,12 +1,12 @@
 import axios, { AxiosResponse } from 'axios';
-import { MYSQL_DB } from '../classes/MYSQL_DB/MYSQL_DB';
-import { TABLE_NAMES } from '../config/NAMES';
-import { allSportsAPIURLs } from '../config/allSportsAPIURLs';
-import { DB__Category } from '../types/allSportsApi/Cats';
+import { MYSQL_DB } from '../../classes/MYSQL_DB/MYSQL_DB';
+import { TABLE_NAMES } from '../../config/NAMES';
+import { allSportsAPIURLs } from '../../config/allSportsAPIURLs';
+import { DB__Category } from '../../types/allSportsApi/Cats';
 import {
     AllSports__Tournament,
     DB__Tournament,
-} from '../types/allSportsApi/UniqueTournaments';
+} from '../../types/allSportsApi/UniqueTournaments';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -14,8 +14,8 @@ dotenv.config();
  * CORE__CATEGORIES must be populated first
  * or run getCategories
  */
-export async function getTournamentsByCategory(DB: MYSQL_DB) {
-    const funcName = `getTournamentsByCategory`;
+export async function getTournamentsByCategory__CRICKET(DB: MYSQL_DB) {
+    const funcName = `getTournamentsByCategory__CRICKET`;
     try {
         await DB.cleanTable(TABLE_NAMES.cricketTournaments);
 
@@ -23,7 +23,7 @@ export async function getTournamentsByCategory(DB: MYSQL_DB) {
             TABLE_NAMES.cricketCategories
         );
         for (const category of categories) {
-            const url = `${allSportsAPIURLs.tournaments}${category.id}`;
+            const url = `${allSportsAPIURLs.CRICKET.tournaments}${category.id}`;
             const headers = {
                 'X-RapidAPI-Key': process.env.ALLSPORTS_KEY!,
                 'X-RapidAPI-Host': allSportsAPIURLs.hostHeader,

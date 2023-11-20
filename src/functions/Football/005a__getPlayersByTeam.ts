@@ -1,19 +1,28 @@
 import axios, { AxiosResponse } from 'axios';
-import { MYSQL_DB } from '../classes/MYSQL_DB/MYSQL_DB';
-import { TABLE_NAMES } from '../config/NAMES';
-import { allSportsAPIURLs } from '../config/allSportsAPIURLs';
-import { DB__Tournament } from '../types/allSportsApi/UniqueTournaments';
+import { MYSQL_DB } from '../../classes/MYSQL_DB/MYSQL_DB';
+import { TABLE_NAMES } from '../../config/NAMES';
+import { allSportsAPIURLs } from '../../config/allSportsAPIURLs';
+import { DB__Tournament } from '../../types/allSportsApi/UniqueTournaments';
 import {
     AllSports__LeagueSeason,
     DB__LeagueSeason,
-} from '../types/allSportsApi/Seasons';
+} from '../../types/allSportsApi/Seasons';
 import * as dotenv from 'dotenv';
-import { AllSports__StandingsResponse, AllSports__Team, AllSports__TeamStandings, DB__Team } from '../types/allSportsApi/Teams';
-import { AllSports__Player, AllSports__TeamPlayersAPIResponse, DB__Player } from '../types/allSportsApi/Player';
+import {
+    AllSports__StandingsResponse,
+    AllSports__Team,
+    AllSports__TeamStandings,
+    DB__Team,
+} from '../../types/allSportsApi/Teams';
+import {
+    AllSports__Player,
+    AllSports__TeamPlayersAPIResponse,
+    DB__Player,
+} from '../../types/allSportsApi/Player';
 dotenv.config();
 
-export async function getPlayersByTeam(DB: MYSQL_DB) {
-    const funcName = `getPlayersByTeam`;
+export async function getPlayersByTeam__FOOTBALL(DB: MYSQL_DB) {
+    const funcName = `getPlayersByTeam__FOOTBALL`;
     try {
         await DB.cleanTable(TABLE_NAMES.cricketPlayers);
 
@@ -23,8 +32,10 @@ export async function getPlayersByTeam(DB: MYSQL_DB) {
 
         for (const team of teams) {
             try {
-                const url = allSportsAPIURLs.teamPlayers
-                    .replace('teamId',team.id.toString());
+                const url = allSportsAPIURLs.FOOTBALL.teamPlayers.replace(
+                    'teamId',
+                    team.id.toString()
+                );
                 const headers = {
                     'X-RapidAPI-Key': process.env.ALLSPORTS_KEY!,
                     'X-RapidAPI-Host': allSportsAPIURLs.hostHeader,
@@ -36,16 +47,26 @@ export async function getPlayersByTeam(DB: MYSQL_DB) {
                     headers,
                 };
 
-                const response: AllSports__TeamPlayersAPIResponse = await axios.request(axiosRequest);
+                const response: AllSports__TeamPlayersAPIResponse =
+                    await axios.request(axiosRequest);
 
-                if (!response || !response.data) throw `!response || !response.data`;
+                if (!response || !response.data)
+                    throw `!response || !response.data`;
 
-                const players: AllSports__Player[] =
-                    response.data.players.map((playerContainer) => playerContainer.player)
-                    .concat(response.data.foreignPlayers.map((playerContainer) => playerContainer.player))
-                    .concat(response.data.nationalPlayers.map((playerContainer) => playerContainer.player))
+                const players: AllSports__Player[] = response.data.players
+                    .map((playerContainer) => playerContainer.player)
+                    .concat(
+                        response.data.foreignPlayers.map(
+                            (playerContainer) => playerContainer.player
+                        )
+                    )
+                    .concat(
+                        response.data.nationalPlayers.map(
+                            (playerContainer) => playerContainer.player
+                        )
+                    );
 
-                if (players.length === 0 || !players) 
+                if (players.length === 0 || !players)
                     throw `players.length === 0 || !players for team: ${team.id} ${team.name}`;
 
                 // const filtered = leagueSeasons.filter(
@@ -70,7 +91,7 @@ export async function getPlayersByTeam(DB: MYSQL_DB) {
                         shortName: player.shortName,
                         userCount: player.userCount,
                         position: player.position,
-                        teamId: team.id
+                        teamId: team.id,
                     })
                 );
 
@@ -79,11 +100,12 @@ export async function getPlayersByTeam(DB: MYSQL_DB) {
                     TABLE_NAMES.cricketPlayers,
                     true
                 );
-                console.log(
-                    `Insert result: ${insertResult}`
-                );
+                console.log(`Insert result: ${insertResult}`);
             } catch (e) {
-                console.log (`%cFailed to get team data with error: ${e}: ${team.id} ${team.name}`,'color: orange');
+                console.log(
+                    `%cFailed to get team data with error: ${e}: ${team.id} ${team.name}`,
+                    'color: orange'
+                );
             }
             // return;
         }
