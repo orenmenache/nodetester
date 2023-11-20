@@ -51,8 +51,6 @@ export async function getTournamentsByCategory__FOOTBALL(DB: MYSQL_DB) {
                     secondaryColorHex: tournament.secondaryColorHex,
                     userCount: tournament.userCount,
                     category_id: tournament.category.id,
-                    displayInverseHomeAwayTeams:
-                        tournament.displayInverseHomeAwayTeams,
                 })
             );
 

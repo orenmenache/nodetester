@@ -1,26 +1,26 @@
-import { AxiosResponse } from "axios";
+import { AxiosResponse } from 'axios';
 
 export interface AllSports__Player {
-    id: number;
+    id: string;
     name: string;
     slug: string;
     shortName: string;
     position: string;
-    userCount: number;
+    userCount: string;
 }
 
 export interface DB__Player {
-    id: number;
+    id: string;
     name: string;
     slug: string;
     shortName: string;
     position: string;
-    userCount: number;
-    teamId: number;
+    userCount: string;
+    teamId: string;
 }
 
 export type AllSports__TeamPlayersAPIResponse = AxiosResponse<{
-    players: {player: AllSports__Player}[],
-    foreignPlayers: {player: AllSports__Player}[],
-    nationalPlayers: {player: AllSports__Player}[],
-}>
+    players: { player: AllSports__Player }[];
+    foreignPlayers: { player: AllSports__Player }[];
+    nationalPlayers: { player: AllSports__Player }[];
+}>;

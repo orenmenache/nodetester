@@ -3,32 +3,32 @@ import { AllSports__Player } from './Player';
 import { AllSports__Team } from './Teams';
 
 export interface AllSports__Statistics {
-    id: number;
-    innings: number;
-    battingInnings: number;
-    battingMatches: number;
-    runsScored: number;
-    hundreds: number;
-    matches: number;
+    id: string;
+    innings: string;
+    battingInnings: string;
+    battingMatches: string;
+    runsScored: string;
+    hundreds: string;
+    matches: string;
     type: string;
-    appearances: number;
+    appearances: string;
     playedEnough: boolean;
 }
 
 export interface DB__Statistics {
-    // id: number;
-    innings: number;
-    battingInnings: number;
-    battingMatches: number;
-    runsScored: number;
-    hundreds: number;
-    matches: number;
+    // id: string;
+    innings: string;
+    battingInnings: string;
+    battingMatches: string;
+    runsScored: string;
+    hundreds: string;
+    matches: string;
     type: string;
-    appearances: number;
+    appearances: string;
     category: AllSports__TopPlayerCategories;
-    playerId: number;
-    teamId: number;
-    leagueSeasonId: number;
+    playerId: string;
+    teamId: string;
+    leagueSeasonId: string;
 }
 
 export interface AllSports__TopPlayerBundle {

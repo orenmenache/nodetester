@@ -1,0 +1,14 @@
+USE Football;
+DROP TABLE IF EXISTS RAPID__NEXTMATCHES;
+CREATE TABLE RAPID__NEXTMATCHES (
+    id INT PRIMARY KEY,
+    round INT,
+    startTimestamp TIMESTAMP,
+    slug VARCHAR(255),
+    tournament_id INT NOT NULL,
+    homeTeamId INT NOT NULL,
+    awayTeamId INT NOT NULL,
+    FOREIGN KEY (tournament_id) REFERENCES CORE__TOURNAMENTS(id),
+    FOREIGN KEY (homeTeamId) REFERENCES CORE__TEAMS(id),
+    FOREIGN KEY (awayTeamId) REFERENCES CORE__TEAMS(id)
+);

@@ -1,37 +1,39 @@
-import { AxiosResponse } from "axios";
+import { AxiosResponse } from 'axios';
 
 /**
  * We'll be getting the teams via the standings
  */
-export type AllSports__StandingsResponse = AxiosResponse<{standings: {rows: AllSports__TeamStandings[]}[]}>;
+export type AllSports__StandingsResponse = AxiosResponse<{
+    standings: { rows: AllSports__TeamStandings[] }[];
+}>;
 
 export type AllSports__TeamStandings = {
     team: AllSports__Team;
-    position: number;
-    matches: number;
-    wins: number;
-    netRunRate: number;
-    id: number;
-    losses: number;
-    draws: number;
-    points: number;
-}
+    position: string;
+    matches: string;
+    wins: string;
+    netRunRate: string;
+    id: string;
+    losses: string;
+    draws: string;
+    points: string;
+};
 
 export interface AllSports__Team {
-    id: number;
+    id: string;
     name: string;
     slug: string;
     shortName: string;
-    userCount: number;
-    type: number;
+    userCount: string;
+    type: string;
 }
 
 export interface DB__Team {
-    id: number;
+    id: string;
     name: string;
     slug: string;
     shortName: string;
-    userCount: number;
-    type: number;
-    leagueSeasonId: number;
+    userCount: string;
+    type: string;
+    leagueSeasonId: string;
 }

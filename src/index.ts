@@ -6,6 +6,9 @@ import axios, { AxiosResponse } from 'axios';
 import { allSportsAPIURLs } from './config/allSportsAPIURLs';
 import { AllSports__LeagueSeason } from './types/allSportsApi/Seasons';
 import { getTeamsByTournamentAndSeason__FOOTBALL } from './functions/Football/004__getTeamsByTournamentAndSeason';
+import { getPlayersByTeam__FOOTBALL } from './functions/Football/005a__getPlayersByTeam';
+import { getLastMatches__FOOTBALL } from './functions/Football/006__getLastMatches';
+import { getNextMatches__FOOTBALL } from './functions/Football/007__getNextMatches';
 dotenv.config();
 
 async function main() {
@@ -29,7 +32,9 @@ async function main() {
         // await getCategories__FOOTBALL(DB);
         // await getTournamentsByCategory__FOOTBALL(DB);
         // await getLeagueSeasonsByTournament__FOOTBALL(DB);
-        await getTeamsByTournamentAndSeason__FOOTBALL(DB);
+        // await getTeamsByTournamentAndSeason__FOOTBALL(DB);
+        // await getPlayersByTeam__FOOTBALL(DB);
+        await getNextMatches__FOOTBALL();
     } catch (e) {
         console.warn(`Failed to insert: ${e}`);
     } finally {

@@ -31,12 +31,14 @@ dotenv.config();
 export async function getTopPlayersByLeague__FOOTBALL(DB: MYSQL_DB) {
     const funcName = `getTopPlayersByLeague__FOOTBALL`;
     try {
-        await DB.cleanTable(TABLE_NAMES.cricketStatistics);
+        await DB.cleanTable(TABLE_NAMES.footballStatistics);
 
         let leaguesWithTopPlayers = [];
 
         const leagueSeasons: DB__LeagueSeason[] =
-            await DB.SELECT<DB__LeagueSeason>(TABLE_NAMES.cricketLeagueSeasons);
+            await DB.SELECT<DB__LeagueSeason>(
+                TABLE_NAMES.footballLeagueSeasons
+            );
 
         for (const ls of leagueSeasons) {
             try {
@@ -45,7 +47,7 @@ export async function getTopPlayersByLeague__FOOTBALL(DB: MYSQL_DB) {
                     .replace('seasonId', ls.id.toString());
 
                 //console.log(url);
-                //const url = `https://allsportsapi2.p.rapidapi.com/api/cricket/tournament/11165/season/41321/top-players`
+                //const url = `https://allsportsapi2.p.rapidapi.com/api/football/tournament/11165/season/41321/top-players`
                 const headers = {
                     'X-RapidAPI-Key': process.env.ALLSPORTS_KEY!,
                     'X-RapidAPI-Host': allSportsAPIURLs.hostHeader,
@@ -94,7 +96,7 @@ export async function getTopPlayersByLeague__FOOTBALL(DB: MYSQL_DB) {
 
                     const insertResult = await DB.INSERT_BATCH<DB__Statistics>(
                         stats,
-                        TABLE_NAMES.cricketStatistics,
+                        TABLE_NAMES.footballStatistics,
                         false
                     );
                     if (insertResult) leaguesWithTopPlayers.push(ls);

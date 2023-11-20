@@ -1,23 +1,23 @@
 export type AllSports__Category = {
-    id: number;
+    id: string;
     name: string;
     slug: string;
-    priority: number;
+    priority: string;
     flag: string;
     alpha2: string;
     sport: {
-        id: number;
+        id: string;
         name: string;
         slug: string;
     };
 };
 
 export type DB__Category = {
-    id: number;
+    id: string;
     name: string;
     slug: string;
-    priority: number;
+    priority: string;
     flag: string;
     alpha2: string;
-    sport_id: number;
+    sport_id: string;
 };

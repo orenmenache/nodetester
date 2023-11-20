@@ -24,4 +24,6 @@ export const TABLE_NAMES: { [key: string]: string } = {
     footballPlayers: `${DB_NAMES.Football}.CORE__PLAYERS`, // comes from teams
     footballStatistics: `${DB_NAMES.Football}.CORE__STATISTICS`,
     footballTeams: `${DB_NAMES.Football}.CORE__TEAMS`,
+    footballLastMatches: `${DB_NAMES.Football}.RAPID__LASTMATCHES`,
+    footballNextMatches: `${DB_NAMES.Football}.RAPID__NEXTMATCHES`,
 };

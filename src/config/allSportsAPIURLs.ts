@@ -7,6 +7,7 @@ export const allSportsAPIURLs = {
         standings: `https://allsportsapi2.p.rapidapi.com/api/cricket/tournament/tournamentId/season/seasonId/standings/total`,
         teamPlayers: `https://allsportsapi2.p.rapidapi.com/api/cricket/team/teamId/players`,
         topPlayers: `https://allsportsapi2.p.rapidapi.com/api/cricket/tournament/tournamentId/season/seasonId/top-players`,
+        lastMatches: `https://allsportsapi2.p.rapidapi.com/api/cricket/tournament/tournamentId/season/seasonId/matches/last/0`,
     },
     FOOTBALL: {
         categories: `https://allsportsapi2.p.rapidapi.com/api/tournament/categories`,
@@ -15,5 +16,7 @@ export const allSportsAPIURLs = {
         standings: `https://allsportsapi2.p.rapidapi.com/api/tournament/tournamentId/season/seasonId/standings/total`,
         teamPlayers: `https://allsportsapi2.p.rapidapi.com/api/team/teamId/players`,
         topPlayers: `https://allsportsapi2.p.rapidapi.com/api/tournament/tournamentId/season/seasonId/top-players`,
+        lastMatches: `https://allsportsapi2.p.rapidapi.com/api/tournament/tournamentId/season/seasonId/matches/last/0`,
+        nextMatches: `https://allsportsapi2.p.rapidapi.com/api/tournament/tournamentId/season/seasonId/matches/next/0`,
     },
 };

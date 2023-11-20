@@ -33,11 +33,11 @@ export async function getTeamsByTournamentAndSeason__FOOTBALL(DB: MYSQL_DB) {
         //     );
 
         const EnglishPremierLeague: DB__LeagueSeason = {
-            id: 52186,
+            id: '52186',
             name: 'Premier League 23/24',
             editor: false,
             year: '23/24',
-            tournament_id: 17,
+            tournament_id: '17',
         };
 
         const ls = EnglishPremierLeague;

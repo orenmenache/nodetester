@@ -24,10 +24,10 @@ dotenv.config();
 export async function getPlayersByTeam__FOOTBALL(DB: MYSQL_DB) {
     const funcName = `getPlayersByTeam__FOOTBALL`;
     try {
-        await DB.cleanTable(TABLE_NAMES.cricketPlayers);
+        await DB.cleanTable(TABLE_NAMES.footballPlayers);
 
         const teams: DB__Team[] = await DB.SELECT<DB__Team>(
-            TABLE_NAMES.cricketTeams
+            TABLE_NAMES.footballTeams
         );
 
         for (const team of teams) {
@@ -53,18 +53,19 @@ export async function getPlayersByTeam__FOOTBALL(DB: MYSQL_DB) {
                 if (!response || !response.data)
                     throw `!response || !response.data`;
 
-                const players: AllSports__Player[] = response.data.players
-                    .map((playerContainer) => playerContainer.player)
-                    .concat(
-                        response.data.foreignPlayers.map(
-                            (playerContainer) => playerContainer.player
-                        )
-                    )
-                    .concat(
-                        response.data.nationalPlayers.map(
-                            (playerContainer) => playerContainer.player
-                        )
-                    );
+                const players: AllSports__Player[] = response.data.players.map(
+                    (playerContainer) => playerContainer.player
+                );
+                // .concat(
+                //     response.data.foreignPlayers.map(
+                //         (playerContainer) => playerContainer.player
+                //     )
+                // )
+                // .concat(
+                //     response.data.nationalPlayers.map(
+                //         (playerContainer) => playerContainer.player
+                //     )
+                // );
 
                 if (players.length === 0 || !players)
                     throw `players.length === 0 || !players for team: ${team.id} ${team.name}`;
@@ -97,10 +98,12 @@ export async function getPlayersByTeam__FOOTBALL(DB: MYSQL_DB) {
 
                 const insertResult = await DB.INSERT_BATCH<DB__Player>(
                     dbPlayers,
-                    TABLE_NAMES.cricketPlayers,
+                    TABLE_NAMES.footballPlayers,
                     true
                 );
                 console.log(`Insert result: ${insertResult}`);
+
+                // console.log(JSON.stringify(players));
             } catch (e) {
                 console.log(
                     `%cFailed to get team data with error: ${e}: ${team.id} ${team.name}`,
