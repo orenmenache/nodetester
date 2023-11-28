@@ -1,9 +1,5 @@
-import { AllSports__Team } from '../Teams';
-import { AllSports__Tournament } from '../UniqueTournaments';
-
-interface RoundInfo {
-    round: string;
-}
+import { AllSports__Team } from '../../Teams';
+import { AllSports__Tournament } from '../../UniqueTournaments';
 
 interface Status {
     code: string;
@@ -11,12 +7,16 @@ interface Status {
     type: string;
 }
 
-interface Score {
+interface Inning {
+    score: string;
+    wickets: string;
+    overs: string;
+}
+
+interface CricketScore {
     current: string;
     display: string;
-    period1: string;
-    period2: string;
-    normaltime: string;
+    innings: { [key: string]: Inning };
 }
 
 interface Time {
@@ -30,18 +30,18 @@ interface Changes {
     changeTimestamp: string;
 }
 
-export interface AllSports__NextMatch {
+export interface AllSports__LastMatch {
     tournament: { uniqueTournament: AllSports__Tournament };
-    roundInfo: RoundInfo;
     customId: string;
     status: Status;
     winnerCode: string;
     homeTeam: AllSports__Team;
     awayTeam: AllSports__Team;
-    homeScore: Score;
-    awayScore: Score;
+    homeScore: CricketScore;
+    awayScore: CricketScore;
     time: Time;
     changes: Changes;
+    coverage: string;
     hasGlobalHighlights: boolean;
     hasXg: boolean;
     hasEventPlayerStatistics: boolean;
@@ -54,16 +54,20 @@ export interface AllSports__NextMatch {
     slug: string;
     finalResultOnly: boolean;
     isEditor: boolean;
+    note: string;
 }
 
-export interface DB__NextMatch {
+export interface DB__LastMatch {
     tournament_id: string;
-    //round: string;
+    winnerCode: string;
     homeTeamId: string;
     homeTeamName: string;
     awayTeamId: string;
     awayTeamName: string;
+    homeScore: string;
+    awayScore: string;
     id: string;
     startTimestamp: string;
     slug: string;
+    note: string;
 }

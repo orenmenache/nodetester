@@ -39,31 +39,31 @@ export async function getTournamentsByCategory__CRICKET(DB: MYSQL_DB) {
                 groups: { uniqueTournaments: AllSports__Tournament[] }[];
             }> = await axios.request(axiosRequest);
 
-            const tournaments: AllSports__Tournament[] =
-                response.data.groups[0].uniqueTournaments;
+            for (const group of response.data.groups) {
+                const tournaments: AllSports__Tournament[] =
+                    group.uniqueTournaments;
 
-            const tournamentsDB: DB__Tournament[] = tournaments.map(
-                (tournament: AllSports__Tournament) => ({
-                    id: tournament.id,
-                    name: tournament.name,
-                    slug: tournament.slug,
-                    primaryColorHex: tournament.primaryColorHex,
-                    secondaryColorHex: tournament.secondaryColorHex,
-                    userCount: tournament.userCount,
-                    category_id: tournament.category.id,
-                    displayInverseHomeAwayTeams:
-                        tournament.displayInverseHomeAwayTeams,
-                })
-            );
+                const tournamentsDB: DB__Tournament[] = tournaments.map(
+                    (tournament: AllSports__Tournament) => ({
+                        id: tournament.id,
+                        name: tournament.name,
+                        slug: tournament.slug,
+                        primaryColorHex: tournament.primaryColorHex,
+                        secondaryColorHex: tournament.secondaryColorHex,
+                        userCount: tournament.userCount,
+                        category_id: tournament.category.id,
+                    })
+                );
 
-            const insertResult = await DB.INSERT_BATCH<DB__Tournament>(
-                tournamentsDB,
-                TABLE_NAMES.cricketTournaments,
-                false
-            );
-            console.log(
-                `Insert result: ${insertResult} for category: ${category.id} ${category.name}`
-            );
+                const insertResult = await DB.INSERT_BATCH<DB__Tournament>(
+                    tournamentsDB,
+                    TABLE_NAMES.cricketTournaments,
+                    false
+                );
+                console.log(
+                    `Insert result: ${insertResult} for category: ${category.id} ${category.name}`
+                );
+            }
         }
     } catch (e) {
         throw `${funcName} failed: ${e}`;

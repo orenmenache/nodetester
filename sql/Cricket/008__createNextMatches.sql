@@ -7,7 +7,9 @@ CREATE TABLE RAPID__NEXTMATCHES (
     slug VARCHAR(255),
     tournament_id INT NOT NULL,
     homeTeamId INT NOT NULL,
+    homeTeamName VARCHAR(255) NOT NULL,
     awayTeamId INT NOT NULL,
+    awayTeamName VARCHAR(255) NOT NULL,
     FOREIGN KEY (tournament_id) REFERENCES CORE__TOURNAMENTS(id),
     FOREIGN KEY (homeTeamId) REFERENCES CORE__TEAMS(id),
     FOREIGN KEY (awayTeamId) REFERENCES CORE__TEAMS(id)

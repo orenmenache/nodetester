@@ -57,49 +57,36 @@ export async function getTeamsByTournamentAndSeason__CRICKET(DB: MYSQL_DB) {
                 )
                     throw `!response || !response.data || !response.data.standings || response.data.standings.length`;
 
-                const teams: AllSports__Team[] =
-                    response.data.standings[0].rows.map(
+                for (const standing of response.data.standings) {
+                    const teams: AllSports__Team[] = standing.rows.map(
                         (row: AllSports__TeamStandings) => row.team
                     );
 
-                if (teams.length === 0 || !teams)
-                    throw `teams.length === 0 || !teams for leagueSeason: ${ls.id} ${ls.name} ${ls.year}`;
+                    if (teams.length === 0 || !teams)
+                        throw `teams.length === 0 || !teams for leagueSeason: ${ls.id} ${ls.name} ${ls.year}`;
 
-                // const filtered = leagueSeasons.filter(
-                //     (season: AllSports__LeagueSeason) =>
-                //         Number(season.year) >= thisYear
-                // );
+                    const dbTeams: DB__Team[] = teams.map(
+                        (team: AllSports__Team) => ({
+                            id: team.id,
+                            name: team.name,
+                            slug: team.slug,
+                            shortName: team.shortName,
+                            userCount: team.userCount,
+                            type: team.type,
+                            leagueSeasonId: ls.id,
+                        })
+                    );
 
-                // if (filtered.length === 0) {
-                //     console.warn(
-                //         `No leagues THIS YEAR or NEXT YEAR for tournament: ${JSON.stringify(
-                //             tournament
-                //         )}`
-                //     );
-                //     continue;
-                // }
-
-                const dbTeams: DB__Team[] = teams.map(
-                    (team: AllSports__Team) => ({
-                        id: team.id,
-                        name: team.name,
-                        slug: team.slug,
-                        shortName: team.shortName,
-                        userCount: team.userCount,
-                        type: team.type,
-                        leagueSeasonId: ls.id,
-                    })
-                );
-
-                const insertResult = await DB.INSERT_BATCH<DB__Team>(
-                    dbTeams,
-                    TABLE_NAMES.cricketTeams,
-                    true
-                );
-                console.log(`Insert result: ${insertResult}`);
-                if (insertResult) {
-                    console.log(`%c${JSON.stringify(ls)}`, 'color: cyan');
-                    leaguesWithStandings.push(ls);
+                    const insertResult = await DB.INSERT_BATCH<DB__Team>(
+                        dbTeams,
+                        TABLE_NAMES.cricketTeams,
+                        true
+                    );
+                    console.log(`Insert result: ${insertResult}`);
+                    if (insertResult) {
+                        console.log(`%c${JSON.stringify(ls)}`, 'color: cyan');
+                        leaguesWithStandings.push(ls);
+                    }
                 }
             } catch (e) {
                 console.log(

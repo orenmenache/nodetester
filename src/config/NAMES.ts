@@ -16,6 +16,8 @@ export const TABLE_NAMES: { [key: string]: string } = {
     cricketPlayers: `${DB_NAMES.Cricket}.CORE__PLAYERS`, // comes from teams
     cricketStatistics: `${DB_NAMES.Cricket}.CORE__STATISTICS`,
     cricketTeams: `${DB_NAMES.Cricket}.CORE__TEAMS`,
+    cricketNextMatches: `${DB_NAMES.Cricket}.RAPID__NEXTMATCHES`,
+    cricketLastMatches: `${DB_NAMES.Cricket}.RAPID__LASTMATCHES`,
     footballStandings: `${DB_NAMES.Football}.STANDINGS`,
     footballCategories: `${DB_NAMES.Football}.CORE__CATEGORIES`,
     footballTournaments: `${DB_NAMES.Football}.CORE__TOURNAMENTS`,

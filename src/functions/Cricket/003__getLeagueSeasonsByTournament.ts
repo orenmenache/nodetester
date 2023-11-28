@@ -19,9 +19,6 @@ export async function getLeagueSeasonsByTournament__CRICKET(DB: MYSQL_DB) {
     try {
         await DB.cleanTable(TABLE_NAMES.cricketLeagueSeasons);
 
-        const now = new Date();
-        const thisYear = now.getFullYear();
-
         const tournaments: DB__Tournament[] = await DB.SELECT<DB__Tournament>(
             TABLE_NAMES.cricketTournaments
         );
@@ -58,27 +55,12 @@ export async function getLeagueSeasonsByTournament__CRICKET(DB: MYSQL_DB) {
                     continue;
                 }
 
-                // const filtered = leagueSeasons.filter(
-                //     (season: AllSports__LeagueSeason) =>
-                //         Number(season.year) >= thisYear
-                // );
-
-                // if (filtered.length === 0) {
-                //     console.warn(
-                //         `No leagues THIS YEAR or NEXT YEAR for tournament: ${JSON.stringify(
-                //             tournament
-                //         )}`
-                //     );
-                //     continue;
-                // }
-
-                //const leagueSeasonsDB: DB__LeagueSeason[] = filtered.map(
                 const leagueSeasonsDB: DB__LeagueSeason[] = leagueSeasons.map(
                     (leagueSeason: AllSports__LeagueSeason) => ({
                         id: leagueSeason.id,
                         name: leagueSeason.name,
                         editor: leagueSeason.editor,
-                        year: Number(leagueSeason.year),
+                        year: leagueSeason.year,
                         tournament_id: tournament.id,
                     })
                 );

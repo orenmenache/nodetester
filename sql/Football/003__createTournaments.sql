@@ -8,6 +8,5 @@ CREATE TABLE CORE__TOURNAMENTS (
     secondaryColorHex VARCHAR(7),
     category_id INT NOT NULL,
     userCount INT NOT NULL,
-    displayInverseHomeAwayTeams BOOLEAN,
     FOREIGN KEY (category_id) REFERENCES CORE__CATEGORIES(id)
 );

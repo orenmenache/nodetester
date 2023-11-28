@@ -9,10 +9,8 @@ import {
 import { TABLE_NAMES } from '../../config/NAMES';
 import { formatDateToSQLTimestamp } from '../formatToMySQLTimestamp';
 
-export async function getLastMatches__FOOTBALL() {
+export async function getLastMatches__FOOTBALL(DB: MYSQL_DB) {
     const funcName = `getLastMatches__FOOTBALL`;
-    const DB = new MYSQL_DB();
-    DB.createPool();
     try {
         const EnglishPremierLeague: DB__LeagueSeason = {
             id: '52186',
@@ -74,7 +72,5 @@ export async function getLastMatches__FOOTBALL() {
         console.log(`Insert result: ${insertResult}`);
     } catch (e) {
         throw `Error in ${funcName}: ${e}`;
-    } finally {
-        await DB.pool.end();
     }
 }

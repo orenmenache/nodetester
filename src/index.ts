@@ -9,6 +9,11 @@ import { getTeamsByTournamentAndSeason__FOOTBALL } from './functions/Football/00
 import { getPlayersByTeam__FOOTBALL } from './functions/Football/005a__getPlayersByTeam';
 import { getLastMatches__FOOTBALL } from './functions/Football/006__getLastMatches';
 import { getNextMatches__FOOTBALL } from './functions/Football/007__getNextMatches';
+import { getNextMatches__CRICKET } from './functions/Cricket/007__getNextMatches';
+import { getTournamentsByCategory__CRICKET } from './functions/Cricket/002__getTournamentsByCategory';
+import { getLeagueSeasonsByTournament__CRICKET } from './functions/Cricket/003__getLeagueSeasonsByTournament';
+import { getTeamsByTournamentAndSeason__CRICKET } from './functions/Cricket/004__getTeamsByTournamentAndSeason';
+import { getLastMatches__CRICKET } from './functions/Cricket/006__getLastMatches';
 dotenv.config();
 
 async function main() {
@@ -31,10 +36,13 @@ async function main() {
          */
         // await getCategories__FOOTBALL(DB);
         // await getTournamentsByCategory__FOOTBALL(DB);
-        // await getLeagueSeasonsByTournament__FOOTBALL(DB);
-        // await getTeamsByTournamentAndSeason__FOOTBALL(DB);
+        // await getLeagueSeasonsByTournament__CRICKET(DB);
+        // await getTeamsByTournamentAndSeason__CRICKET(DB);
         // await getPlayersByTeam__FOOTBALL(DB);
-        await getNextMatches__FOOTBALL();
+        // await getLastMatches__FOOTBALL();
+        // await getTournamentsByCategory__CRICKET(DB);
+        // await getNextMatches__CRICKET(DB);
+        await getLastMatches__CRICKET(DB);
     } catch (e) {
         console.warn(`Failed to insert: ${e}`);
     } finally {
