@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { TABLE_NAMES } from '../../config/NAMES';
+import { TABLES } from '../../config/NAMES';
 import { allSportsAPIURLs } from '../../config/allSportsAPIURLs';
 import {
     AllSports__Category,
@@ -12,7 +12,7 @@ dotenv.config();
 export async function getCategories__CRICKET(DB: MYSQL_DB) {
     const funcName = `getCategories__CRICKET`;
     try {
-        await DB.cleanTable(TABLE_NAMES.cricketCategories.name);
+        await DB.cleanTable(TABLES.cricketCategories.name);
 
         const url = allSportsAPIURLs.CRICKET.categories;
         const headers = {
@@ -43,7 +43,7 @@ export async function getCategories__CRICKET(DB: MYSQL_DB) {
 
         const insertResult = await DB.INSERT_BATCH<DB__Category>(
             categoriesDB,
-            TABLE_NAMES.cricketCategories.name,
+            TABLES.cricketCategories.name,
             false
         );
         console.log(`Insert result: ${insertResult}`);

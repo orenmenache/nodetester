@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { MYSQL_DB } from '../../classes/MYSQL_DB/MYSQL_DB';
-import { TABLE_NAMES } from '../../config/NAMES';
+import { TABLES } from '../../config/NAMES';
 import { allSportsAPIURLs } from '../../config/allSportsAPIURLs';
 import { DB__Tournament } from '../../types/allSportsApi/UniqueTournaments';
 import {
@@ -24,10 +24,10 @@ dotenv.config();
 export async function getPlayersByTeam__FOOTBALL(DB: MYSQL_DB) {
     const funcName = `getPlayersByTeam__FOOTBALL`;
     try {
-        await DB.cleanTable(TABLE_NAMES.footballPlayers.name);
+        await DB.cleanTable(TABLES.footballPlayers.name);
 
         const teams: DB__Team[] = await DB.SELECT<DB__Team>(
-            TABLE_NAMES.footballTeams.name
+            TABLES.footballTeams.name
         );
 
         for (const team of teams) {
@@ -98,7 +98,7 @@ export async function getPlayersByTeam__FOOTBALL(DB: MYSQL_DB) {
 
                 const insertResult = await DB.INSERT_BATCH<DB__Player>(
                     dbPlayers,
-                    TABLE_NAMES.footballPlayers.name,
+                    TABLES.footballPlayers.name,
                     true
                 );
                 console.log(`Insert result: ${insertResult}`);

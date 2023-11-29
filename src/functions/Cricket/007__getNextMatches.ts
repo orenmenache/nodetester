@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import { MYSQL_DB } from '../../classes/MYSQL_DB/MYSQL_DB';
 import { allSportsAPIURLs } from '../../config/allSportsAPIURLs';
 import { DB__LeagueSeason } from '../../types/allSportsApi/Seasons';
-import { TABLE_NAMES } from '../../config/NAMES';
+import { TABLES } from '../../config/NAMES';
 import { formatDateToSQLTimestamp } from '../formatToMySQLTimestamp';
 import {
     AllSports__NextMatch,
@@ -19,10 +19,10 @@ export async function getNextMatches__CRICKET(DB: MYSQL_DB) {
             'X-RapidAPI-Host': allSportsAPIURLs.hostHeader,
         };
 
-        await DB.cleanTable(TABLE_NAMES.cricketNextMatches.name);
+        await DB.cleanTable(TABLES.cricketNextMatches.name);
 
         const leageSeasons: DB__LeagueSeason[] =
-            await DB.SELECT<DB__LeagueSeason>(TABLE_NAMES.cricketLeagueSeasons.name);
+            await DB.SELECT<DB__LeagueSeason>(TABLES.cricketLeagueSeasons.name);
 
         for (const ls of leageSeasons) {
             try {
@@ -69,7 +69,7 @@ export async function getNextMatches__CRICKET(DB: MYSQL_DB) {
 
                 const insertResult = await DB.INSERT_BATCH<DB__NextMatch>(
                     nextMatches,
-                    TABLE_NAMES.cricketNextMatches.name,
+                    TABLES.cricketNextMatches.name,
                     true
                 );
 
@@ -80,7 +80,7 @@ export async function getNextMatches__CRICKET(DB: MYSQL_DB) {
                  */
                 const updateLeagueHasNextMatches = async () => {
                     const updateResult = await DB.UPDATE(
-                        TABLE_NAMES.cricketLeagueSeasons.name,
+                        TABLES.cricketLeagueSeasons.name,
                         { hasNextMatches: 1 },
                         { id: ls.id }
                     );

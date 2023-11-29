@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { MYSQL_DB } from '../../classes/MYSQL_DB/MYSQL_DB';
-import { TABLE_NAMES } from '../../config/NAMES';
+import { TABLES } from '../../config/NAMES';
 import { allSportsAPIURLs } from '../../config/allSportsAPIURLs';
 import { DB__Tournament } from '../../types/allSportsApi/UniqueTournaments';
 import {
@@ -31,13 +31,13 @@ dotenv.config();
 export async function getTopPlayersByLeague__FOOTBALL(DB: MYSQL_DB) {
     const funcName = `getTopPlayersByLeague__FOOTBALL`;
     try {
-        await DB.cleanTable(TABLE_NAMES.footballStatistics.name);
+        await DB.cleanTable(TABLES.footballStatistics.name);
 
         let leaguesWithTopPlayers = [];
 
         const leagueSeasons: DB__LeagueSeason[] =
             await DB.SELECT<DB__LeagueSeason>(
-                TABLE_NAMES.footballLeagueSeasons.name
+                TABLES.footballLeagueSeasons.name
             );
 
         for (const ls of leagueSeasons) {
@@ -96,7 +96,7 @@ export async function getTopPlayersByLeague__FOOTBALL(DB: MYSQL_DB) {
 
                     const insertResult = await DB.INSERT_BATCH<DB__Statistics>(
                         stats,
-                        TABLE_NAMES.footballStatistics.name,
+                        TABLES.footballStatistics.name,
                         false
                     );
                     if (insertResult) leaguesWithTopPlayers.push(ls);

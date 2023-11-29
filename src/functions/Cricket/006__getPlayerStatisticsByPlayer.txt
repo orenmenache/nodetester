@@ -1,19 +1,19 @@
 import * as dotenv from 'dotenv';
 import { MYSQL_DB } from '../../classes/MYSQL_DB/MYSQL_DB';
 import { allSportsAPIURLs } from '../../config/allSportsAPIURLs';
-import { TABLE_NAMES } from '../../config/NAMES';
+import { TABLES } from '../../config/NAMES';
 import { DB__Player } from '../../types/allSportsApi/Player';
 dotenv.config();
 
 export async function getPlayersStatisticsByPlayer(DB: MYSQL_DB) {
     const funcName = `getPlayersStatisticsByPlayer`;
     try {
-        await DB.cleanTable(TABLE_NAMES.cricketStatistics);
+        await DB.cleanTable(TABLES.cricketStatistics);
         
         let playersWithStatistics = [];
 
         const players: DB__Player[] = await DB.SELECT<DB__Player>(
-            TABLE_NAMES.cricketPlayers
+            TABLES.cricketPlayers
         );
 
         for (const player of players) {
@@ -64,7 +64,7 @@ export async function getPlayersStatisticsByPlayer(DB: MYSQL_DB) {
                     
                     const insertResult = await DB.INSERT_BATCH<DB__Statistics>(
                         stats,
-                        TABLE_NAMES.cricketStatistics,
+                        TABLES.cricketStatistics,
                         false
                     );
                     if (insertResult) leaguesWithTopPlayers.push(ls);

@@ -6,7 +6,7 @@ export const DB_NAMES: { [key in DB_NAME]: DB_NAME } = {
     Cricket: 'Cricket',
 };
 
-export const TABLE_NAMES: {
+export const TABLES: {
     [key: string]: { name: string; createStatementSqlPath: string | null };
 } = {
     admins: {
@@ -19,30 +19,31 @@ export const TABLE_NAMES: {
     },
     cricketCategories: {
         name: `${DB_NAMES.Cricket}.CORE__CATEGORIES`,
-        createStatementSqlPath: '../sql/Cricket/002__createCategories.sql',
+        createStatementSqlPath: './sql/Cricket/002__createCategories.sql',
     },
     cricketTournaments: {
         name: `${DB_NAMES.Cricket}.CORE__TOURNAMENTS`,
-        createStatementSqlPath: '../sql/Cricket/002__createTournaments.sql',
+        createStatementSqlPath: './sql/Cricket/003__createTournaments.sql',
     },
     cricketLeagueSeasons: {
         name: `${DB_NAMES.Cricket}.CORE__LEAGUESEASONS`,
-        createStatementSqlPath: '../sql/Cricket/002__createLeagueSeasons.sql',
+        createStatementSqlPath: './sql/Cricket/004__createLeagueSeasons.sql', //`C:/Users/User/Documents/programming/NewsFactory/vicki/nodetester/sql/Cricket/004__createLeagueSeasons.sql`
     },
+
     //cricketTopPlayers: { name: `${DB_NAMES.Cricket}.CORE__TOPPLAYERS`, createStatementSqlPath: null }, // comes from leagues
     //cricketPlayers: { name: `${DB_NAMES.Cricket}.CORE__PLAYERS`, createStatementSqlPath: null }, // comes from teams
     //cricketStatistics: { name: `${DB_NAMES.Cricket}.CORE__STATISTICS`, createStatementSqlPath: null },
     cricketTeams: {
         name: `${DB_NAMES.Cricket}.CORE__TEAMS`,
-        createStatementSqlPath: null,
+        createStatementSqlPath: './sql/Cricket/005__createTeams.sql',
     },
     cricketNextMatches: {
         name: `${DB_NAMES.Cricket}.RAPID__NEXTMATCHES`,
-        createStatementSqlPath: null,
+        createStatementSqlPath: './sql/Cricket/008__createNextMatches.sql',
     },
     cricketLastMatches: {
         name: `${DB_NAMES.Cricket}.RAPID__LASTMATCHES`,
-        createStatementSqlPath: null,
+        createStatementSqlPath: './sql/Cricket/007__createLastMatches.sql',
     },
     footballStandings: {
         name: `${DB_NAMES.Football}.STANDINGS`,

@@ -1,5 +1,5 @@
 import { MYSQL_DB } from '../../classes/MYSQL_DB/MYSQL_DB';
-import { TABLE_NAMES } from '../../config/NAMES';
+import { TABLES } from '../../config/NAMES';
 import fs from 'fs';
 import { getLeagueSeasonsByTournament__CRICKET } from './003__getLeagueSeasonsByTournament';
 
@@ -15,14 +15,14 @@ export const RECONSTRUCT = {
              * We need to do this in a specific order
              */
             const constrainedTableNamesByDescHirarchy = [
-                TABLE_NAMES.cricketNextMatches,
-                TABLE_NAMES.cricketLastMatches,
-                //TABLE_NAMES.cricketStandings,
-                //TABLE_NAMES.cricketStatistics,
-                //TABLE_NAMES.cricketTopPlayers,
-                //TABLE_NAMES.cricketPlayers,
-                TABLE_NAMES.cricketTeams,
-                TABLE_NAMES.cricketLeagueSeasons,
+                TABLES.cricketNextMatches,
+                TABLES.cricketLastMatches,
+                //TABLES.cricketStandings,
+                //TABLES.cricketStatistics,
+                //TABLES.cricketTopPlayers,
+                //TABLES.cricketPlayers,
+                TABLES.cricketTeams,
+                TABLES.cricketLeagueSeasons,
             ];
 
             for (const table of constrainedTableNamesByDescHirarchy) {
@@ -49,7 +49,12 @@ export const RECONSTRUCT = {
                 const sqlStatement = this.getSqlStatementFromFile(
                     table.createStatementSqlPath
                 );
-                if (!sqlStatement) continue;
+                if (!sqlStatement) {
+                    console.warn(
+                        `No sql create statement, or incorrect sql statement filePath for table: ${table.name}`
+                    );
+                    continue;
+                }
                 const createResult = await DB.pool.execute(sqlStatement);
                 if (!createResult) throw `Failed to create table ${table.name}`;
             }

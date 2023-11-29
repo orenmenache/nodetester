@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import { MYSQL_DB } from '../../classes/MYSQL_DB/MYSQL_DB';
 import { allSportsAPIURLs } from '../../config/allSportsAPIURLs';
 import { DB__LeagueSeason } from '../../types/allSportsApi/Seasons';
-import { TABLE_NAMES } from '../../config/NAMES';
+import { TABLES } from '../../config/NAMES';
 import { formatDateToSQLTimestamp } from '../formatToMySQLTimestamp';
 import {
     AllSports__NextMatch,
@@ -27,7 +27,7 @@ export async function getNextMatches__FOOTBALL() {
 
         const ls = EnglishPremierLeague;
 
-        await DB.cleanTable(TABLE_NAMES.footballNextMatches.name);
+        await DB.cleanTable(TABLES.footballNextMatches.name);
         const url = allSportsAPIURLs.FOOTBALL.nextMatches
             .replace('tournamentId', ls.tournament_id.toString())
             .replace('seasonId', ls.id.toString());
@@ -69,7 +69,7 @@ export async function getNextMatches__FOOTBALL() {
 
         const insertResult = await DB.INSERT_BATCH<DB__NextMatch>(
             nextMatches,
-            TABLE_NAMES.footballNextMatches.name,
+            TABLES.footballNextMatches.name,
             true
         );
 

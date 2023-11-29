@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { MYSQL_DB } from '../../classes/MYSQL_DB/MYSQL_DB';
-import { TABLE_NAMES } from '../../config/NAMES';
+import { TABLES } from '../../config/NAMES';
 import { allSportsAPIURLs } from '../../config/allSportsAPIURLs';
 import { DB__Tournament } from '../../types/allSportsApi/UniqueTournaments';
 import {
@@ -17,10 +17,10 @@ dotenv.config();
 export async function getLeagueSeasonsByTournament__CRICKET(DB: MYSQL_DB) {
     const funcName = `getLeagueSeasonsByTournament__CRICKET`;
     try {
-        //await DB.cleanTable(TABLE_NAMES.cricketLeagueSeasons);
+        //await DB.cleanTable(TABLES.cricketLeagueSeasons);
 
         const tournaments: DB__Tournament[] = await DB.SELECT<DB__Tournament>(
-            TABLE_NAMES.cricketTournaments.name
+            TABLES.cricketTournaments.name
         );
 
         for (const tournament of tournaments) {
@@ -72,7 +72,7 @@ export async function getLeagueSeasonsByTournament__CRICKET(DB: MYSQL_DB) {
 
                 const insertResult = await DB.INSERT_BATCH<DB__LeagueSeason>(
                     leagueSeasonsDB,
-                    TABLE_NAMES.cricketLeagueSeasons.name,
+                    TABLES.cricketLeagueSeasons.name,
                     true
                 );
                 console.log(

@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { MYSQL_DB } from '../../classes/MYSQL_DB/MYSQL_DB';
-import { TABLE_NAMES } from '../../config/NAMES';
+import { TABLES } from '../../config/NAMES';
 import { allSportsAPIURLs } from '../../config/allSportsAPIURLs';
 import { DB__Tournament } from '../../types/allSportsApi/UniqueTournaments';
 import {
@@ -17,7 +17,7 @@ dotenv.config();
 export async function getLeagueSeasonsByTournament__FOOTBALL(DB: MYSQL_DB) {
     const funcName = `getLeagueSeasonsByTournament__FOOTBALL`;
     try {
-        await DB.cleanTable(TABLE_NAMES.footballLeagueSeasons.name);
+        await DB.cleanTable(TABLES.footballLeagueSeasons.name);
 
         const now = new Date();
         const thisYear = now.getFullYear();
@@ -25,7 +25,7 @@ export async function getLeagueSeasonsByTournament__FOOTBALL(DB: MYSQL_DB) {
         let greenTournaments: DB__Tournament[] = [];
 
         const tournaments: DB__Tournament[] = await DB.SELECT<DB__Tournament>(
-            TABLE_NAMES.footballTournaments.name
+            TABLES.footballTournaments.name
         );
 
         for (const tournament of tournaments) {
@@ -87,7 +87,7 @@ export async function getLeagueSeasonsByTournament__FOOTBALL(DB: MYSQL_DB) {
 
                 const insertResult = await DB.INSERT_BATCH<DB__LeagueSeason>(
                     leagueSeasonsDB,
-                    TABLE_NAMES.footballLeagueSeasons.name,
+                    TABLES.footballLeagueSeasons.name,
                     true
                 );
                 console.log(

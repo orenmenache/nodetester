@@ -8,7 +8,7 @@ import {
     RowDataPacket,
 } from 'mysql2/promise';
 import { ConditionClause } from './types';
-import { DB_NAME, TABLE_NAMES } from '../../config/NAMES';
+import { DB_NAME, TABLES } from '../../config/NAMES';
 import * as dotenv from 'dotenv';
 dotenv.config();
 

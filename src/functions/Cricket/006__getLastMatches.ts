@@ -6,7 +6,7 @@ import {
     AllSports__LastMatch,
     DB__LastMatch,
 } from '../../types/allSportsApi/Match/Cricket/LastMatch';
-import { TABLE_NAMES } from '../../config/NAMES';
+import { TABLES } from '../../config/NAMES';
 import { formatDateToSQLTimestamp } from '../formatToMySQLTimestamp';
 import * as dotenv from 'dotenv';
 dotenv.config();
@@ -21,10 +21,10 @@ export async function getLastMatches__CRICKET(DB: MYSQL_DB) {
     };
 
     try {
-        await DB.cleanTable(TABLE_NAMES.cricketLastMatches.name);
+        await DB.cleanTable(TABLES.cricketLastMatches.name);
 
         const allLeagueSeasons: DB__LeagueSeason[] =
-            await DB.SELECT<DB__LeagueSeason>(TABLE_NAMES.cricketLeagueSeasons.name);
+            await DB.SELECT<DB__LeagueSeason>(TABLES.cricketLeagueSeasons.name);
 
         for (const ls of allLeagueSeasons) {
             try {
@@ -67,7 +67,7 @@ export async function getLastMatches__CRICKET(DB: MYSQL_DB) {
                 }
                 const insertResult = await DB.INSERT_BATCH<DB__LastMatch>(
                     lastMatches,
-                    TABLE_NAMES.cricketLastMatches.name,
+                    TABLES.cricketLastMatches.name,
                     true
                 );
 
@@ -78,7 +78,7 @@ export async function getLastMatches__CRICKET(DB: MYSQL_DB) {
                  */
                 const updateLeagueHasLastMatches = async () => {
                     const updateResult = await DB.UPDATE(
-                        TABLE_NAMES.cricketLeagueSeasons.name,
+                        TABLES.cricketLeagueSeasons.name,
                         { hasLastMatches: 1 },
                         { id: ls.id }
                     );

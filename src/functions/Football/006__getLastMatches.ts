@@ -6,7 +6,7 @@ import {
     AllSports__LastMatch,
     DB__LastMatch,
 } from '../../types/allSportsApi/Match/LastMatch';
-import { TABLE_NAMES } from '../../config/NAMES';
+import { TABLES } from '../../config/NAMES';
 import { formatDateToSQLTimestamp } from '../formatToMySQLTimestamp';
 
 export async function getLastMatches__FOOTBALL(DB: MYSQL_DB) {
@@ -25,7 +25,7 @@ export async function getLastMatches__FOOTBALL(DB: MYSQL_DB) {
 
         const ls = EnglishPremierLeague;
 
-        await DB.cleanTable(TABLE_NAMES.footballLastMatches.name);
+        await DB.cleanTable(TABLES.footballLastMatches.name);
         const url = allSportsAPIURLs.FOOTBALL.lastMatches
             .replace('tournamentId', ls.tournament_id.toString())
             .replace('seasonId', ls.id.toString());
@@ -68,7 +68,7 @@ export async function getLastMatches__FOOTBALL(DB: MYSQL_DB) {
 
         const insertResult = await DB.INSERT_BATCH<DB__LastMatch>(
             lastMatches,
-            TABLE_NAMES.footballLastMatches.name,
+            TABLES.footballLastMatches.name,
             true
         );
 
