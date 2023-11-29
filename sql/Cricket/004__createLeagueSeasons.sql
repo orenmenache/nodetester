@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS Cricket.CORE__LEAGUESEASONS (
     hasNextMatches BOOLEAN NOT NULL,
     hasLastMatches BOOLEAN NOT NULL,
     tournament_id INT NOT NULL,
-    woman BOOLEAN NOT NULL,
+    type VARCHAR(255) NOT NULL,
+    women BOOLEAN NOT NULL,
 FOREIGN KEY (tournament_id) REFERENCES CORE__TOURNAMENTS(id)
 )

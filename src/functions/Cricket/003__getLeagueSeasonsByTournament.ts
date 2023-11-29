@@ -10,6 +10,8 @@ import {
 import * as dotenv from 'dotenv';
 dotenv.config();
 
+type LeagueType = 'T20' | 'ODI' | 'TEST' | 'Unknown';
+
 /**
  * CORE__TOURNAMENTS must be populated first
  * or run getTournamentsByCategory
@@ -56,18 +58,30 @@ export async function getLeagueSeasonsByTournament__CRICKET(DB: MYSQL_DB) {
                 }
 
                 const leagueSeasonsDB: DB__LeagueSeason[] = leagueSeasons.map(
-                    (leagueSeason: AllSports__LeagueSeason) => ({
-                        id: leagueSeason.id,
-                        name: leagueSeason.name,
-                        editor: leagueSeason.editor,
-                        year: leagueSeason.year,
-                        tournament_id: tournament.id,
-                        hasLastMatches: false, // will be updated in getLastMatches
-                        hasNextMatches: false, // will be updated in getNextMatches
-                        woman:
-                            leagueSeason.name.toLowerCase().indexOf('woman') >
-                            -1,
-                    })
+                    (leagueSeason: AllSports__LeagueSeason) => {
+                        let type: LeagueType = 'Unknown';
+                        if (leagueSeason.name.indexOf('T20') > -1) type = 'T20';
+                        if (leagueSeason.name.indexOf('ODI') > -1) type = 'ODI';
+                        if (
+                            leagueSeason.name.toLowerCase().indexOf('test') > -1
+                        )
+                            type = 'TEST';
+
+                        return {
+                            id: leagueSeason.id,
+                            name: leagueSeason.name,
+                            editor: leagueSeason.editor,
+                            year: leagueSeason.year,
+                            tournament_id: tournament.id,
+                            hasLastMatches: false, // will be updated in getLastMatches
+                            hasNextMatches: false, // will be updated in getNextMatches
+                            type,
+                            women:
+                                leagueSeason.name
+                                    .toLowerCase()
+                                    .indexOf('women') > -1,
+                        };
+                    }
                 );
 
                 const insertResult = await DB.INSERT_BATCH<DB__LeagueSeason>(

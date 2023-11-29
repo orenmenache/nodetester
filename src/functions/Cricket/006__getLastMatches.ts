@@ -7,11 +7,11 @@ import {
     DB__LastMatch,
 } from '../../types/allSportsApi/Match/Cricket/LastMatch';
 import { TABLES } from '../../config/NAMES';
-import { formatDateToSQLTimestamp } from '../formatToMySQLTimestamp';
+import { formatDateToSQLTimestamp } from '../GEN/formatToMySQLTimestamp';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-export async function getLastMatches__CRICKET(DB: MYSQL_DB) {
+export async function getLastMatches__CRICKET(DB: MYSQL_DB): Promise<boolean> {
     const funcName = `getLastMatches__CRICKET`;
     DB.createPool();
 
@@ -92,6 +92,7 @@ export async function getLastMatches__CRICKET(DB: MYSQL_DB) {
                 console.warn(`Error @ ls: ${ls.id} ${ls.name}: ${e}`);
             }
         }
+        return true;
     } catch (e) {
         throw `Error in ${funcName}: ${e}`;
     }

@@ -9,7 +9,7 @@ import { MYSQL_DB } from '../../classes/MYSQL_DB/MYSQL_DB';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-export async function getCategories__CRICKET(DB: MYSQL_DB) {
+export async function getCategories__CRICKET(DB: MYSQL_DB): Promise<boolean> {
     const funcName = `getCategories__CRICKET`;
     try {
         await DB.cleanTable(TABLES.cricketCategories.name);
@@ -47,6 +47,7 @@ export async function getCategories__CRICKET(DB: MYSQL_DB) {
             false
         );
         console.log(`Insert result: ${insertResult}`);
+        return true;
     } catch (e) {
         throw `${funcName} failed: ${e}`;
     }

@@ -1,3 +1,10 @@
+import { MYSQL_DB } from '../classes/MYSQL_DB/MYSQL_DB';
+import { getCategories__CRICKET } from '../functions/Cricket/001__getCategories';
+import { getLeagueSeasonsByTournament__CRICKET } from '../functions/Cricket/003__getLeagueSeasonsByTournament';
+import { getTeamsByTournamentAndSeason__CRICKET } from '../functions/Cricket/004__getTeamsByTournamentAndSeason';
+import { getLastMatches__CRICKET } from '../functions/Cricket/006__getLastMatches';
+import { getNextMatches__CRICKET } from '../functions/Cricket/007__getNextMatches';
+
 export type DB_NAME = 'Football' | 'config' | 'Cricket';
 
 export const DB_NAMES: { [key in DB_NAME]: DB_NAME } = {
@@ -7,7 +14,11 @@ export const DB_NAMES: { [key in DB_NAME]: DB_NAME } = {
 };
 
 export const TABLES: {
-    [key: string]: { name: string; createStatementSqlPath: string | null };
+    [key: string]: {
+        name: string;
+        createStatementSqlPath: string | null;
+        dataPopulationFunction?: (DB: MYSQL_DB) => Promise<boolean>;
+    };
 } = {
     admins: {
         name: `${DB_NAMES.config}.admins`,
@@ -28,6 +39,8 @@ export const TABLES: {
     cricketLeagueSeasons: {
         name: `${DB_NAMES.Cricket}.CORE__LEAGUESEASONS`,
         createStatementSqlPath: './sql/Cricket/004__createLeagueSeasons.sql', //`C:/Users/User/Documents/programming/NewsFactory/vicki/nodetester/sql/Cricket/004__createLeagueSeasons.sql`
+        dataPopulationFunction: (DB: MYSQL_DB) =>
+            getLeagueSeasonsByTournament__CRICKET(DB),
     },
 
     //cricketTopPlayers: { name: `${DB_NAMES.Cricket}.CORE__TOPPLAYERS`, createStatementSqlPath: null }, // comes from leagues
@@ -36,14 +49,18 @@ export const TABLES: {
     cricketTeams: {
         name: `${DB_NAMES.Cricket}.CORE__TEAMS`,
         createStatementSqlPath: './sql/Cricket/005__createTeams.sql',
+        dataPopulationFunction: (DB: MYSQL_DB) =>
+            getTeamsByTournamentAndSeason__CRICKET(DB),
     },
     cricketNextMatches: {
         name: `${DB_NAMES.Cricket}.RAPID__NEXTMATCHES`,
         createStatementSqlPath: './sql/Cricket/008__createNextMatches.sql',
+        dataPopulationFunction: (DB: MYSQL_DB) => getNextMatches__CRICKET(DB),
     },
     cricketLastMatches: {
         name: `${DB_NAMES.Cricket}.RAPID__LASTMATCHES`,
         createStatementSqlPath: './sql/Cricket/007__createLastMatches.sql',
+        dataPopulationFunction: (DB: MYSQL_DB) => getLastMatches__CRICKET(DB),
     },
     footballStandings: {
         name: `${DB_NAMES.Football}.STANDINGS`,

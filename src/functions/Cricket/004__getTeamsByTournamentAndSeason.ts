@@ -20,7 +20,9 @@ dotenv.config();
  * We get the standings for every league
  * and with that we get the ids and info of the teams
  */
-export async function getTeamsByTournamentAndSeason__CRICKET(DB: MYSQL_DB) {
+export async function getTeamsByTournamentAndSeason__CRICKET(
+    DB: MYSQL_DB
+): Promise<boolean> {
     const funcName = `getTeamsByTournamentAndSeason__CRICKET`;
     try {
         await DB.cleanTable(TABLES.cricketTeams.name);
@@ -100,6 +102,7 @@ export async function getTeamsByTournamentAndSeason__CRICKET(DB: MYSQL_DB) {
             `%cNumber of leagues with standings: ${leaguesWithStandings.length}`,
             'color: yellow'
         );
+        return true;
     } catch (e) {
         throw `${funcName} failed: ${e}`;
     }

@@ -3,7 +3,7 @@ import { MYSQL_DB } from '../../classes/MYSQL_DB/MYSQL_DB';
 import { allSportsAPIURLs } from '../../config/allSportsAPIURLs';
 import { DB__LeagueSeason } from '../../types/allSportsApi/Seasons';
 import { TABLES } from '../../config/NAMES';
-import { formatDateToSQLTimestamp } from '../formatToMySQLTimestamp';
+import { formatDateToSQLTimestamp } from '../GEN/formatToMySQLTimestamp';
 import {
     AllSports__NextMatch,
     DB__NextMatch,
@@ -22,7 +22,7 @@ export async function getNextMatches__FOOTBALL() {
             tournament_id: '17',
             hasLastMatches: true,
             hasNextMatches: true,
-            woman: false,
+            women: false,
         };
 
         const ls = EnglishPremierLeague;

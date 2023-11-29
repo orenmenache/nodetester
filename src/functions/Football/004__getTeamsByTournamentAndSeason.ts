@@ -40,7 +40,7 @@ export async function getTeamsByTournamentAndSeason__FOOTBALL(DB: MYSQL_DB) {
             tournament_id: '17',
             hasLastMatches: true,
             hasNextMatches: true,
-            woman: false,
+            women: false,
         };
 
         const ls = EnglishPremierLeague;

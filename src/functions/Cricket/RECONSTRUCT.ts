@@ -1,7 +1,6 @@
 import { MYSQL_DB } from '../../classes/MYSQL_DB/MYSQL_DB';
 import { TABLES } from '../../config/NAMES';
 import fs from 'fs';
-import { getLeagueSeasonsByTournament__CRICKET } from './003__getLeagueSeasonsByTournament';
 
 export const RECONSTRUCT = {
     async leagueSeasons(DB: MYSQL_DB) {
@@ -14,7 +13,7 @@ export const RECONSTRUCT = {
              *
              * We need to do this in a specific order
              */
-            const constrainedTableNamesByDescHirarchy = [
+            const constrainedTablesByDescHirarchy = [
                 TABLES.cricketNextMatches,
                 TABLES.cricketLastMatches,
                 //TABLES.cricketStandings,
@@ -25,7 +24,7 @@ export const RECONSTRUCT = {
                 TABLES.cricketLeagueSeasons,
             ];
 
-            for (const table of constrainedTableNamesByDescHirarchy) {
+            for (const table of constrainedTablesByDescHirarchy) {
                 const deleteResult = await DB.DELETETABLE(table.name);
                 if (!deleteResult) break;
             }
@@ -42,22 +41,40 @@ export const RECONSTRUCT = {
              * (reverse order of the hierarchy)
              */
 
-            constrainedTableNamesByDescHirarchy.reverse();
+            const constrainedTablesByAscHirarchy =
+                constrainedTablesByDescHirarchy.reverse();
 
-            for (const table of constrainedTableNamesByDescHirarchy) {
-                if (!table.createStatementSqlPath) continue;
-                const sqlStatement = this.getSqlStatementFromFile(
-                    table.createStatementSqlPath
-                );
-                if (!sqlStatement) {
-                    console.warn(
-                        `No sql create statement, or incorrect sql statement filePath for table: ${table.name}`
+            const createTables = async () => {
+                for (const table of constrainedTablesByAscHirarchy) {
+                    if (!table.createStatementSqlPath) continue;
+                    const sqlStatement = this.getSqlStatementFromFile(
+                        table.createStatementSqlPath
                     );
-                    continue;
+                    if (!sqlStatement) {
+                        console.warn(
+                            `No sql create statement, or incorrect sql statement filePath for table: ${table.name}`
+                        );
+                        continue;
+                    }
+                    const createResult = await DB.pool.execute(sqlStatement);
+                    if (!createResult)
+                        throw `Failed to create table ${table.name}`;
+                    console.log(`Created table ${table.name}`);
                 }
-                const createResult = await DB.pool.execute(sqlStatement);
-                if (!createResult) throw `Failed to create table ${table.name}`;
-            }
+            };
+            await createTables();
+
+            const populateTables = async () => {
+                for (const table of constrainedTablesByAscHirarchy) {
+                    if (!table.dataPopulationFunction) continue;
+                    const populateResult: boolean =
+                        await table.dataPopulationFunction(DB);
+                    if (!populateResult)
+                        throw `Failed to populate table ${table.name}`;
+                    console.log(`Populated table ${table.name}`);
+                }
+            };
+            await populateTables();
 
             // const createLeagueSeasonsResult =
             //     await getLeagueSeasonsByTournament__CRICKET(DB);

@@ -3,7 +3,7 @@ import { MYSQL_DB } from '../../classes/MYSQL_DB/MYSQL_DB';
 import { allSportsAPIURLs } from '../../config/allSportsAPIURLs';
 import { DB__LeagueSeason } from '../../types/allSportsApi/Seasons';
 import { TABLES } from '../../config/NAMES';
-import { formatDateToSQLTimestamp } from '../formatToMySQLTimestamp';
+import { formatDateToSQLTimestamp } from '../GEN/formatToMySQLTimestamp';
 import {
     AllSports__NextMatch,
     DB__NextMatch,
@@ -11,7 +11,7 @@ import {
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-export async function getNextMatches__CRICKET(DB: MYSQL_DB) {
+export async function getNextMatches__CRICKET(DB: MYSQL_DB): Promise<boolean> {
     const funcName = `getNextMatches__CRICKET`;
     try {
         const headers = {
@@ -94,6 +94,7 @@ export async function getNextMatches__CRICKET(DB: MYSQL_DB) {
                 console.warn(`${e}`);
             }
         }
+        return true;
     } catch (e) {
         throw `Error in ${funcName}: ${e}`;
     }

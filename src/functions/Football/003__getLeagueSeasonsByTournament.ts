@@ -79,8 +79,8 @@ export async function getLeagueSeasonsByTournament__FOOTBALL(DB: MYSQL_DB) {
                         tournament_id: tournament.id,
                         hasLastMatches: false, // will be updated in getLastMatches
                         hasNextMatches: false, // will be updated in getNextMatches
-                        woman:
-                            leagueSeason.name.toLowerCase().indexOf('woman') >
+                        women:
+                            leagueSeason.name.toLowerCase().indexOf('women') >
                             -1,
                     })
                 );

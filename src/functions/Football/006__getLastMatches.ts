@@ -7,7 +7,7 @@ import {
     DB__LastMatch,
 } from '../../types/allSportsApi/Match/LastMatch';
 import { TABLES } from '../../config/NAMES';
-import { formatDateToSQLTimestamp } from '../formatToMySQLTimestamp';
+import { formatDateToSQLTimestamp } from '../GEN/formatToMySQLTimestamp';
 
 export async function getLastMatches__FOOTBALL(DB: MYSQL_DB) {
     const funcName = `getLastMatches__FOOTBALL`;
@@ -20,7 +20,7 @@ export async function getLastMatches__FOOTBALL(DB: MYSQL_DB) {
             tournament_id: '17',
             hasLastMatches: true,
             hasNextMatches: true,
-            woman: false,
+            women: false,
         };
 
         const ls = EnglishPremierLeague;
