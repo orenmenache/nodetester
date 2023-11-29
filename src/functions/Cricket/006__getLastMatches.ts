@@ -23,13 +23,10 @@ export async function getLastMatches__CRICKET(DB: MYSQL_DB) {
     try {
         await DB.cleanTable(TABLE_NAMES.cricketLastMatches);
 
-        const activeLeagueSeasons: DB__LeagueSeason[] =
-            await DB.SELECT<DB__LeagueSeason>(
-                TABLE_NAMES.cricketLeagueSeasons,
-                { active: 1 }
-            );
+        const allLeagueSeasons: DB__LeagueSeason[] =
+            await DB.SELECT<DB__LeagueSeason>(TABLE_NAMES.cricketLeagueSeasons);
 
-        for (const ls of activeLeagueSeasons) {
+        for (const ls of allLeagueSeasons) {
             try {
                 const url = allSportsAPIURLs.CRICKET.lastMatches
                     .replace('tournamentId', ls.tournament_id.toString())
@@ -75,6 +72,22 @@ export async function getLastMatches__CRICKET(DB: MYSQL_DB) {
                 );
 
                 console.log(`Insert result: ${insertResult} for ${ls.name}`);
+
+                /**
+                 * Updates the league's hasLastMatches flag in the database.
+                 */
+                const updateLeagueHasLastMatches = async () => {
+                    const updateResult = await DB.UPDATE(
+                        TABLE_NAMES.cricketLeagueSeasons,
+                        { hasLastMatches: 1 },
+                        { id: ls.id }
+                    );
+
+                    console.log(
+                        `Update result: ${updateResult} for ${ls.id} ${ls.name}`
+                    );
+                };
+                await updateLeagueHasLastMatches();
             } catch (e) {
                 console.warn(`Error @ ls: ${ls.id} ${ls.name}: ${e}`);
             }

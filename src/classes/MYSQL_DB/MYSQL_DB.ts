@@ -219,6 +219,7 @@ export class MYSQL_DB {
                     'Pool was not created. Ensure the pool is created when running the app.'
                 );
             }
+
             const deleteAllRecordsSql = `DELETE FROM ${tableName};`;
             await this.pool.execute(deleteAllRecordsSql);
             return true;
@@ -311,5 +312,22 @@ export class MYSQL_DB {
         }
 
         return [sql, params];
+    }
+    async DELETETABLE(tableName: string): Promise<boolean> {
+        const funcName = 'DELETETABLE';
+        try {
+            if (!this.pool) {
+                throw new Error(
+                    'Pool was not created. Ensure pool is created when running the app.'
+                );
+            }
+            const sql = `DROP TABLE IF EXISTS ${tableName};`;
+            await this.pool.execute(sql);
+            // console.log(`Table ${tableName} deleted successfully`);
+            return true;
+        } catch (e) {
+            console.warn(`Error in ${funcName}: ${e}`);
+            return false;
+        }
     }
 }

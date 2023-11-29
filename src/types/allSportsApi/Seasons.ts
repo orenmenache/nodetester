@@ -11,4 +11,7 @@ export type DB__LeagueSeason = {
     editor: boolean;
     year: string;
     tournament_id: string;
+    hasLastMatches: boolean;
+    hasNextMatches: boolean;
+    woman: boolean;
 };

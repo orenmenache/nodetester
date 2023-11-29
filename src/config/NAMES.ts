@@ -6,26 +6,82 @@ export const DB_NAMES: { [key in DB_NAME]: DB_NAME } = {
     Cricket: 'Cricket',
 };
 
-export const TABLE_NAMES: { [key: string]: string } = {
-    admins: `${DB_NAMES.config}.admins`,
-    cricketStandings: `${DB_NAMES.Cricket}.STANDINGS`,
-    cricketCategories: `${DB_NAMES.Cricket}.CORE__CATEGORIES`,
-    cricketTournaments: `${DB_NAMES.Cricket}.CORE__TOURNAMENTS`,
-    cricketLeagueSeasons: `${DB_NAMES.Cricket}.CORE__LEAGUESEASONS`,
-    cricketTopPlayers: `${DB_NAMES.Cricket}.CORE__TOPPLAYERS`, // comes from leagues
-    cricketPlayers: `${DB_NAMES.Cricket}.CORE__PLAYERS`, // comes from teams
-    cricketStatistics: `${DB_NAMES.Cricket}.CORE__STATISTICS`,
-    cricketTeams: `${DB_NAMES.Cricket}.CORE__TEAMS`,
-    cricketNextMatches: `${DB_NAMES.Cricket}.RAPID__NEXTMATCHES`,
-    cricketLastMatches: `${DB_NAMES.Cricket}.RAPID__LASTMATCHES`,
-    footballStandings: `${DB_NAMES.Football}.STANDINGS`,
-    footballCategories: `${DB_NAMES.Football}.CORE__CATEGORIES`,
-    footballTournaments: `${DB_NAMES.Football}.CORE__TOURNAMENTS`,
-    footballLeagueSeasons: `${DB_NAMES.Football}.CORE__LEAGUESEASONS`,
-    footballTopPlayers: `${DB_NAMES.Football}.CORE__TOPPLAYERS`, // comes from leagues
-    footballPlayers: `${DB_NAMES.Football}.CORE__PLAYERS`, // comes from teams
-    footballStatistics: `${DB_NAMES.Football}.CORE__STATISTICS`,
-    footballTeams: `${DB_NAMES.Football}.CORE__TEAMS`,
-    footballLastMatches: `${DB_NAMES.Football}.RAPID__LASTMATCHES`,
-    footballNextMatches: `${DB_NAMES.Football}.RAPID__NEXTMATCHES`,
+export const TABLE_NAMES: {
+    [key: string]: { name: string; createStatementSqlPath: string | null };
+} = {
+    admins: {
+        name: `${DB_NAMES.config}.admins`,
+        createStatementSqlPath: null,
+    },
+    cricketStandings: {
+        name: `${DB_NAMES.Cricket}.STANDINGS`,
+        createStatementSqlPath: null,
+    },
+    cricketCategories: {
+        name: `${DB_NAMES.Cricket}.CORE__CATEGORIES`,
+        createStatementSqlPath: '../sql/Cricket/002__createCategories.sql',
+    },
+    cricketTournaments: {
+        name: `${DB_NAMES.Cricket}.CORE__TOURNAMENTS`,
+        createStatementSqlPath: '../sql/Cricket/002__createTournaments.sql',
+    },
+    cricketLeagueSeasons: {
+        name: `${DB_NAMES.Cricket}.CORE__LEAGUESEASONS`,
+        createStatementSqlPath: '../sql/Cricket/002__createLeagueSeasons.sql',
+    },
+    //cricketTopPlayers: { name: `${DB_NAMES.Cricket}.CORE__TOPPLAYERS`, createStatementSqlPath: null }, // comes from leagues
+    //cricketPlayers: { name: `${DB_NAMES.Cricket}.CORE__PLAYERS`, createStatementSqlPath: null }, // comes from teams
+    //cricketStatistics: { name: `${DB_NAMES.Cricket}.CORE__STATISTICS`, createStatementSqlPath: null },
+    cricketTeams: {
+        name: `${DB_NAMES.Cricket}.CORE__TEAMS`,
+        createStatementSqlPath: null,
+    },
+    cricketNextMatches: {
+        name: `${DB_NAMES.Cricket}.RAPID__NEXTMATCHES`,
+        createStatementSqlPath: null,
+    },
+    cricketLastMatches: {
+        name: `${DB_NAMES.Cricket}.RAPID__LASTMATCHES`,
+        createStatementSqlPath: null,
+    },
+    footballStandings: {
+        name: `${DB_NAMES.Football}.STANDINGS`,
+        createStatementSqlPath: null,
+    },
+    footballCategories: {
+        name: `${DB_NAMES.Football}.CORE__CATEGORIES`,
+        createStatementSqlPath: null,
+    },
+    footballTournaments: {
+        name: `${DB_NAMES.Football}.CORE__TOURNAMENTS`,
+        createStatementSqlPath: null,
+    },
+    footballLeagueSeasons: {
+        name: `${DB_NAMES.Football}.CORE__LEAGUESEASONS`,
+        createStatementSqlPath: null,
+    },
+    footballTopPlayers: {
+        name: `${DB_NAMES.Football}.CORE__TOPPLAYERS`,
+        createStatementSqlPath: null,
+    }, // comes from leagues
+    footballPlayers: {
+        name: `${DB_NAMES.Football}.CORE__PLAYERS`,
+        createStatementSqlPath: null,
+    }, // comes from teams
+    footballStatistics: {
+        name: `${DB_NAMES.Football}.CORE__STATISTICS`,
+        createStatementSqlPath: null,
+    },
+    footballTeams: {
+        name: `${DB_NAMES.Football}.CORE__TEAMS`,
+        createStatementSqlPath: null,
+    },
+    footballLastMatches: {
+        name: `${DB_NAMES.Football}.RAPID__LASTMATCHES`,
+        createStatementSqlPath: null,
+    },
+    footballNextMatches: {
+        name: `${DB_NAMES.Football}.RAPID__NEXTMATCHES`,
+        createStatementSqlPath: null,
+    },
 };

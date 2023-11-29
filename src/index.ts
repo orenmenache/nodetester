@@ -14,35 +14,14 @@ import { getTournamentsByCategory__CRICKET } from './functions/Cricket/002__getT
 import { getLeagueSeasonsByTournament__CRICKET } from './functions/Cricket/003__getLeagueSeasonsByTournament';
 import { getTeamsByTournamentAndSeason__CRICKET } from './functions/Cricket/004__getTeamsByTournamentAndSeason';
 import { getLastMatches__CRICKET } from './functions/Cricket/006__getLastMatches';
+import { RECONSTRUCT } from './functions/Cricket/RECONSTRUCT';
 dotenv.config();
 
 async function main() {
     const DB = new MYSQL_DB();
     DB.createPool();
     try {
-        // await getCategories(DB);
-        // await getTournamentsByCategory(DB);
-        // await getLeagueSeasonsByTournament(DB);
-        /**
-         * 249 leagues with standings
-         * When we filter leagueSeasons from 2023 and above
-         * there are 112 leagueSeasons with standings
-         */
-        // await getTeamsByTournamentAndSeason(DB);
-        // await getPlayersByTeam(DB);
-        // await getTopPlayersByLeague(DB);
-        /**
-         * FOOTBALL
-         */
-        // await getCategories__FOOTBALL(DB);
-        // await getTournamentsByCategory__FOOTBALL(DB);
-        // await getLeagueSeasonsByTournament__CRICKET(DB);
-        // await getTeamsByTournamentAndSeason__CRICKET(DB);
-        // await getPlayersByTeam__FOOTBALL(DB);
-        // await getLastMatches__FOOTBALL();
-        // await getTournamentsByCategory__CRICKET(DB);
-        // await getNextMatches__CRICKET(DB);
-        await getLastMatches__CRICKET(DB);
+        await RECONSTRUCT.leagueSeasons(DB);
     } catch (e) {
         console.warn(`Failed to insert: ${e}`);
     } finally {

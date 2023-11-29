@@ -5,7 +5,9 @@ CREATE TABLE CORE__LEAGUESEASONS (
     editor BOOLEAN,
     name VARCHAR(255) NOT NULL,
     year VARCHAR(10) NOT NULL,
-    active BOOLEAN NOT NULL,
+    hasNextMatches BOOLEAN NOT NULL,
+    hasLastMatches BOOLEAN NOT NULL,
     tournament_id INT NOT NULL,
+    woman BOOLEAN NOT NULL,
 FOREIGN KEY (tournament_id) REFERENCES CORE__TOURNAMENTS(id)
 )
