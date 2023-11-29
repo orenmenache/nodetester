@@ -23,12 +23,12 @@ dotenv.config();
 export async function getTeamsByTournamentAndSeason__CRICKET(DB: MYSQL_DB) {
     const funcName = `getTeamsByTournamentAndSeason__CRICKET`;
     try {
-        await DB.cleanTable(TABLE_NAMES.cricketTeams);
+        await DB.cleanTable(TABLE_NAMES.cricketTeams.name);
 
         let leaguesWithStandings = [];
 
         const leagueSeasons: DB__LeagueSeason[] =
-            await DB.SELECT<DB__LeagueSeason>(TABLE_NAMES.cricketLeagueSeasons);
+            await DB.SELECT<DB__LeagueSeason>(TABLE_NAMES.cricketLeagueSeasons.name);
 
         for (const ls of leagueSeasons) {
             try {
@@ -79,7 +79,7 @@ export async function getTeamsByTournamentAndSeason__CRICKET(DB: MYSQL_DB) {
 
                     const insertResult = await DB.INSERT_BATCH<DB__Team>(
                         dbTeams,
-                        TABLE_NAMES.cricketTeams,
+                        TABLE_NAMES.cricketTeams.name,
                         true
                     );
                     console.log(`Insert result: ${insertResult}`);

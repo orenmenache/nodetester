@@ -23,7 +23,7 @@ dotenv.config();
 export async function getTeamsByTournamentAndSeason__FOOTBALL(DB: MYSQL_DB) {
     const funcName = `getTeamsByTournamentAndSeason__FOOTBALL`;
     try {
-        await DB.cleanTable(TABLE_NAMES.footballTeams);
+        await DB.cleanTable(TABLE_NAMES.footballTeams.name);
 
         let leaguesWithStandings = [];
 
@@ -38,6 +38,9 @@ export async function getTeamsByTournamentAndSeason__FOOTBALL(DB: MYSQL_DB) {
             editor: false,
             year: '23/24',
             tournament_id: '17',
+            hasLastMatches: true,
+            hasNextMatches: true,
+            woman: false,
         };
 
         const ls = EnglishPremierLeague;
@@ -89,7 +92,7 @@ export async function getTeamsByTournamentAndSeason__FOOTBALL(DB: MYSQL_DB) {
 
             const insertResult = await DB.INSERT_BATCH<DB__Team>(
                 dbTeams,
-                TABLE_NAMES.footballTeams,
+                TABLE_NAMES.footballTeams.name,
                 true
             );
             console.log(`Insert result: ${insertResult}`);

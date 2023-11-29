@@ -17,10 +17,10 @@ dotenv.config();
 export async function getTournamentsByCategory__FOOTBALL(DB: MYSQL_DB) {
     const funcName = `getTournamentsByCategory__FOOTBALL`;
     try {
-        await DB.cleanTable(TABLE_NAMES.footballTournaments);
+        await DB.cleanTable(TABLE_NAMES.footballTournaments.name);
 
         const categories: DB__Category[] = await DB.SELECT<DB__Category>(
-            TABLE_NAMES.footballCategories
+            TABLE_NAMES.footballCategories.name
         );
         for (const category of categories) {
             const url = `${allSportsAPIURLs.FOOTBALL.tournaments}${category.id}`;
@@ -56,7 +56,7 @@ export async function getTournamentsByCategory__FOOTBALL(DB: MYSQL_DB) {
 
             const insertResult = await DB.INSERT_BATCH<DB__Tournament>(
                 tournamentsDB,
-                TABLE_NAMES.footballTournaments,
+                TABLE_NAMES.footballTournaments.name,
                 false
             );
             console.log(

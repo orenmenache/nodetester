@@ -31,13 +31,13 @@ dotenv.config();
 export async function getTopPlayersByLeague__FOOTBALL(DB: MYSQL_DB) {
     const funcName = `getTopPlayersByLeague__FOOTBALL`;
     try {
-        await DB.cleanTable(TABLE_NAMES.footballStatistics);
+        await DB.cleanTable(TABLE_NAMES.footballStatistics.name);
 
         let leaguesWithTopPlayers = [];
 
         const leagueSeasons: DB__LeagueSeason[] =
             await DB.SELECT<DB__LeagueSeason>(
-                TABLE_NAMES.footballLeagueSeasons
+                TABLE_NAMES.footballLeagueSeasons.name
             );
 
         for (const ls of leagueSeasons) {
@@ -96,7 +96,7 @@ export async function getTopPlayersByLeague__FOOTBALL(DB: MYSQL_DB) {
 
                     const insertResult = await DB.INSERT_BATCH<DB__Statistics>(
                         stats,
-                        TABLE_NAMES.footballStatistics,
+                        TABLE_NAMES.footballStatistics.name,
                         false
                     );
                     if (insertResult) leaguesWithTopPlayers.push(ls);

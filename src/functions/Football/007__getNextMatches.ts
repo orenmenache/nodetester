@@ -20,11 +20,14 @@ export async function getNextMatches__FOOTBALL() {
             editor: false,
             year: '23/24',
             tournament_id: '17',
+            hasLastMatches: true,
+            hasNextMatches: true,
+            woman: false,
         };
 
         const ls = EnglishPremierLeague;
 
-        await DB.cleanTable(TABLE_NAMES.footballNextMatches);
+        await DB.cleanTable(TABLE_NAMES.footballNextMatches.name);
         const url = allSportsAPIURLs.FOOTBALL.nextMatches
             .replace('tournamentId', ls.tournament_id.toString())
             .replace('seasonId', ls.id.toString());
@@ -50,9 +53,11 @@ export async function getNextMatches__FOOTBALL() {
         for (const event of response.data.events) {
             const dbNextMatch: DB__NextMatch = {
                 tournament_id: event.tournament.uniqueTournament.id,
-                round: event.roundInfo.round,
+                //round: event.roundInfo.round,
                 homeTeamId: event.homeTeam.id,
                 awayTeamId: event.awayTeam.id,
+                homeTeamName: event.homeTeam.name,
+                awayTeamName: event.awayTeam.name,
                 id: event.id,
                 startTimestamp: formatDateToSQLTimestamp(
                     new Date(Number(event.startTimestamp) * 1000)
@@ -64,7 +69,7 @@ export async function getNextMatches__FOOTBALL() {
 
         const insertResult = await DB.INSERT_BATCH<DB__NextMatch>(
             nextMatches,
-            TABLE_NAMES.footballNextMatches,
+            TABLE_NAMES.footballNextMatches.name,
             true
         );
 

@@ -18,11 +18,14 @@ export async function getLastMatches__FOOTBALL(DB: MYSQL_DB) {
             editor: false,
             year: '23/24',
             tournament_id: '17',
+            hasLastMatches: true,
+            hasNextMatches: true,
+            woman: false,
         };
 
         const ls = EnglishPremierLeague;
 
-        await DB.cleanTable(TABLE_NAMES.footballLastMatches);
+        await DB.cleanTable(TABLE_NAMES.footballLastMatches.name);
         const url = allSportsAPIURLs.FOOTBALL.lastMatches
             .replace('tournamentId', ls.tournament_id.toString())
             .replace('seasonId', ls.id.toString());
@@ -65,7 +68,7 @@ export async function getLastMatches__FOOTBALL(DB: MYSQL_DB) {
 
         const insertResult = await DB.INSERT_BATCH<DB__LastMatch>(
             lastMatches,
-            TABLE_NAMES.footballLastMatches,
+            TABLE_NAMES.footballLastMatches.name,
             true
         );
 

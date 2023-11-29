@@ -24,10 +24,10 @@ dotenv.config();
 export async function getPlayersByTeam__FOOTBALL(DB: MYSQL_DB) {
     const funcName = `getPlayersByTeam__FOOTBALL`;
     try {
-        await DB.cleanTable(TABLE_NAMES.footballPlayers);
+        await DB.cleanTable(TABLE_NAMES.footballPlayers.name);
 
         const teams: DB__Team[] = await DB.SELECT<DB__Team>(
-            TABLE_NAMES.footballTeams
+            TABLE_NAMES.footballTeams.name
         );
 
         for (const team of teams) {
@@ -98,7 +98,7 @@ export async function getPlayersByTeam__FOOTBALL(DB: MYSQL_DB) {
 
                 const insertResult = await DB.INSERT_BATCH<DB__Player>(
                     dbPlayers,
-                    TABLE_NAMES.footballPlayers,
+                    TABLE_NAMES.footballPlayers.name,
                     true
                 );
                 console.log(`Insert result: ${insertResult}`);

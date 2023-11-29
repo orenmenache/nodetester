@@ -20,7 +20,7 @@ export async function getLeagueSeasonsByTournament__CRICKET(DB: MYSQL_DB) {
         //await DB.cleanTable(TABLE_NAMES.cricketLeagueSeasons);
 
         const tournaments: DB__Tournament[] = await DB.SELECT<DB__Tournament>(
-            TABLE_NAMES.cricketTournaments
+            TABLE_NAMES.cricketTournaments.name
         );
 
         for (const tournament of tournaments) {
@@ -72,7 +72,7 @@ export async function getLeagueSeasonsByTournament__CRICKET(DB: MYSQL_DB) {
 
                 const insertResult = await DB.INSERT_BATCH<DB__LeagueSeason>(
                     leagueSeasonsDB,
-                    TABLE_NAMES.cricketLeagueSeasons,
+                    TABLE_NAMES.cricketLeagueSeasons.name,
                     true
                 );
                 console.log(

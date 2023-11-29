@@ -19,10 +19,10 @@ export async function getNextMatches__CRICKET(DB: MYSQL_DB) {
             'X-RapidAPI-Host': allSportsAPIURLs.hostHeader,
         };
 
-        await DB.cleanTable(TABLE_NAMES.cricketNextMatches);
+        await DB.cleanTable(TABLE_NAMES.cricketNextMatches.name);
 
         const leageSeasons: DB__LeagueSeason[] =
-            await DB.SELECT<DB__LeagueSeason>(TABLE_NAMES.cricketLeagueSeasons);
+            await DB.SELECT<DB__LeagueSeason>(TABLE_NAMES.cricketLeagueSeasons.name);
 
         for (const ls of leageSeasons) {
             try {
@@ -69,7 +69,7 @@ export async function getNextMatches__CRICKET(DB: MYSQL_DB) {
 
                 const insertResult = await DB.INSERT_BATCH<DB__NextMatch>(
                     nextMatches,
-                    TABLE_NAMES.cricketNextMatches,
+                    TABLE_NAMES.cricketNextMatches.name,
                     true
                 );
 
@@ -80,7 +80,7 @@ export async function getNextMatches__CRICKET(DB: MYSQL_DB) {
                  */
                 const updateLeagueHasNextMatches = async () => {
                     const updateResult = await DB.UPDATE(
-                        TABLE_NAMES.cricketLeagueSeasons,
+                        TABLE_NAMES.cricketLeagueSeasons.name,
                         { hasNextMatches: 1 },
                         { id: ls.id }
                     );

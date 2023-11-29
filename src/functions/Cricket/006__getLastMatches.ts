@@ -21,10 +21,10 @@ export async function getLastMatches__CRICKET(DB: MYSQL_DB) {
     };
 
     try {
-        await DB.cleanTable(TABLE_NAMES.cricketLastMatches);
+        await DB.cleanTable(TABLE_NAMES.cricketLastMatches.name);
 
         const allLeagueSeasons: DB__LeagueSeason[] =
-            await DB.SELECT<DB__LeagueSeason>(TABLE_NAMES.cricketLeagueSeasons);
+            await DB.SELECT<DB__LeagueSeason>(TABLE_NAMES.cricketLeagueSeasons.name);
 
         for (const ls of allLeagueSeasons) {
             try {
@@ -67,7 +67,7 @@ export async function getLastMatches__CRICKET(DB: MYSQL_DB) {
                 }
                 const insertResult = await DB.INSERT_BATCH<DB__LastMatch>(
                     lastMatches,
-                    TABLE_NAMES.cricketLastMatches,
+                    TABLE_NAMES.cricketLastMatches.name,
                     true
                 );
 
@@ -78,7 +78,7 @@ export async function getLastMatches__CRICKET(DB: MYSQL_DB) {
                  */
                 const updateLeagueHasLastMatches = async () => {
                     const updateResult = await DB.UPDATE(
-                        TABLE_NAMES.cricketLeagueSeasons,
+                        TABLE_NAMES.cricketLeagueSeasons.name,
                         { hasLastMatches: 1 },
                         { id: ls.id }
                     );

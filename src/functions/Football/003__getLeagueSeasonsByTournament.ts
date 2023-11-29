@@ -17,7 +17,7 @@ dotenv.config();
 export async function getLeagueSeasonsByTournament__FOOTBALL(DB: MYSQL_DB) {
     const funcName = `getLeagueSeasonsByTournament__FOOTBALL`;
     try {
-        await DB.cleanTable(TABLE_NAMES.footballLeagueSeasons);
+        await DB.cleanTable(TABLE_NAMES.footballLeagueSeasons.name);
 
         const now = new Date();
         const thisYear = now.getFullYear();
@@ -25,7 +25,7 @@ export async function getLeagueSeasonsByTournament__FOOTBALL(DB: MYSQL_DB) {
         let greenTournaments: DB__Tournament[] = [];
 
         const tournaments: DB__Tournament[] = await DB.SELECT<DB__Tournament>(
-            TABLE_NAMES.footballTournaments
+            TABLE_NAMES.footballTournaments.name
         );
 
         for (const tournament of tournaments) {
@@ -77,12 +77,17 @@ export async function getLeagueSeasonsByTournament__FOOTBALL(DB: MYSQL_DB) {
                         editor: leagueSeason.editor,
                         year: leagueSeason.year,
                         tournament_id: tournament.id,
+                        hasLastMatches: false, // will be updated in getLastMatches
+                        hasNextMatches: false, // will be updated in getNextMatches
+                        woman:
+                            leagueSeason.name.toLowerCase().indexOf('woman') >
+                            -1,
                     })
                 );
 
                 const insertResult = await DB.INSERT_BATCH<DB__LeagueSeason>(
                     leagueSeasonsDB,
-                    TABLE_NAMES.footballLeagueSeasons,
+                    TABLE_NAMES.footballLeagueSeasons.name,
                     true
                 );
                 console.log(

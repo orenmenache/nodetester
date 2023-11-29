@@ -15,7 +15,7 @@ dotenv.config();
 export async function getCategories__FOOTBALL(DB: MYSQL_DB) {
     const funcName = `getCategories__FOOTBALL`;
     try {
-        await DB.cleanTable(TABLE_NAMES.footballCategories);
+        await DB.cleanTable(TABLE_NAMES.footballCategories.name);
 
         const url = allSportsAPIURLs.FOOTBALL.categories;
         const headers = {
@@ -49,7 +49,7 @@ export async function getCategories__FOOTBALL(DB: MYSQL_DB) {
 
         const insertResult = await DB.INSERT_BATCH<DB__Category>(
             categoriesDB,
-            TABLE_NAMES.footballCategories,
+            TABLE_NAMES.footballCategories.name,
             false
         );
         console.log(`Insert result: ${insertResult}`);
