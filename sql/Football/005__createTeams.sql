@@ -4,9 +4,8 @@ CREATE TABLE CORE__TEAMS (
     id INT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     slug VARCHAR(255),
-    shortName VARCHAR(255) NOT NULL,
-    userCount VARCHAR(255),
-    type VARCHAR(255),
-    leagueSeasonId INT NOT NULL,
-    FOREIGN KEY (leagueSeasonId) REFERENCES CORE__LEAGUESEASONS(id)
+    short_name VARCHAR(255) NOT NULL,
+    name_code VARCHAR(255) NOT NULL --,
+    -- league_season_id INT NOT NULL,
+    -- FOREIGN KEY (league_season_id) REFERENCES CORE__LEAGUESEASONS(id)
 )

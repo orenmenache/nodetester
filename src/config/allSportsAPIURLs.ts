@@ -16,7 +16,7 @@ export const allSportsAPIURLs = {
         leagueseasons: `https://allsportsapi2.p.rapidapi.com/api/tournament/tournamentId/seasons`, //replace tournamentId
         standings: `https://allsportsapi2.p.rapidapi.com/api/tournament/tournamentId/season/seasonId/standings/total`,
         teamPlayers: `https://allsportsapi2.p.rapidapi.com/api/team/teamId/players`,
-        topPlayers: `https://allsportsapi2.p.rapidapi.com/api/tournament/tournamentId/season/seasonId/top-players`,
+        statistics: `https://allsportsapi2.p.rapidapi.com/api/tournament/tournamentId/season/seasonId/statistics`,
         lastMatches: `https://allsportsapi2.p.rapidapi.com/api/tournament/tournamentId/season/seasonId/matches/last/0`,
         nextMatches: `https://allsportsapi2.p.rapidapi.com/api/tournament/tournamentId/season/seasonId/matches/next/0`,
     },

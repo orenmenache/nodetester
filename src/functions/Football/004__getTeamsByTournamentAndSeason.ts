@@ -27,21 +27,21 @@ export async function getTeamsByTournamentAndSeason__FOOTBALL(DB: MYSQL_DB) {
 
         let leaguesWithStandings = [];
 
-        // const leagueSeasons: DB__LeagueSeason[] =
-        //     await DB.SELECT<DB__LeagueSeason>(
-        //         TABLES.footballLeagueSeasons
-        //     );
+        const leagueSeasons: DB__LeagueSeason[] =
+            await DB.SELECT<DB__LeagueSeason>(
+                TABLES.FOOTBALL.leagueSeasons.name
+            );
 
-        const EnglishPremierLeague: DB__LeagueSeason = {
-            id: '52186',
-            name: 'Premier League 23/24',
-            editor: false,
-            year: '23/24',
-            tournament_id: '17',
-            hasLastMatches: true,
-            hasNextMatches: true,
-            women: false,
-        };
+        // const EnglishPremierLeague: DB__LeagueSeason = {
+        //     id: '52186',
+        //     name: 'Premier League 23/24',
+        //     editor: false,
+        //     year: '23/24',
+        //     tournament_id: '17',
+        //     hasLastMatches: true,
+        //     hasNextMatches: true,
+        //     women: false,
+        // };
 
         const ls = EnglishPremierLeague;
         //for (const ls of leagueSeasons) {

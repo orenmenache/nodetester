@@ -8,7 +8,6 @@ import {
     RowDataPacket,
 } from 'mysql2/promise';
 import { ConditionClause } from './types';
-import { DB_NAME, TABLES } from '../../config/NAMES';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -18,7 +17,6 @@ export class MYSQL_DB {
         password: process.env.DB_PWD,
         host: process.env.DB_HOST,
         port: 25060,
-        database: process.env.DB_NAME,
         connectionLimit: 10,
         multipleStatements: true,
     } as PoolOptions;
@@ -26,7 +24,8 @@ export class MYSQL_DB {
     errors: string[];
     pool: Pool;
 
-    constructor() {
+    constructor(dbName: string = 'Football') {
+        MYSQL_DB.config.database = dbName;
         this.pool = {} as Pool;
         this.errors = [];
     }
@@ -219,7 +218,6 @@ export class MYSQL_DB {
                     'Pool was not created. Ensure the pool is created when running the app.'
                 );
             }
-
             const deleteAllRecordsSql = `DELETE FROM ${tableName};`;
             await this.pool.execute(deleteAllRecordsSql);
             return true;
@@ -312,22 +310,5 @@ export class MYSQL_DB {
         }
 
         return [sql, params];
-    }
-    async DELETETABLE(tableName: string): Promise<boolean> {
-        const funcName = 'DELETETABLE';
-        try {
-            if (!this.pool) {
-                throw new Error(
-                    'Pool was not created. Ensure pool is created when running the app.'
-                );
-            }
-            const sql = `DROP TABLE IF EXISTS ${tableName};`;
-            await this.pool.execute(sql);
-            // console.log(`Table ${tableName} deleted successfully`);
-            return true;
-        } catch (e) {
-            console.warn(`Error in ${funcName}: ${e}`);
-            return false;
-        }
     }
 }
