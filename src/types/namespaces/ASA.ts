@@ -74,9 +74,6 @@ export namespace ASA {
         id: string;
         name: string;
         slug: string;
-        primaryColorHex: string;
-        secondaryColorHex: string;
-        userCount: string;
     };
 
     export type Tournament = TournamentBase & {
@@ -157,6 +154,21 @@ export namespace ASA {
             slug: string;
             finalResultOnly: boolean;
             isEditor: boolean;
+        };
+    }
+
+    export namespace Motorsport {
+        export type SeasonBase = {
+            description: string;
+            id: string;
+            name: string;
+            slug: string;
+            year: string;
+        };
+
+        export type Season = SeasonBase & {
+            startDateTimestamp: string;
+            endDateTimestamp: string;
         };
     }
 }

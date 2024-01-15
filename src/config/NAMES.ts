@@ -5,13 +5,21 @@ import { getTeamsByTournamentAndSeason__CRICKET } from '../functions/Cricket/004
 import { getLastMatches__CRICKET } from '../functions/Cricket/006__getLastMatches';
 import { getNextMatches__CRICKET } from '../functions/Cricket/007__getNextMatches';
 
-export type DB_NAME = 'Football' | 'config' | 'Cricket' | 'Tennis';
+export type DB_NAME =
+    | 'Football'
+    | 'config'
+    | 'Cricket'
+    | 'Tennis'
+    | 'Motorsport'
+    | 'Basketball';
 
 export const DB_NAMES: { [key in DB_NAME]: DB_NAME } = {
     config: 'config',
     Football: 'Football',
     Cricket: 'Cricket',
     Tennis: 'Tennis',
+    Motorsport: 'Motorsport',
+    Basketball: 'Basketball',
 };
 
 export const TABLES: {
@@ -105,6 +113,30 @@ export const TABLES: {
     },
     tennisCategories: {
         name: `${DB_NAMES.Tennis}.CORE__CATEGORIES`,
+        createStatementSqlPath: null,
+    },
+    tennisTournaments: {
+        name: `${DB_NAMES.Tennis}.CORE__TOURNAMENTS`,
+        createStatementSqlPath: null,
+    },
+    motorsportCategories: {
+        name: `${DB_NAMES.Motorsport}.CORE__CATEGORIES`,
+        createStatementSqlPath: null,
+    },
+    motorsportStages: {
+        name: `${DB_NAMES.Motorsport}.CORE__STAGES`,
+        createStatementSqlPath: null,
+    },
+    motorsportSeasons: {
+        name: `${DB_NAMES.Motorsport}.CORE__SEASONS`,
+        createStatementSqlPath: null,
+    },
+    basketballCategories: {
+        name: `${DB_NAMES.Basketball}.CORE__CATEGORIES`,
+        createStatementSqlPath: null,
+    },
+    basketballTournaments: {
+        name: `${DB_NAMES.Basketball}.CORE__TOURNAMENTS`,
         createStatementSqlPath: null,
     },
 };

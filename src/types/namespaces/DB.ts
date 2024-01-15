@@ -45,4 +45,17 @@ export namespace DB {
             away_score: string;
         };
     }
+
+    export namespace Cricket {}
+
+    export namespace Tennis {}
+
+    export namespace Motorsport {
+        export type Season = ASA.Motorsport.SeasonBase & {
+            start_date: string;
+            end_date: string;
+            stage_id: string;
+            category_id: string;
+        };
+    }
 }

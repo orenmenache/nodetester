@@ -12,22 +12,16 @@ dotenv.config();
  * CORE__CATEGORIES must be populated first
  * or run getCategories
  */
-export async function getTournamentsByCategory__TENNIS(DB: MYSQL_DB) {
-    const funcName = `getTournamentsByCategory__TENNIS`;
+export async function getTournamentsByCategory__BASKETBALL(DB: MYSQL_DB) {
+    const funcName = `getTournamentsByCategory__BASKETBALL`;
     try {
         const categories: DB.Category[] = await DB.SELECT<DB.Category>(
-            TABLES.tennisCategories.name
+            TABLES.basketballCategories.name
         );
         for (const category of categories) {
-            const id = Number(category.id);
-            // console.log(`category.id: ${id}`);
-            // console.log(`Smaller than 0: ${id < 0}`);
-
-            if (id > 0) continue;
-
             console.log(`category.name: ${category.name}`);
 
-            const url = `${allSportsAPIURLs.TENNIS.tournaments}${category.id}`;
+            const url = `${allSportsAPIURLs.BASKETBALL.tournaments}${category.id}`;
 
             const axiosRequest = {
                 method: 'GET',
@@ -58,7 +52,7 @@ export async function getTournamentsByCategory__TENNIS(DB: MYSQL_DB) {
 
             const insertResult = await DB.INSERT_BATCH<DB.Tournament>(
                 tournamentsDB,
-                TABLES.tennisTournaments.name,
+                TABLES.basketballTournaments.name,
                 false
             );
             console.log(
