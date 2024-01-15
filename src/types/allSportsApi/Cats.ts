@@ -18,6 +18,5 @@ export type DB__Category = {
     slug: string;
     priority: string;
     flag: string;
-    alpha2: string;
     sport_id: string;
 };

@@ -5,12 +5,13 @@ import { getTeamsByTournamentAndSeason__CRICKET } from '../functions/Cricket/004
 import { getLastMatches__CRICKET } from '../functions/Cricket/006__getLastMatches';
 import { getNextMatches__CRICKET } from '../functions/Cricket/007__getNextMatches';
 
-export type DB_NAME = 'Football' | 'config' | 'Cricket';
+export type DB_NAME = 'Football' | 'config' | 'Cricket' | 'Tennis';
 
 export const DB_NAMES: { [key in DB_NAME]: DB_NAME } = {
     config: 'config',
     Football: 'Football',
     Cricket: 'Cricket',
+    Tennis: 'Tennis',
 };
 
 export const TABLES: {
@@ -100,6 +101,10 @@ export const TABLES: {
     },
     footballNextMatches: {
         name: `${DB_NAMES.Football}.RAPID__NEXTMATCHES`,
+        createStatementSqlPath: null,
+    },
+    tennisCategories: {
+        name: `${DB_NAMES.Tennis}.CORE__CATEGORIES`,
         createStatementSqlPath: null,
     },
 };
