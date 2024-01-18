@@ -7,6 +7,8 @@ import {
 } from '../../types/allSportsApi/Cats';
 import { MYSQL_DB } from '../../classes/MYSQL_DB/MYSQL_DB';
 import * as dotenv from 'dotenv';
+import { ASA } from '../../types/namespaces/ASA';
+import { DB } from '../../types/namespaces/DB';
 dotenv.config();
 
 export async function getCategories__CRICKET(DB: MYSQL_DB): Promise<boolean> {
@@ -26,22 +28,19 @@ export async function getCategories__CRICKET(DB: MYSQL_DB): Promise<boolean> {
             headers,
         };
 
-        const response: AxiosResponse<{ categories: AllSports__Category[] }> =
+        const response: AxiosResponse<{ categories: ASA.Category[] }> =
             await axios.request(axiosRequest);
-        const categories: AllSports__Category[] = response.data.categories;
-        const categoriesDB: DB__Category[] = categories.map(
-            (category: AllSports__Category) => ({
+        const categories: ASA.Category[] = response.data.categories;
+        const categoriesDB: DB.Category[] = categories.map(
+            (category: ASA.Category) => ({
                 id: category.id,
                 name: category.name,
                 slug: category.slug,
-                priority: category.priority,
-                flag: category.flag,
-                alpha2: category.alpha2,
                 sport_id: category.sport.id,
             })
         );
 
-        const insertResult = await DB.INSERT_BATCH<DB__Category>(
+        const insertResult = await DB.INSERT_BATCH<DB.Category>(
             categoriesDB,
             TABLES.cricketCategories.name,
             false

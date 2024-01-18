@@ -1,0 +1,58 @@
+in use:
+G:/Real Estate/
+G:/Real Estate/fonts/
+G:/Real Estate/fonts/OpenSansHebrew/
+G:/Real Estate/RE_Exports/
+G:/Real Estate/RE_Exports/Wait/
+G:/Real Estate/RE_Exports/Archive/
+G:/Real Estate/RE_Exports/Ready/
+G:/Real Estate/RE_Exports/QA/
+G:/Real Estate/RE_Order Files/
+G:/Real Estate/RE_scripts/
+G:/Real Estate/RE_Assets/
+G:/Real Estate/RE_Assets/RE_A_Websites/
+G:/Real Estate/RE_Translates/
+G:/Real Estate/RE_Translates/RE_T_Hebrew/
+G:/Real Estate/RE_Elements/
+G:/Real Estate/RE_Elements/RE_E_Pictures/
+G:/Real Estate/RE_Elements/RE_E_Soundtracks/
+G:/Real Estate/RE_Elements/RE_E_Soundtracks/Long/
+G:/Real Estate/RE_Elements/RE_E_Soundtracks/To Be Edited/
+G:/Real Estate/RE_Elements/RE_E_Footage/
+G:/Real Estate/RE_Elements/RE_E_Footage/RE_E_F_Israel/
+G:/Real Estate/RE_Saved-Projects/
+
+to be archived:
+G:/Real Estate/RE_Archive/
+G:/Real Estate/RE_Customer/
+G:/Real Estate/RE_To Be Organized/
+G:/Real Estate/RE_VOD/
+G:/Real Estate/RE_Uploads/
+G:/Real Estate/RE_Data/
+
+special:
+G:/Real Estate/RE_Order Files/RE_O_Pictures/ used for client uploaded photos, needs cleaning periodically. Ideally every day/week removing everything older than 6 months
+
+G:/Real Estate/RE_After-Effects/ here there are loads of folders of the projects which, after collecting everything can be archived or moved somewhere relevant for the continuation of the designing
+The folders used for production in here are: 
+G:/Real Estate/RE_After-Effects/RE_AE_Projects/RE_AE_P_Templates/
+G:/Real Estate/RE_After-Effects/RE_AE_Projects/RE_AE_P_Templates/RE_AE_P_T_Vertical/
+G:/Real Estate/RE_After-Effects/RE_AE_Projects/RE_AE_P_Templates/RE_AE_P_T_Horizontal/
+G:/Real Estate/RE_After-Effects/RE_AE_Projects/RE_AE_P_Templates/RE_AE_P_T_Horizontal/collected 180124/
+
+G:/Real Estate/RE_Elements/RE_E_Footage/RE_E_F_Israel/RE_E_F_IL_Footage/ in this folder the two folders that are in use are:
+G:/Real Estate/RE_Elements/RE_E_Footage/RE_E_F_Israel/RE_E_F_IL_Footage/avira content/
+G:/Real Estate/RE_Elements/RE_E_Footage/RE_E_F_Israel/RE_E_F_IL_Footage/avira openers/
+
+The other folders need archiving cause they contain raw footage that were being editing into openers
+G:/Real Estate/RE_Elements/RE_E_Footage/RE_E_F_Israel/RE_E_F_IL_Footage/Drones/
+G:/Real Estate/RE_Elements/RE_E_Footage/RE_E_F_Israel/RE_E_F_IL_Footage/Drones/Netanya/
+G:/Real Estate/RE_Elements/RE_E_Footage/RE_E_F_Israel/RE_E_F_IL_Footage/Drones/Ashdod/
+G:/Real Estate/RE_Elements/RE_E_Footage/RE_E_F_Israel/RE_E_F_IL_Footage/Drones/Herzliah/
+G:/Real Estate/RE_Elements/RE_E_Footage/RE_E_F_Israel/RE_E_F_IL_Footage/Drones/Israel/
+G:/Real Estate/RE_Elements/RE_E_Footage/RE_E_F_Israel/RE_E_F_IL_Footage/Drones/Ashkelon/
+G:/Real Estate/RE_Elements/RE_E_Footage/RE_E_F_Israel/RE_E_F_IL_Footage/Drones/Tel Aviv/
+G:/Real Estate/RE_Elements/RE_E_Footage/RE_E_F_Israel/RE_E_F_IL_Haifa/
+G:/Real Estate/RE_Elements/RE_E_Footage/RE_E_F_Israel/RE_E_F_IL_Haifa/RE_E_F_IL_Haifa_Points-Of-Interests/
+G:/Real Estate/RE_Elements/RE_E_Footage/RE_E_F_Israel/RE_E_F_IL_Haifa/RE_E_F_IL_Haifa_City-Openers/
+

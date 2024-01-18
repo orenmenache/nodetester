@@ -57,9 +57,9 @@ export namespace ASA {
         id: string;
         name: string;
         slug: string;
-        priority: string;
-        flag: string;
-        alpha2: string;
+        priority?: string;
+        flag?: string;
+        alpha2?: string;
     };
 
     export type Category = CategoryBase & {

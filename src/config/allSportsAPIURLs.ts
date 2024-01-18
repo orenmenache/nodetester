@@ -23,10 +23,12 @@ export const allSportsAPIURLs = {
     TENNIS: {
         categories: `https://allsportsapi2.p.rapidapi.com/api/tennis/tournament/categories`,
         tournaments: `https://allsportsapi2.p.rapidapi.com/api/tennis/tournament/all/category/`, //expects category number at the end
+        leagueseasons: `https://allsportsapi2.p.rapidapi.com/api/tennis/tournament/tournamentId/seasons`, //replace tournamentId
     },
     BASKETBALL: {
         categories: `https://allsportsapi2.p.rapidapi.com/api/basketball/tournament/categories`,
         tournaments: `https://allsportsapi2.p.rapidapi.com/api/basketball/tournament/all/category/`, //expects category number at the end
+        leagueseasons: `https://allsportsapi2.p.rapidapi.com/api/basketball/tournament/tournamentId/seasons`, //replace tournamentId
     },
     MOTORSPORT: {
         categories: `https://allsportsapi2.p.rapidapi.com/api/motorsport/categories`,

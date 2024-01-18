@@ -2,11 +2,9 @@ import axios, { AxiosResponse } from 'axios';
 import { MYSQL_DB } from '../../classes/MYSQL_DB/MYSQL_DB';
 import { TABLES } from '../../config/NAMES';
 import { allSportsAPIURLs } from '../../config/allSportsAPIURLs';
-import { DB__Tournament } from '../../types/allSportsApi/UniqueTournaments';
-import {
-    AllSports__LeagueSeason,
-    DB__LeagueSeason,
-} from '../../types/allSportsApi/Seasons';
+import { DB__LeagueSeason } from '../../types/allSportsApi/Seasons';
+import { ASA } from '../../types/namespaces/ASA';
+import { DB } from '../../types/namespaces/DB';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -19,9 +17,9 @@ type LeagueType = 'T20' | 'ODI' | 'TEST' | 'Unknown';
 export async function getLeagueSeasonsByTournament__CRICKET(DB: MYSQL_DB) {
     const funcName = `getLeagueSeasonsByTournament__CRICKET`;
     try {
-        //await DB.cleanTable(TABLES.cricketLeagueSeasons);
+        await DB.cleanTable(TABLES.cricketLeagueSeasons.name);
 
-        const tournaments: DB__Tournament[] = await DB.SELECT<DB__Tournament>(
+        const tournaments: DB.Tournament[] = await DB.SELECT<DB.Tournament>(
             TABLES.cricketTournaments.name
         );
 
@@ -43,11 +41,10 @@ export async function getLeagueSeasonsByTournament__CRICKET(DB: MYSQL_DB) {
                 };
 
                 const response: AxiosResponse<{
-                    seasons: AllSports__LeagueSeason[];
+                    seasons: ASA.LeagueSeason[];
                 }> = await axios.request(axiosRequest);
 
-                const leagueSeasons: AllSports__LeagueSeason[] =
-                    response.data.seasons;
+                const leagueSeasons: ASA.LeagueSeason[] = response.data.seasons;
 
                 if (leagueSeasons.length === 0 || !leagueSeasons) {
                     console.log(
@@ -57,34 +54,52 @@ export async function getLeagueSeasonsByTournament__CRICKET(DB: MYSQL_DB) {
                     continue;
                 }
 
-                const leagueSeasonsDB: DB__LeagueSeason[] = leagueSeasons.map(
-                    (leagueSeason: AllSports__LeagueSeason) => {
-                        let type: LeagueType = 'Unknown';
-                        if (leagueSeason.name.indexOf('T20') > -1) type = 'T20';
-                        if (leagueSeason.name.indexOf('ODI') > -1) type = 'ODI';
-                        if (
-                            leagueSeason.name.toLowerCase().indexOf('test') > -1
-                        )
-                            type = 'TEST';
+                const currentlyActiveSeasons: ASA.LeagueSeason[] =
+                    leagueSeasons.filter((leagueSeason: ASA.LeagueSeason) =>
+                        leagueSeason.year.toString().includes('24')
+                    );
 
-                        return {
-                            id: leagueSeason.id,
-                            name: leagueSeason.name,
-                            editor: leagueSeason.editor,
-                            year: leagueSeason.year,
-                            tournament_id: tournament.id,
-                            hasLastMatches: false, // will be updated in getLastMatches
-                            hasNextMatches: false, // will be updated in getNextMatches
-                            type,
-                            women:
+                if (
+                    currentlyActiveSeasons.length === 0 ||
+                    !currentlyActiveSeasons
+                ) {
+                    console.log(
+                        `%cNo currentlyActiveSeasons for tournament: ${tournament.id} ${tournament.name}`,
+                        'color: orange'
+                    );
+                    continue;
+                }
+
+                const leagueSeasonsDB: DB.LeagueSeason[] =
+                    currentlyActiveSeasons.map(
+                        (leagueSeason: ASA.LeagueSeason) => {
+                            let type: LeagueType = 'Unknown';
+                            if (leagueSeason.name.indexOf('T20') > -1)
+                                type = 'T20';
+                            if (leagueSeason.name.indexOf('ODI') > -1)
+                                type = 'ODI';
+                            if (
                                 leagueSeason.name
                                     .toLowerCase()
-                                    .indexOf('women') > -1,
-                        };
-                    }
-                );
+                                    .indexOf('test') > -1
+                            )
+                                type = 'TEST';
 
-                const insertResult = await DB.INSERT_BATCH<DB__LeagueSeason>(
+                            return {
+                                id: leagueSeason.id,
+                                name: leagueSeason.name,
+                                year: leagueSeason.year,
+                                tournament_id: tournament.id,
+                                has_last_matches: false, // will be updated in getLastMatches
+                                has_next_matches: false, // will be updated in getNextMatches
+                                has_standings: false, // will be updated in getStandings
+                                has_last_matches_within_last_month: false, // will be updated in getLastMatchesWithinLastMonth
+                                type,
+                            };
+                        }
+                    );
+
+                const insertResult = await DB.INSERT_BATCH<DB.LeagueSeason>(
                     leagueSeasonsDB,
                     TABLES.cricketLeagueSeasons.name,
                     true

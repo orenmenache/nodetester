@@ -119,6 +119,10 @@ export const TABLES: {
         name: `${DB_NAMES.Tennis}.CORE__TOURNAMENTS`,
         createStatementSqlPath: null,
     },
+    tennisLeagueSeasons: {
+        name: `${DB_NAMES.Tennis}.CORE__LEAGUESEASONS`,
+        createStatementSqlPath: null,
+    },
     motorsportCategories: {
         name: `${DB_NAMES.Motorsport}.CORE__CATEGORIES`,
         createStatementSqlPath: null,
@@ -137,6 +141,10 @@ export const TABLES: {
     },
     basketballTournaments: {
         name: `${DB_NAMES.Basketball}.CORE__TOURNAMENTS`,
+        createStatementSqlPath: null,
+    },
+    basketballLeagueSeasons: {
+        name: `${DB_NAMES.Basketball}.CORE__LEAGUESEASONS`,
         createStatementSqlPath: null,
     },
 };

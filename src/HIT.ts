@@ -144,4 +144,26 @@ export const HIT = {
             }
         },
     },
+    Cricket: {
+        async categories() {
+            const CricketDB = new MYSQL_DB('Cricket');
+            CricketDB.createPool();
+
+            const axiosRequest = buildGetRequest(
+                allSportsAPIURLs.CRICKET.categories,
+                {}
+            );
+
+            try {
+                const response: AxiosResponse<{ categories: ASA.Category[] }> =
+                    await axios.request(axiosRequest);
+
+                console.log(JSON.stringify(response.data.categories, null, 4));
+            } catch (e) {
+                console.log(e);
+            } finally {
+                await CricketDB.pool.end();
+            }
+        },
+    },
 };

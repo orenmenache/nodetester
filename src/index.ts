@@ -9,10 +9,15 @@ import { getTournamentsByCategory__BASKETBALL } from './functions/Basketball/002
 import { getCategories__MOTORSPORT } from './functions/Motorsport/001__getCategories';
 import { getStagesByCategory__MOTORSPORT } from './functions/Motorsport/002__getStagesByCategory';
 import { getSeasonsByStage__MOTORSPORT } from './functions/Motorsport/003__getSeasonsByStage';
+import { getLeagueSeasonsByTournament__BASKETBALL } from './functions/Basketball/003__getLeagueSeasonsByTournament';
+import { getLeagueSeasonsByTournament__TENNIS } from './functions/Tennis/003__getLeagueSeasonsByTournament';
+import { getCategories__CRICKET } from './functions/Cricket/001__getCategories';
+import { getTournamentsByCategory__CRICKET } from './functions/Cricket/002__getTournamentsByCategory';
+import { getLeagueSeasonsByTournament__CRICKET } from './functions/Cricket/003__getLeagueSeasonsByTournament';
 dotenv.config();
 
 async function main() {
-    const DB = new MYSQL_DB('Tennis');
+    const DB = new MYSQL_DB('Cricket');
     DB.createPool();
 
     try {
@@ -24,7 +29,11 @@ async function main() {
 
         // await getCategories__MOTORSPORT(DB);
         // await getStagesByCategory__MOTORSPORT(DB);
-        await getSeasonsByStage__MOTORSPORT(DB);
+        // await getSeasonsByStage__MOTORSPORT(DB);
+
+        //await getLeagueSeasonsByTournament__TENNIS(DB);
+        // await getTournamentsByCategory__CRICKET(DB);
+        await getLeagueSeasonsByTournament__CRICKET(DB);
     } catch (e) {
         console.log(e);
     } finally {

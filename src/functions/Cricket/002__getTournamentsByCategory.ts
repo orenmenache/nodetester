@@ -2,12 +2,13 @@ import axios, { AxiosResponse } from 'axios';
 import { MYSQL_DB } from '../../classes/MYSQL_DB/MYSQL_DB';
 import { TABLES } from '../../config/NAMES';
 import { allSportsAPIURLs } from '../../config/allSportsAPIURLs';
-import { DB__Category } from '../../types/allSportsApi/Cats';
 import {
     AllSports__Tournament,
     DB__Tournament,
 } from '../../types/allSportsApi/UniqueTournaments';
 import * as dotenv from 'dotenv';
+import { DB } from '../../types/namespaces/DB';
+import { ASA } from '../../types/namespaces/ASA';
 dotenv.config();
 
 /**
@@ -19,9 +20,10 @@ export async function getTournamentsByCategory__CRICKET(DB: MYSQL_DB) {
     try {
         await DB.cleanTable(TABLES.cricketTournaments.name);
 
-        const categories: DB__Category[] = await DB.SELECT<DB__Category>(
+        const categories: DB.Category[] = await DB.SELECT<DB.Category>(
             TABLES.cricketCategories.name
         );
+
         for (const category of categories) {
             const url = `${allSportsAPIURLs.CRICKET.tournaments}${category.id}`;
             const headers = {
@@ -36,29 +38,33 @@ export async function getTournamentsByCategory__CRICKET(DB: MYSQL_DB) {
             };
 
             const response: AxiosResponse<{
-                groups: { uniqueTournaments: AllSports__Tournament[] }[];
+                groups: { uniqueTournaments: ASA.Tournament[] }[];
             }> = await axios.request(axiosRequest);
 
+            // console.log(JSON.stringify(response.data.groups, null, 4));
+            // return;
             for (const group of response.data.groups) {
-                const tournaments: AllSports__Tournament[] =
-                    group.uniqueTournaments;
+                const tournaments: ASA.Tournament[] = group.uniqueTournaments;
 
-                const tournamentsDB: DB__Tournament[] = tournaments.map(
-                    (tournament: AllSports__Tournament) => ({
+                const filteredTournaments: ASA.Tournament[] =
+                    tournaments.filter(
+                        (tournament: ASA.Tournament) =>
+                            !tournament.name.toLowerCase().includes('women')
+                    );
+
+                const tournamentsDB: DB.Tournament[] = filteredTournaments.map(
+                    (tournament: ASA.Tournament) => ({
                         id: tournament.id,
                         name: tournament.name,
                         slug: tournament.slug,
-                        primaryColorHex: tournament.primaryColorHex,
-                        secondaryColorHex: tournament.secondaryColorHex,
-                        userCount: tournament.userCount,
                         category_id: tournament.category.id,
                     })
                 );
 
-                const insertResult = await DB.INSERT_BATCH<DB__Tournament>(
+                const insertResult = await DB.INSERT_BATCH<DB.Tournament>(
                     tournamentsDB,
                     TABLES.cricketTournaments.name,
-                    false
+                    true
                 );
                 console.log(
                     `Insert result: ${insertResult} for category: ${category.id} ${category.name}`
