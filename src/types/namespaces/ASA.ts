@@ -44,16 +44,14 @@ export namespace ASA {
         nameCode: string;
     };
 
-    export type TeamStandings = {
+    export type TeamStandingsBase = {
         team: Team;
-        position: string;
-        matches: string;
-        wins: string;
-        netRunRate: string;
-        id: string;
-        losses: string;
-        draws: string;
-        points: string;
+        position: number;
+        matches: number;
+        wins: number;
+        id: number;
+        losses: number;
+        points: number;
     };
 
     export type CategoryBase = {
@@ -99,14 +97,23 @@ export namespace ASA {
     };
 
     export namespace Football {
-        export type TeamPlayersResponse = AxiosResponse<{
-            players: { player: Player }[];
-            foreignPlayers: { player: Player }[];
-            nationalPlayers: { player: Player }[];
-        }>;
-        export type StandingsResponse = AxiosResponse<{
-            standings: { rows: TeamStandings[] }[];
-        }>;
+        export namespace Responses {
+            export type TeamPlayers = AxiosResponse<{
+                players: { player: Player }[];
+                foreignPlayers: { player: Player }[];
+                nationalPlayers: { player: Player }[];
+            }>;
+            export type Standings = AxiosResponse<{
+                standings: { rows: ASA.Football.Standings[] }[];
+            }>;
+        }
+
+        export type Standings = ASA.TeamStandingsBase & {
+            draws: number;
+            scoresFor: number;
+            scoresAgainst: number;
+        };
+
         export type LastMatch = {
             tournament: { uniqueTournament: Tournament };
             roundInfo: Internal.RoundInfo;
@@ -156,6 +163,18 @@ export namespace ASA {
             slug: string;
             finalResultOnly: boolean;
             isEditor: boolean;
+        };
+    }
+
+    export namespace Cricket {
+        export namespace Responses {
+            export type Standings = AxiosResponse<{
+                standings: { rows: ASA.Cricket.Standings[] }[];
+            }>;
+        }
+
+        export type Standings = ASA.TeamStandingsBase & {
+            draws: number;
         };
     }
 

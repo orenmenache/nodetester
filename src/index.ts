@@ -19,6 +19,8 @@ import { getNextMatches__FOOTBALL } from './functions/Football/007__getNextMatch
 import { getNextMatches__CRICKET } from './functions/Cricket/007__getNextMatches';
 import { getNextMatches__BASKETBALL } from './functions/Basketball/007__getNextMatches';
 import { getNextMatches__TENNIS } from './functions/Tennis/007__getNextMatches';
+import getStandings__FOOTBALL from './functions/Football/009__getStandings';
+import getStandings__CRICKET from './functions/Cricket/009__getStandings';
 dotenv.config();
 
 async function main() {
@@ -38,7 +40,7 @@ async function main() {
 
         //await getLeagueSeasonsByTournament__TENNIS(DB);
         // await getTournamentsByCategory__CRICKET(DB);
-        await getNextMatches__TENNIS(DB);
+        await getStandings__CRICKET(DB);
 
         // const leagueSeasonsTableName = 'CORE__LEAGESEASONS';
         // const relevantS

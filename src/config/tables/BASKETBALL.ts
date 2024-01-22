@@ -4,4 +4,5 @@ export const BASKETBALL = {
     leagueSeasons: 'Basketball.CORE__LEAGUESEASONS',
     nextMatches: 'Basketball.RAPID__NEXTMATCHES',
     teams: 'Basketball.CORE__TEAMS',
+    standings: 'Basketball.RAPID__STANDINGS',
 };

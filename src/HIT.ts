@@ -94,7 +94,7 @@ export const HIT = {
                 }
             );
 
-            const response: ASA.Football.StandingsResponse =
+            const response: ASA.Football.Responses.Standings =
                 await axios.request(axiosRequest);
 
             console.log(JSON.stringify(response.data.standings[0], null, 4));

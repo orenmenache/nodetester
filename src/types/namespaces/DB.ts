@@ -26,6 +26,19 @@ export namespace DB {
         category_id: string;
     };
 
+    export type StandingsBase = {
+        id: string;
+        tournament_id: string;
+        league_season_id: string;
+        team_id: string;
+        position: string;
+        matches: string;
+        wins: string;
+        losses: string;
+        points: string;
+        when_created: string;
+    };
+
     export namespace Football {
         export type NextMatch = {
             id: string;
@@ -43,9 +56,19 @@ export namespace DB {
             home_score: string;
             away_score: string;
         };
+
+        export type Standings = StandingsBase & {
+            draws: string;
+            scores_for: string;
+            scores_against: string;
+        };
     }
 
-    export namespace Cricket {}
+    export namespace Cricket {
+        export type Standings = StandingsBase & {
+            draws: string;
+        };
+    }
 
     export namespace Tennis {}
 
