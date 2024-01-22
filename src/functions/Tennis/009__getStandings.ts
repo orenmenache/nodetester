@@ -17,6 +17,19 @@ export default async function getStandings__TENNIS(DB: MYSQL_DB) {
 
         //const ls = leagueSeasons[0];
         for (const ls of leagueSeasons) {
+            if (!ls) {
+                console.warn(`No leagueSeason`);
+                continue;
+            }
+            if (!ls.tournament_id) {
+                console.warn(`No tournament_id`);
+                continue;
+            }
+            if (!ls.id) {
+                console.warn(`No league id`);
+                continue;
+            }
+
             const axiosRequest = buildGetRequest(
                 allSportsAPIURLs.TENNIS.standings,
                 {
@@ -25,12 +38,13 @@ export default async function getStandings__TENNIS(DB: MYSQL_DB) {
                 }
             );
 
-            const response: ASA.TENNIS.Responses.Standings =
+            const response: ASA.Tennis.Responses.Standings =
                 await axios.request(axiosRequest);
 
             // console.log(JSON.stringify(response.data.standings[0], null, 4));
 
             if (
+                !response ||
                 !response.data ||
                 typeof response.data !== 'object' ||
                 !('standings' in response.data) ||
@@ -54,21 +68,37 @@ export default async function getStandings__TENNIS(DB: MYSQL_DB) {
                 { id: ls.id }
             );
 
-            let standingsDB: DB.TENNIS.Standings[] = [];
+            let standingsDB: DB.StandingsBase[] = [];
             const when_created = formatDateToSQLTimestamp(new Date());
 
             for (const row of response.data.standings[0].rows) {
-                const standings: DB.TENNIS.Standings = {
-                    id: row.id.toString(),
-                    tournament_id: ls.tournament_id.toString(),
-                    league_season_id: ls.id.toString(),
-                    team_id: row.team.id.toString(),
-                    position: row.position.toString(),
-                    matches: row.matches.toString(),
-                    wins: row.wins.toString(),
-                    losses: row.losses.toString(),
-                    points: row.points.toString(),
-                    draws: row.draws.toString(),
+                if (
+                    !row.team ||
+                    !row.team.id ||
+                    !row.position ||
+                    (!row.matches && row.matches !== 0) ||
+                    (!row.wins && row.wins !== 0) ||
+                    (!row.losses && row.losses !== 0) ||
+                    (!row.points && row.points !== 0)
+                ) {
+                    console.warn(
+                        `Error in standings data for season ${
+                            ls.name
+                        }. Raw data: ${JSON.stringify(row)}`
+                    );
+                    continue;
+                }
+
+                const standings: DB.StandingsBase = {
+                    id: String(row.id),
+                    tournament_id: ls.tournament_id,
+                    league_season_id: ls.id,
+                    team_id: row.team.id,
+                    position: String(row.position),
+                    matches: String(row.matches),
+                    wins: String(row.wins),
+                    losses: String(row.losses),
+                    points: String(row.points),
                     when_created,
                 };
                 standingsDB.push(standings);
@@ -95,7 +125,7 @@ export default async function getStandings__TENNIS(DB: MYSQL_DB) {
                 }
             }
 
-            await DB.INSERT_BATCH<DB.TENNIS.Standings>(
+            await DB.INSERT_BATCH<DB.StandingsBase>(
                 standingsDB,
                 TENNIS.standings,
                 false

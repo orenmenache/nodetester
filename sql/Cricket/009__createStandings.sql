@@ -12,8 +12,6 @@ CREATE TABLE RAPID__STANDINGS (
     losses INT,
     points INT,
     when_created TIMESTAMP,
-    start_time_timestamp TIMESTAMP,
-    slug VARCHAR(255),
     
     FOREIGN KEY (tournament_id) REFERENCES CORE__TOURNAMENTS(id),
     FOREIGN KEY (league_season_id) REFERENCES CORE__LEAGUESEASONS(id),

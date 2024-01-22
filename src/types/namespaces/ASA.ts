@@ -95,7 +95,6 @@ export namespace ASA {
         position: string;
         userCount: string;
     };
-
     export namespace Football {
         export namespace Responses {
             export type TeamPlayers = AxiosResponse<{
@@ -176,6 +175,14 @@ export namespace ASA {
         export type Standings = ASA.TeamStandingsBase & {
             draws: number;
         };
+    }
+
+    export namespace Tennis {
+        export namespace Responses {
+            export type Standings = AxiosResponse<{
+                standings: { rows: TeamStandingsBase[] }[];
+            }>;
+        }
     }
 
     export namespace Motorsport {

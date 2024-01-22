@@ -25,12 +25,14 @@ export const allSportsAPIURLs = {
         tournaments: `https://allsportsapi2.p.rapidapi.com/api/tennis/tournament/all/category/`, //expects category number at the end
         leagueseasons: `https://allsportsapi2.p.rapidapi.com/api/tennis/tournament/tournamentId/seasons`, //replace tournamentId
         nextMatches: `https://allsportsapi2.p.rapidapi.com/api/tennis/tournament/tournamentId/season/seasonId/events/next/0`,
+        standings: `https://allsportsapi2.p.rapidapi.com/api/tennis/tournament/tournamentId/season/seasonId/standings/total`,
     },
     BASKETBALL: {
         categories: `https://allsportsapi2.p.rapidapi.com/api/basketball/tournament/categories`,
         tournaments: `https://allsportsapi2.p.rapidapi.com/api/basketball/tournament/all/category/`, //expects category number at the end
         leagueseasons: `https://allsportsapi2.p.rapidapi.com/api/basketball/tournament/tournamentId/seasons`, //replace tournamentId
         nextMatches: `https://allsportsapi2.p.rapidapi.com/api/basketball/tournament/tournamentId/season/seasonId/matches/next/0`,
+        standings: `https://allsportsapi2.p.rapidapi.com/api/basketball/tournament/tournamentId/season/seasonId/standings/total`,
     },
     MOTORSPORT: {
         categories: `https://allsportsapi2.p.rapidapi.com/api/motorsport/categories`,

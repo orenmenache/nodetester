@@ -1,4 +1,4 @@
-USE Football;
+USE Tennis;
 DROP TABLE IF EXISTS RAPID__STANDINGS;
 CREATE TABLE RAPID__STANDINGS (
     id INT PRIMARY KEY,
@@ -8,11 +8,8 @@ CREATE TABLE RAPID__STANDINGS (
     position INT NOT NULL,
     matches INT,
     wins INT,
-    draws INT,
     losses INT,
     points INT,
-    scores_for INT,
-    scores_against INT,
     when_created TIMESTAMP,
     
     FOREIGN KEY (tournament_id) REFERENCES CORE__TOURNAMENTS(id),
