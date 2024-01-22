@@ -1,8 +1,9 @@
 import { ASA } from './ASA';
 
 export namespace DB {
-    export type Team = ASA.Team & {
-        leagueSeasonId: string;
+    export type Team = ASA.TeamBase & {
+        short_name: string;
+        name_code: string;
     };
 
     export type Category = ASA.CategoryBase & {
@@ -30,13 +31,11 @@ export namespace DB {
             id: string;
             tournament_id: string;
             league_season_id: string;
-            start_timestamp: string;
+            start_time_timestamp: string;
+            start_time_seconds: string;
             slug: string;
             home_team_id: string;
             away_team_id: string;
-            home_team_name: string;
-            away_team_name: string;
-            round: string;
         };
 
         export type LastMatch = NextMatch & {

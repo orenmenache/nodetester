@@ -38,8 +38,38 @@ export const HIT = {
                 events: ASA.Football.NextMatch[];
             }> = await axios.request(axiosRequest);
 
-            console.log(JSON.stringify(response.data.events[0], null, 4));
+            //console.log(JSON.stringify(response.data.events[0], null, 4));
+            for (const event of response.data.events) {
+                console.log(event.awayTeam.name);
+                console.log(event.homeTeam.name);
+                console.log(new Date(Number(event.startTimestamp) * 1000));
+            }
         },
+
+        // async leagueSeasons() {
+        //     const FootballDB = new MYSQL_DB('Football');
+        //     FootballDB.createPool();
+
+        //     const tournament: DB.Tournament = {
+        //         id: '1',
+        //         name: 'European Championship',
+
+        //     };
+
+        //     const axiosRequest = buildGetRequest(
+        //         allSportsAPIURLs.FOOTBALL.nextMatches,
+        //         {
+        //             tournamentId: ls.tournament_id.toString(),
+        //             seasonId: ls.id.toString(),
+        //         }
+        //     );
+
+        //     const response: AxiosResponse<{
+        //         events: ASA.Football.NextMatch[];
+        //     }> = await axios.request(axiosRequest);
+
+        //     console.log(JSON.stringify(response.data.events[0], null, 4));
+        // },
 
         async standings() {
             const FootballDB = new MYSQL_DB('Football');

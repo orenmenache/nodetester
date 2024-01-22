@@ -14,6 +14,7 @@ import {
     AllSports__TeamStandings,
     DB__Team,
 } from '../../types/allSportsApi/Teams';
+import { DB } from '../../types/namespaces/DB';
 dotenv.config();
 
 /**
@@ -27,10 +28,8 @@ export async function getTeamsByTournamentAndSeason__FOOTBALL(DB: MYSQL_DB) {
 
         let leaguesWithStandings = [];
 
-        const leagueSeasons: DB__LeagueSeason[] =
-            await DB.SELECT<DB__LeagueSeason>(
-                TABLES.FOOTBALL.leagueSeasons.name
-            );
+        const leagueSeasons: DB.LeagueSeason[] =
+            await DB.SELECT<DB.LeagueSeason>(TABLES.footballLeagueSeasons.name);
 
         // const EnglishPremierLeague: DB__LeagueSeason = {
         //     id: '52186',
@@ -43,8 +42,8 @@ export async function getTeamsByTournamentAndSeason__FOOTBALL(DB: MYSQL_DB) {
         //     women: false,
         // };
 
-        const ls = EnglishPremierLeague;
-        //for (const ls of leagueSeasons) {
+        // const ls = EnglishPremierLeague;
+        for (const ls of leagueSeasons) {
         try {
             const url = allSportsAPIURLs.FOOTBALL.standings
                 .replace('tournamentId', ls.tournament_id.toString())

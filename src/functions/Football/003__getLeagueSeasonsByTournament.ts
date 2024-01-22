@@ -1,30 +1,18 @@
 import axios, { AxiosResponse } from 'axios';
+import * as dotenv from 'dotenv';
 import { MYSQL_DB } from '../../classes/MYSQL_DB/MYSQL_DB';
 import { TABLES } from '../../config/NAMES';
 import { allSportsAPIURLs } from '../../config/allSportsAPIURLs';
-import { DB__Tournament } from '../../types/allSportsApi/UniqueTournaments';
-import {
-    AllSports__LeagueSeason,
-    DB__LeagueSeason,
-} from '../../types/allSportsApi/Seasons';
-import * as dotenv from 'dotenv';
+import { ASA } from '../../types/namespaces/ASA';
+import { DB } from '../../types/namespaces/DB';
 dotenv.config();
 
-/**
- * Builds on categories
- * Tested 201123
- */
 export async function getLeagueSeasonsByTournament__FOOTBALL(DB: MYSQL_DB) {
     const funcName = `getLeagueSeasonsByTournament__FOOTBALL`;
     try {
         await DB.cleanTable(TABLES.footballLeagueSeasons.name);
 
-        const now = new Date();
-        const thisYear = now.getFullYear();
-        let dudTournaments: DB__Tournament[] = [];
-        let greenTournaments: DB__Tournament[] = [];
-
-        const tournaments: DB__Tournament[] = await DB.SELECT<DB__Tournament>(
+        const tournaments: DB.Tournament[] = await DB.SELECT<DB.Tournament>(
             TABLES.footballTournaments.name
         );
 
@@ -46,69 +34,67 @@ export async function getLeagueSeasonsByTournament__FOOTBALL(DB: MYSQL_DB) {
                 };
 
                 const response: AxiosResponse<{
-                    seasons: AllSports__LeagueSeason[];
+                    seasons: ASA.LeagueSeason[];
                 }> = await axios.request(axiosRequest);
 
-                const leagueSeasons: AllSports__LeagueSeason[] =
-                    response.data.seasons;
+                const leagueSeasons: ASA.LeagueSeason[] = response.data.seasons;
 
                 if (leagueSeasons.length === 0 || !leagueSeasons) {
-                    throw `No seasons for tournament: ${tournament.id} ${tournament.name}`;
+                    console.log(
+                        `%cNo seasons for tournament: ${tournament.id} ${tournament.name}`,
+                        'color: yellow'
+                    );
+                    continue;
                 }
 
-                const filtered = leagueSeasons.filter(
-                    (season: AllSports__LeagueSeason) =>
-                        Number(season.year) >= thisYear ||
-                        season.year === '23/24' ||
-                        season.year === '22/23'
-                );
+                const currentlyActiveSeasons: ASA.LeagueSeason[] =
+                    leagueSeasons.filter((leagueSeason: ASA.LeagueSeason) =>
+                        leagueSeason.year.toString().includes('24')
+                    );
 
-                if (filtered.length === 0) {
-                    throw `No leagues THIS YEAR or NEXT YEAR for tournament: ${JSON.stringify(
-                        tournament
-                    )}`;
+                if (
+                    currentlyActiveSeasons.length === 0 ||
+                    !currentlyActiveSeasons
+                ) {
+                    console.log(
+                        `%cNo currentlyActiveSeasons for tournament: ${tournament.id} ${tournament.name}`,
+                        'color: orange'
+                    );
+                    continue;
                 }
 
-                const leagueSeasonsDB: DB__LeagueSeason[] = filtered.map(
-                    //const leagueSeasonsDB: DB__LeagueSeason[] = leagueSeasons.map(
-                    (leagueSeason: AllSports__LeagueSeason) => ({
-                        id: leagueSeason.id,
-                        name: leagueSeason.name,
-                        editor: leagueSeason.editor,
-                        year: leagueSeason.year,
-                        tournament_id: tournament.id,
-                        hasLastMatches: false, // will be updated in getLastMatches
-                        hasNextMatches: false, // will be updated in getNextMatches
-                        women:
-                            leagueSeason.name.toLowerCase().indexOf('women') >
-                            -1,
-                    })
-                );
+                const leagueSeasonsDB: DB.LeagueSeason[] =
+                    currentlyActiveSeasons.map(
+                        (leagueSeason: ASA.LeagueSeason) => {
+                            return {
+                                id: leagueSeason.id,
+                                name: leagueSeason.name,
+                                year: leagueSeason.year,
+                                tournament_id: tournament.id,
+                                has_last_matches: false, // will be updated in getLastMatches
+                                has_next_matches: false, // will be updated in getNextMatches
+                                has_standings: false, // will be updated in getStandings
+                                has_last_matches_within_last_month: false, // will be updated in getLastMatchesWithinLastMonth
+                            };
+                        }
+                    );
 
-                const insertResult = await DB.INSERT_BATCH<DB__LeagueSeason>(
+                const insertResult = await DB.INSERT_BATCH<DB.LeagueSeason>(
                     leagueSeasonsDB,
                     TABLES.footballLeagueSeasons.name,
-                    true
+                    false
                 );
                 console.log(
                     `Insert result: ${insertResult} for tournament: ${tournament.id} ${tournament.name}`
                 );
-                if (insertResult) greenTournaments.push(tournament);
-                else throw `!insertResult`;
             } catch (e) {
-                // console.log(
-                //     `%cFailed to get data for tournament: ${tournament.id} ${tournament.name}`,
-                //     'color: orange'
-                // );
-                dudTournaments.push(tournament);
+                console.log(
+                    `%cFailed to get data for tournament: ${tournament.id} ${tournament.name}`,
+                    'color: orange'
+                );
             }
         }
-
-        console.warn(
-            `#dudTournaments: ${dudTournaments.length}\n\n${dudTournaments
-                .map((dud) => dud.name + ' ' + dud.id)
-                .join('\n')}`
-        );
+        return true;
     } catch (e) {
         throw `${funcName} failed: ${e}`;
     }

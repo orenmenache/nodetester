@@ -32,13 +32,16 @@ export namespace ASA {
         };
     }
 
-    export type Team = {
+    export type TeamBase = {
         id: string;
         name: string;
         slug: string;
+        type?: string;
+    };
+
+    export type Team = TeamBase & {
         shortName: string;
-        userCount: string;
-        type: string;
+        nameCode: string;
     };
 
     export type TeamStandings = {
@@ -132,7 +135,6 @@ export namespace ASA {
 
         export type NextMatch = {
             tournament: { uniqueTournament: Tournament };
-            roundInfo: Internal.RoundInfo;
             customId: string;
             status: Internal.Status;
             winnerCode: string;

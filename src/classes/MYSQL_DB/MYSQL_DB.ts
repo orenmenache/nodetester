@@ -93,8 +93,8 @@ export class MYSQL_DB {
                 // There's a whereClause and no likeClause
                 // The formatted whereClause already contains the word 'WHERE'
                 const selectWhereStatement = `${selectStatement} ${whereClauseSQL}`;
-                console.log(`selectWhere:`, selectWhereStatement);
-                console.log(`params:`, whereClauseParams);
+                //console.log(`selectWhere:`, selectWhereStatement);
+                //console.log(`params:`, whereClauseParams);
                 result = await this.pool.execute(
                     selectWhereStatement,
                     whereClauseParams
@@ -144,14 +144,14 @@ export class MYSQL_DB {
             const [whereClauseSQL, whereClauseParams] =
                 this.formatWhereClause(whereClause);
 
-            console.log(`whereClauseSQL`, whereClauseSQL);
-            console.log('whereClauseParams', whereClauseParams);
+            // console.log(`whereClauseSQL`, whereClauseSQL);
+            // console.log('whereClauseParams', whereClauseParams);
 
             const sql = `UPDATE ${table} SET ${setClause} ${whereClauseSQL}`;
             const params = [...setParams, ...whereClauseParams];
 
-            console.log(`sql`, sql);
-            console.log('params', params);
+            // console.log(`sql`, sql);
+            // console.log('params', params);
 
             const [result] = await this.pool.execute(sql, params);
             return (result as OkPacket).affectedRows === 1;
@@ -202,6 +202,10 @@ export class MYSQL_DB {
             }INTO ${tableName} (${columns}) VALUES ${valuePlaceholders}`;
 
             // Execute the query with all the values
+
+            // console.warn(`sql: ${sql}`);
+            // console.warn(`values: ${JSON.stringify(values)}`);
+
             await this.pool.execute(sql, values);
 
             //console.log('Data inserted successfully.');

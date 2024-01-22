@@ -14,10 +14,13 @@ import { getLeagueSeasonsByTournament__TENNIS } from './functions/Tennis/003__ge
 import { getCategories__CRICKET } from './functions/Cricket/001__getCategories';
 import { getTournamentsByCategory__CRICKET } from './functions/Cricket/002__getTournamentsByCategory';
 import { getLeagueSeasonsByTournament__CRICKET } from './functions/Cricket/003__getLeagueSeasonsByTournament';
+import { getLeagueSeasonsByTournament__FOOTBALL } from './functions/Football/003__getLeagueSeasonsByTournament';
+import { getNextMatches__FOOTBALL } from './functions/Football/007__getNextMatches';
+import { getNextMatches__CRICKET } from './functions/Cricket/007__getNextMatches';
 dotenv.config();
 
 async function main() {
-    const DB = new MYSQL_DB('Cricket');
+    const DB = new MYSQL_DB('Football');
     DB.createPool();
 
     try {
@@ -33,7 +36,10 @@ async function main() {
 
         //await getLeagueSeasonsByTournament__TENNIS(DB);
         // await getTournamentsByCategory__CRICKET(DB);
-        await getLeagueSeasonsByTournament__CRICKET(DB);
+        await getNextMatches__FOOTBALL(DB);
+
+        // const leagueSeasonsTableName = 'CORE__LEAGESEASONS';
+        // const relevantS
     } catch (e) {
         console.log(e);
     } finally {
