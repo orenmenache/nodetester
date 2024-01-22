@@ -2,7 +2,6 @@ import axios, { AxiosResponse } from 'axios';
 import { MYSQL_DB } from '../../classes/MYSQL_DB/MYSQL_DB';
 import { TABLES } from '../../config/NAMES';
 import { allSportsAPIURLs } from '../../config/allSportsAPIURLs';
-import { DB__LeagueSeason } from '../../types/allSportsApi/Seasons';
 import { ASA } from '../../types/namespaces/ASA';
 import { DB } from '../../types/namespaces/DB';
 import * as dotenv from 'dotenv';

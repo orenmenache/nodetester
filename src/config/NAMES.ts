@@ -64,7 +64,7 @@ export const TABLES: {
     cricketNextMatches: {
         name: `${DB_NAMES.Cricket}.RAPID__NEXTMATCHES`,
         createStatementSqlPath: './sql/Cricket/008__createNextMatches.sql',
-        dataPopulationFunction: (DB: MYSQL_DB) => getNextMatches__CRICKET(DB),
+        //dataPopulationFunction: (DB: MYSQL_DB) => getNextMatches__CRICKET(DB),
     },
     cricketLastMatches: {
         name: `${DB_NAMES.Cricket}.RAPID__LASTMATCHES`,
@@ -145,6 +145,10 @@ export const TABLES: {
     },
     basketballLeagueSeasons: {
         name: `${DB_NAMES.Basketball}.CORE__LEAGUESEASONS`,
+        createStatementSqlPath: null,
+    },
+    basketballTeams: {
+        name: `${DB_NAMES.Basketball}.CORE__TEAMS`,
         createStatementSqlPath: null,
     },
 };

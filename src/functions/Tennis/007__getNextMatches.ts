@@ -1,52 +1,32 @@
 import axios, { AxiosResponse } from 'axios';
 import { MYSQL_DB } from '../../classes/MYSQL_DB/MYSQL_DB';
 import { allSportsAPIURLs } from '../../config/allSportsAPIURLs';
-import { DB__LeagueSeason } from '../../types/allSportsApi/Seasons';
-import { TABLES } from '../../config/NAMES';
 import { formatDateToSQLTimestamp } from '../GEN/formatToMySQLTimestamp';
-import {
-    AllSports__NextMatch,
-    DB__NextMatch,
-} from '../../types/allSportsApi/Match/NextMatch';
 import { DB } from '../../types/namespaces/DB';
 import { ASA } from '../../types/namespaces/ASA';
+import { TENNIS } from '../../config/tables/TENNIS';
 
-export async function getNextMatches__FOOTBALL(DB: MYSQL_DB) {
-    const funcName = `getNextMatches__FOOTBALL`;
+export async function getNextMatches__TENNIS(DB: MYSQL_DB) {
+    const funcName = `getNextMatches__TENNIS`;
 
     try {
         const leagueSeasons: DB.LeagueSeason[] =
-            await DB.SELECT<DB.LeagueSeason>(TABLES.footballLeagueSeasons.name);
+            await DB.SELECT<DB.LeagueSeason>(TENNIS.leagueSeasons);
 
-        //const ls = leagueSeasons[0];
-        //console.log(JSON.stringify(leagueSeasons[0]));
-
-        // const EnglishPremierLeague: DB__LeagueSeason = {
-        //     id: '52186',
-        //     name: 'Premier League 23/24',
-        //     editor: false,
-        //     year: '23/24',
-        //     tournament_id: '17',
-        //     hasLastMatches: true,
-        //     hasNextMatches: true,
-        //     women: false,
-        // };
-
-        // await DB.cleanTable(TABLES.footballNextMatches.name);
-        // return;
-        for (let i = 58; i < leagueSeasons.length; i++) {
+        // await DB.cleanTable(TENNIS.nextMatches);
+        for (const ls of leagueSeasons) {
             // let's sleep for 1 second between iterations
             await new Promise((resolve) => setTimeout(resolve, 1000));
-            const ls = leagueSeasons[i];
+            //const ls = leagueSeasons[i];
 
             //for (const ls of leagueSeasons) {
             // if (ls.name.toLowerCase().includes('women')) {
-            //     const sql = `DELETE FROM ${TABLES.footballLeagueSeasons.name} WHERE id = ${ls.id}`;
+            //     const sql = `DELETE FROM ${TENNIS.leagueSeasons} WHERE id = ${ls.id}`;
             //     await DB.pool.execute(sql);
             //     console.log(`Deleted leagueSeason ${ls.name}`);
             // }
 
-            const url = allSportsAPIURLs.FOOTBALL.nextMatches
+            const url = allSportsAPIURLs.TENNIS.nextMatches
                 .replace('tournamentId', ls.tournament_id.toString())
                 .replace('seasonId', ls.id.toString());
 
@@ -75,7 +55,7 @@ export async function getNextMatches__FOOTBALL(DB: MYSQL_DB) {
                 console.warn(`No next matches for leagueSeason ${ls.name}`);
                 // let's update the leagueSeason to say that it has no next matches
                 await DB.UPDATE(
-                    TABLES.footballLeagueSeasons.name,
+                    TENNIS.leagueSeasons,
                     { has_next_matches: false },
                     { id: ls.id }
                 );
@@ -113,12 +93,12 @@ export async function getNextMatches__FOOTBALL(DB: MYSQL_DB) {
                     };
 
                     const homeTeamExists = await DB.SELECT<DB.Team>(
-                        TABLES.footballTeams.name,
+                        TENNIS.teams,
                         { id: homeTeam.id }
                     );
 
                     const awayTeamExists = await DB.SELECT<DB.Team>(
-                        TABLES.footballTeams.name,
+                        TENNIS.teams,
                         { id: awayTeam.id }
                     );
 
@@ -132,7 +112,7 @@ export async function getNextMatches__FOOTBALL(DB: MYSQL_DB) {
                         );
                         await DB.INSERT_BATCH<DB.Team>(
                             [homeTeam],
-                            TABLES.footballTeams.name,
+                            TENNIS.teams,
                             false
                         );
                     }
@@ -147,7 +127,7 @@ export async function getNextMatches__FOOTBALL(DB: MYSQL_DB) {
                         );
                         await DB.INSERT_BATCH<DB.Team>(
                             [awayTeam],
-                            TABLES.footballTeams.name,
+                            TENNIS.teams,
                             false
                         );
                     }
@@ -161,7 +141,7 @@ export async function getNextMatches__FOOTBALL(DB: MYSQL_DB) {
 
             const insertResult = await DB.INSERT_BATCH<DB.Football.NextMatch>(
                 nextMatches,
-                TABLES.footballNextMatches.name,
+                TENNIS.nextMatches,
                 true
             );
 
@@ -169,7 +149,7 @@ export async function getNextMatches__FOOTBALL(DB: MYSQL_DB) {
              * Now let's update the leagueSeason to say that it has next matches
              */
             await DB.UPDATE(
-                TABLES.footballLeagueSeasons.name,
+                TENNIS.leagueSeasons,
                 { has_next_matches: true },
                 { id: ls.id }
             );
