@@ -70,6 +70,13 @@ export namespace DB {
         };
     }
 
+    export namespace Basketball {
+        export type Standings = Omit<StandingsBase, 'matches' | 'points'> & {
+            streak: string;
+            percentage: string;
+        };
+    }
+
     export namespace Tennis {}
 
     export namespace Motorsport {

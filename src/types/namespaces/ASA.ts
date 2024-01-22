@@ -185,6 +185,22 @@ export namespace ASA {
         }
     }
 
+    export namespace Basketball {
+        export namespace Responses {
+            export type Standings = AxiosResponse<{
+                standings: { rows: ASA.Basketball.Standings[] }[];
+            }>;
+        }
+
+        export type Standings = Omit<
+            ASA.TeamStandingsBase,
+            'points' | 'matches'
+        > & {
+            streak: number;
+            percentage: number;
+        };
+    }
+
     export namespace Motorsport {
         export type SeasonBase = {
             description: string;
