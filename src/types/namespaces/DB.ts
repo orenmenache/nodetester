@@ -20,6 +20,8 @@ export namespace DB {
         has_last_matches: boolean;
         has_standings: boolean;
         has_last_matches_within_last_month: boolean;
+        last_nextmatches_update?: string;
+        last_standings_update?: string;
     };
 
     export type Tournament = ASA.TournamentBase & {
@@ -68,6 +70,16 @@ export namespace DB {
         export type Standings = StandingsBase & {
             draws: string;
         };
+        export type NextMatch = {
+            id: string;
+            tournament_id: string;
+            league_season_id: string;
+            start_time_timestamp: string;
+            start_time_seconds: string;
+            slug: string;
+            home_team_id: string;
+            away_team_id: string;
+        };
     }
 
     export namespace Basketball {
@@ -75,9 +87,30 @@ export namespace DB {
             streak: string;
             percentage: string;
         };
+        export type NextMatch = {
+            id: string;
+            tournament_id: string;
+            league_season_id: string;
+            start_time_timestamp: string;
+            start_time_seconds: string;
+            slug: string;
+            home_team_id: string;
+            away_team_id: string;
+        };
     }
 
-    export namespace Tennis {}
+    export namespace Tennis {
+        export type NextMatch = {
+            id: string;
+            tournament_id: string;
+            league_season_id: string;
+            start_time_timestamp: string;
+            start_time_seconds: string;
+            slug: string;
+            home_team_id: string;
+            away_team_id: string;
+        };
+    }
 
     export namespace Motorsport {
         export type Season = ASA.Motorsport.SeasonBase & {

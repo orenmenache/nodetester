@@ -8,5 +8,7 @@ CREATE TABLE IF NOT EXISTS Basketball.CORE__LEAGUESEASONS (
     has_last_matches_within_last_month BOOLEAN NOT NULL,
     has_standings BOOLEAN NOT NULL,
     tournament_id INT NOT NULL,
+    last_standings_update TIMESTAMP,
+    last_nextmatches_update TIMESTAMP,
     FOREIGN KEY (tournament_id) REFERENCES CORE__TOURNAMENTS(id)
 )

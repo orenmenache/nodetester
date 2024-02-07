@@ -195,18 +195,26 @@ export class MYSQL_DB {
 
             //console.log(`VALUES: ${JSON.stringify(values)}`);
 
+            // // Define the SQL query with multiple rows
+            // const columns = Object.keys(data[0]).join(', ');
+            // const sql = `INSERT ${
+            //     ignore ? 'IGNORE ' : ''
+            // }INTO ${tableName} (${columns}) VALUES ${valuePlaceholders}`;
+
             // Define the SQL query with multiple rows
             const columns = Object.keys(data[0]).join(', ');
-            const sql = `INSERT ${
-                ignore ? 'IGNORE ' : ''
-            }INTO ${tableName} (${columns}) VALUES ${valuePlaceholders}`;
-
+            const updateColumns = Object.keys(data[0])
+                .map((col) => `${col}=VALUES(${col})`)
+                .join(', ');
+            let sql = `INSERT`;
+            sql += ignore ? ' IGNORE' : '';
+            sql += ` INTO ${tableName} (${columns}) VALUES ${valuePlaceholders}`;
+            sql += ignore ? '' : ` ON DUPLICATE KEY UPDATE ${updateColumns}`;
             // Execute the query with all the values
+            await this.pool.execute(sql, values);
 
             // console.warn(`sql: ${sql}`);
             // console.warn(`values: ${JSON.stringify(values)}`);
-
-            await this.pool.execute(sql, values);
 
             //console.log('Data inserted successfully.');
             return true;
