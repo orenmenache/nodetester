@@ -223,6 +223,62 @@ export class MYSQL_DB {
             return false;
         }
     }
+    async INSERT_BATCH_OVERWRITE<T extends Object>(
+        data: T[],
+        tableName: string,
+        ignore: boolean
+    ): Promise<boolean> {
+        if (!this.pool) {
+            throw new Error(
+                'Pool was not created. Ensure the pool is created when running the app.'
+            );
+        }
+        try {
+            // Build an array of value placeholders for each data item
+            const numKeys = Object.keys(data[0]).length;
+            const oneArrayPlaceHolder = `(${Array(numKeys)
+                .fill('?')
+                .join(', ')})`;
+            //console.warn(`Placeholder: ${oneArrayPlaceHolder}`);
+            const valuePlaceholders = data
+                .map(() => oneArrayPlaceHolder)
+                .join(', ');
+
+            // Flatten the data array to create a single array of values
+            // const values = data.flatMap((item) => Object.values(item));
+            const values = data.flatMap((item) =>
+                Object.values(item).map((value) =>
+                    value !== undefined ? value : null
+                )
+            );
+
+            //console.log(`VALUES: ${JSON.stringify(values)}`);
+
+            // // Define the SQL query with multiple rows
+            // const columns = Object.keys(data[0]).join(', ');
+            // const sql = `INSERT ${
+            //     ignore ? 'IGNORE ' : ''
+            // }INTO ${tableName} (${columns}) VALUES ${valuePlaceholders}`;
+
+            // Define the SQL query with multiple rows
+            const columns = Object.keys(data[0]).join(', ');
+            const updateColumns = Object.keys(data[0])
+                .map((col) => `${col}=VALUES(${col})`)
+                .join(', ');
+            let sql = `INSERT`;
+            sql += ignore ? ' IGNORE' : '';
+            sql += ` INTO ${tableName} (${columns}) VALUES ${valuePlaceholders}`;
+            sql += ignore ? '' : ` ON DUPLICATE KEY UPDATE ${updateColumns}`;
+            // Execute the query with all the values
+            await this.pool.execute(sql, values);
+
+            //console.log('Data inserted successfully.');
+            return true;
+        } catch (error) {
+            console.error('Error inserting data:', error);
+            return false;
+        }
+    }
     async cleanTable(tableName: string): Promise<boolean> {
         try {
             if (!this.pool) {

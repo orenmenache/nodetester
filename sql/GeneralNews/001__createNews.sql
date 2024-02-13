@@ -11,6 +11,12 @@ CREATE TABLE RAPID__NEWS (
     logo VARCHAR(255) NOT NULL,
     show_standings BOOLEAN NOT NULL,
     show_next_matches BOOLEAN NOT NULL,
-    league_season_id INT,
+    standings_league_season_id INT,
+    schedule_league_season_id INT,
     Foreign Key (sport_id) references config.sports(id)
 );
+
+ALTER TABLE GeneralNews.RAPID__NEWS
+DROP COLUMN league_season_id,
+ADD COLUMN standings_league_season_id INT,
+ADD COLUMN schedule_league_season_id INT;

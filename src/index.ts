@@ -218,4 +218,214 @@ async function main() {
     }
 }
 
-main();
+async function test() {
+    const lambdaName = 'SPFBS5getNextMatches'; // Sports Football Stage5 getNextMatches
+
+    const DB = new MYSQL_DB();
+    DB.createPool();
+    try {
+        /**
+         * Firstly we'll remove next matches that have already happened
+         * or will happen in the next @hourgap hours
+         */
+        const now = new Date();
+        const nowTimestamp = formatDateToSQLTimestamp(now);
+        const hourForwardFactor = 10;
+        const hourBackwardFactor = 4;
+
+        const deleteLastMatches = async (): Promise<void> => {
+            const forwardDate = new Date(
+                now.getTime() + hourForwardFactor * 60 * 60 * 1000
+            );
+            const targetDateTimeStamp = formatDateToSQLTimestamp(forwardDate);
+            const customSelect = `
+            DELETE FROM ${FOOTBALL.nextMatches} 
+            WHERE start_time_timestamp < '${targetDateTimeStamp}';
+            `;
+            await DB.pool.execute(customSelect);
+        };
+
+        await deleteLastMatches();
+
+        const selectLeagueSeasons = async (): Promise<DB.LeagueSeason[]> => {
+            // select all leagueSeasons that weren't updated in the last 8 hours
+            const leagueSeasons = await DB.SELECT<DB.LeagueSeason>(
+                FOOTBALL.leagueSeasons
+            );
+            return leagueSeasons;
+            //     const backwardDate = new Date(
+            //         now.getTime() - hourBackwardFactor * 60 * 60 * 1000
+            //     );
+            //     const backwardDateTimeStamp =
+            //         formatDateToSQLTimestamp(backwardDate);
+            //     const customSelect = `
+            //     SELECT * FROM ${FOOTBALL.leagueSeasons}
+            //     WHERE last_nextmatches_update IS NULL OR last_nextmatches_update < '${backwardDateTimeStamp}';
+            // `;
+            //     const result = await DB.pool.execute(customSelect);
+            //     const [rows] = result;
+            //     return rows as DB.LeagueSeason[];
+        };
+
+        const leagueSeasons = await selectLeagueSeasons();
+
+        if (leagueSeasons.length === 0) {
+            console.log(`No leagueSeasons @ ${nowTimestamp}`);
+            return true;
+        }
+
+        // const ls = leagueSeasons[0];
+        for (const ls of leagueSeasons) {
+            const axiosRequest = buildGetRequest(
+                allSportsAPIURLs.FOOTBALL.nextMatches,
+                {
+                    tournamentId: ls.tournament_id.toString(),
+                    seasonId: ls.id.toString(),
+                }
+            );
+
+            const response: ASA.Football.Responses.NextMatches =
+                await axios.request(axiosRequest);
+
+            // console.log(JSON.stringify(response.data.events[0], null, 4));
+
+            const keyWord = 'events';
+
+            if (
+                !response.data ||
+                typeof response.data !== 'object' ||
+                !(keyWord in response.data) ||
+                response.data[keyWord].length === 0
+            ) {
+                // error in data
+                console.warn(`No ${keyWord} for leagueSeason ${ls.name}`);
+                // let's update the leagueSeason to say that it has no standings
+                // and when it was updated
+                await DB.UPDATE(
+                    FOOTBALL.leagueSeasons,
+                    {
+                        has_next_matches: false,
+                        last_nextmatches_update: nowTimestamp,
+                    },
+                    { id: ls.id }
+                );
+                continue;
+            } // else {
+            // insert standings
+            let nextMatches: DB.Football.NextMatch[] = [];
+            // const when_created = formatDateToSQLTimestamp(new Date());
+
+            for (const event of response.data.events) {
+                const nextMatch: DB.Football.NextMatch = {
+                    id: event.id.toString(),
+                    league_season_id: ls.id,
+                    tournament_id: ls.tournament_id,
+                    start_time_seconds: event.startTimestamp,
+                    start_time_timestamp: formatDateToSQLTimestamp(
+                        new Date(Number(event.startTimestamp) * 1000)
+                    ),
+                    home_team_id: event.homeTeam.id.toString(),
+                    away_team_id: event.awayTeam.id.toString(),
+                    slug: event.slug,
+                };
+
+                const insertMissingTeams = async () => {
+                    for (const team of [event.homeTeam, event.awayTeam]) {
+                        const TeamExists = await DB.SELECT<DB.Team>(
+                            FOOTBALL.teams,
+                            {
+                                id: team.id.toString(),
+                            }
+                        );
+
+                        if (TeamExists.length === 0) {
+                            console.log(
+                                `%cInserting team ${team.name}`,
+                                'color: yellow'
+                            );
+                            const team__DB: DB.Team = {
+                                id: team.id.toString(),
+                                name: team.name,
+                                slug: team.slug,
+                                short_name: team.shortName,
+                                name_code: team.nameCode,
+                            };
+
+                            await new Promise((resolve) =>
+                                setTimeout(resolve, 1000)
+                            );
+
+                            const insertTeamResult =
+                                await DB.INSERT_BATCH_OVERWRITE<DB.Team>(
+                                    [team__DB],
+                                    FOOTBALL.teams,
+                                    false
+                                );
+
+                            if (!insertTeamResult)
+                                throw `false insertTeamsResult for team ${
+                                    team.name
+                                } JSON: ${JSON.stringify(team__DB)}`;
+                        }
+                    }
+                };
+
+                await insertMissingTeams();
+                nextMatches.push(nextMatch);
+            }
+
+            const insertNextMatchesResult =
+                await DB.INSERT_BATCH_OVERWRITE<DB.Football.NextMatch>(
+                    nextMatches,
+                    FOOTBALL.nextMatches,
+                    false
+                );
+
+            if (insertNextMatchesResult) {
+                // let's update the leagueSeason to say that it has standings
+                // and when it was updated
+                await DB.UPDATE(
+                    FOOTBALL.leagueSeasons,
+                    {
+                        has_next_matches: true,
+                        last_nextmatches_update: nowTimestamp,
+                    },
+                    { id: ls.id }
+                );
+                // update lambda dashbaord
+                await DB.UPDATE(
+                    'config.lambdas',
+                    {
+                        last_run: formatDateToSQLTimestamp(new Date()),
+                        last_error: '',
+                    },
+                    { name: lambdaName }
+                );
+                console.log(
+                    `Inserted ${nextMatches.length} nextMatches successfully`
+                );
+            }
+            //} // end else insert standings
+        }
+        return true;
+    } catch (e) {
+        const errorMessage = `Error in ${lambdaName}: ${e}`;
+        console.log(errorMessage);
+
+        // update lambda dashbaord
+        await DB.UPDATE(
+            'config.lambdas',
+            {
+                last_error: `${e}`,
+                last_run: formatDateToSQLTimestamp(new Date()),
+            },
+            { name: lambdaName }
+        );
+    } finally {
+        console.log(`Closing connection`);
+        await DB.pool.end();
+    }
+}
+
+test();
+//main();

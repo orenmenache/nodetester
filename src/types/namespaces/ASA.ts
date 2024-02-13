@@ -105,6 +105,9 @@ export namespace ASA {
             export type Standings = AxiosResponse<{
                 standings: { rows: ASA.Football.Standings[] }[];
             }>;
+            export type NextMatches = AxiosResponse<{
+                events: ASA.Football.NextMatch[];
+            }>;
         }
 
         export type Standings = ASA.TeamStandingsBase & {
