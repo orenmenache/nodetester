@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { MYSQL_DB } from './classes/MYSQL_DB/MYSQL_DB';
 import { allSportsAPIURLs } from './config/allSportsAPIURLs';
 import { DB } from './types/namespaces/DB';
@@ -189,6 +189,49 @@ export const HIT = {
                     await axios.request(axiosRequest);
 
                 console.log(JSON.stringify(response.data.categories, null, 4));
+            } catch (e) {
+                console.log(e);
+            } finally {
+                await CricketDB.pool.end();
+            }
+        },
+        async lastMatches() {
+            const CricketDB = new MYSQL_DB('Cricket');
+            CricketDB.createPool();
+
+            const ls: DB.LeagueSeason = {
+                id: '44608',
+                name: 'Dunno',
+                year: `Don't matter`,
+                tournament_id: '19048',
+                has_next_matches: true,
+                has_last_matches: true,
+                has_standings: true,
+                has_last_matches_within_last_month: true,
+            };
+
+            const axiosRequest: AxiosRequestConfig<any> = buildGetRequest(
+                allSportsAPIURLs.CRICKET.lastMatches,
+                {
+                    tournamentId: ls.tournament_id.toString(),
+                    seasonId: ls.id.toString(),
+                }
+            );
+
+            try {
+                const response: ASA.Cricket.Responses.LastMatches =
+                    await axios.request(axiosRequest);
+
+                // console.log(JSON.stringify(response.data.events, null, 4));
+
+                for (const event of response.data.events) {
+                    console.log(event.awayTeam.id);
+                    console.log(event.homeTeam.id);
+                    console.log(new Date(Number(event.startTimestamp) * 1000));
+                    console.log(event.startTimestamp);
+                    console.log(event.awayScore.current);
+                    console.log(event.homeScore.current);
+                }
             } catch (e) {
                 console.log(e);
             } finally {

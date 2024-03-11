@@ -22,6 +22,7 @@ export namespace DB {
         has_last_matches_within_last_month: boolean;
         last_nextmatches_update?: string;
         last_standings_update?: string;
+        last_lastmatches_update?: string;
     };
 
     export type Tournament = ASA.TournamentBase & {
@@ -79,6 +80,11 @@ export namespace DB {
             slug: string;
             home_team_id: string;
             away_team_id: string;
+        };
+        export type LastMatch = NextMatch & {
+            winner_code: string;
+            home_score: string;
+            away_score: string;
         };
     }
 

@@ -30,6 +30,7 @@ import { buildGetRequest } from './functions/Football/functions/buildGetRequest'
 import { allSportsAPIURLs } from './config/allSportsAPIURLs';
 import axios from 'axios';
 import { ASA } from './types/namespaces/ASA';
+import { CRICKET } from './config/tables/CRICKET';
 dotenv.config();
 
 async function main() {
@@ -218,53 +219,49 @@ async function main() {
     }
 }
 
-async function test() {
-    const lambdaName = 'SPFBS5getNextMatches'; // Sports Football Stage5 getNextMatches
+async function testLambda() {
+    const lambdaName = 'SPCRS6getLastMatches'; // Sports Cricket Stage6 getLastMatches
 
     const DB = new MYSQL_DB();
     DB.createPool();
     try {
         /**
-         * Firstly we'll remove next matches that have already happened
-         * or will happen in the next @hourgap hours
+         * Firstly we'll remove matches that are over two months old
          */
         const now = new Date();
         const nowTimestamp = formatDateToSQLTimestamp(now);
-        const hourForwardFactor = 10;
-        const hourBackwardFactor = 4;
+        const weeksBackwardFactor = 12;
+        const hourBackwardFactor = 0;
 
-        const deleteLastMatches = async (): Promise<void> => {
-            const forwardDate = new Date(
-                now.getTime() + hourForwardFactor * 60 * 60 * 1000
-            );
-            const targetDateTimeStamp = formatDateToSQLTimestamp(forwardDate);
+        const oldLimit = new Date(
+            now.getTime() - weeksBackwardFactor * 7 * 24 * 60 * 60 * 1000
+        );
+
+        const deleteOldMatches = async (): Promise<void> => {
+            const targetDateTimeStamp = formatDateToSQLTimestamp(oldLimit);
             const customSelect = `
-            DELETE FROM ${FOOTBALL.nextMatches} 
-            WHERE start_time_timestamp < '${targetDateTimeStamp}';
+                DELETE FROM ${CRICKET.lastMatches} 
+                WHERE start_time_timestamp < '${targetDateTimeStamp}';
             `;
             await DB.pool.execute(customSelect);
         };
 
-        await deleteLastMatches();
+        await deleteOldMatches();
 
         const selectLeagueSeasons = async (): Promise<DB.LeagueSeason[]> => {
             // select all leagueSeasons that weren't updated in the last 8 hours
-            const leagueSeasons = await DB.SELECT<DB.LeagueSeason>(
-                FOOTBALL.leagueSeasons
+            const backwardDate = new Date(
+                now.getTime() - hourBackwardFactor * 60 * 60 * 1000
             );
-            return leagueSeasons;
-            //     const backwardDate = new Date(
-            //         now.getTime() - hourBackwardFactor * 60 * 60 * 1000
-            //     );
-            //     const backwardDateTimeStamp =
-            //         formatDateToSQLTimestamp(backwardDate);
-            //     const customSelect = `
-            //     SELECT * FROM ${FOOTBALL.leagueSeasons}
-            //     WHERE last_nextmatches_update IS NULL OR last_nextmatches_update < '${backwardDateTimeStamp}';
-            // `;
-            //     const result = await DB.pool.execute(customSelect);
-            //     const [rows] = result;
-            //     return rows as DB.LeagueSeason[];
+            const backwardDateTimeStamp =
+                formatDateToSQLTimestamp(backwardDate);
+            const customSelect = `
+                SELECT * FROM ${CRICKET.leagueSeasons}
+                WHERE last_lastmatches_update IS NULL OR last_lastmatches_update < '${backwardDateTimeStamp}';
+            `;
+            const result = await DB.pool.execute(customSelect);
+            const [rows] = result;
+            return rows as DB.LeagueSeason[];
         };
 
         const leagueSeasons = await selectLeagueSeasons();
@@ -274,20 +271,18 @@ async function test() {
             return true;
         }
 
-        // const ls = leagueSeasons[0];
+        //const ls = leagueSeasons[0];
         for (const ls of leagueSeasons) {
             const axiosRequest = buildGetRequest(
-                allSportsAPIURLs.FOOTBALL.nextMatches,
+                allSportsAPIURLs.CRICKET.lastMatches,
                 {
                     tournamentId: ls.tournament_id.toString(),
                     seasonId: ls.id.toString(),
                 }
             );
 
-            const response: ASA.Football.Responses.NextMatches =
+            const response: ASA.Cricket.Responses.LastMatches =
                 await axios.request(axiosRequest);
-
-            // console.log(JSON.stringify(response.data.events[0], null, 4));
 
             const keyWord = 'events';
 
@@ -299,40 +294,84 @@ async function test() {
             ) {
                 // error in data
                 console.warn(`No ${keyWord} for leagueSeason ${ls.name}`);
-                // let's update the leagueSeason to say that it has no standings
+                // let's update the leagueSeason to say that it has no last matches
                 // and when it was updated
                 await DB.UPDATE(
-                    FOOTBALL.leagueSeasons,
+                    CRICKET.leagueSeasons,
                     {
-                        has_next_matches: false,
-                        last_nextmatches_update: nowTimestamp,
+                        has_last_matches: false,
+                        last_lastmatches_update: nowTimestamp,
                     },
                     { id: ls.id }
                 );
                 continue;
             } // else {
-            // insert standings
-            let nextMatches: DB.Football.NextMatch[] = [];
+
+            let lastMatches: DB.Cricket.LastMatch[] = [];
             // const when_created = formatDateToSQLTimestamp(new Date());
 
-            for (const event of response.data.events) {
-                const nextMatch: DB.Football.NextMatch = {
+            // let's filter out the matches that are over 2 months old
+            const events = response.data.events.filter(
+                (event) =>
+                    new Date(Number(event.startTimestamp) * 1000) > oldLimit
+            );
+
+            if (events.length === 0) {
+                console.warn(
+                    `*** After filtering *** No new matches for leagueSeason ${ls.name}`
+                );
+                // let's update the leagueSeason to say that it has no last matches
+                // and when it was updated
+                await DB.UPDATE(
+                    CRICKET.leagueSeasons,
+                    {
+                        has_last_matches: false,
+                        last_lastmatches_update: nowTimestamp,
+                    },
+                    { id: ls.id }
+                );
+                continue;
+            }
+
+            // console.log(
+            //     `Filtered out ${
+            //         response.data.events.length - events.length
+            //     } matches out of ${response.data.events.length} total matches`
+            // );
+
+            // console.log(
+            //     `response.data.events Dates: ${response.data.events.map(
+            //         (e) => e.startTimestamp
+            //     )}`
+            // );
+            // console.log(`events Dates: ${events.map((e) => e.startTimestamp)}`);
+
+            // return;
+
+            for (const event of events) {
+                const lastMatch: DB.Cricket.LastMatch = {
                     id: event.id.toString(),
                     league_season_id: ls.id,
                     tournament_id: ls.tournament_id,
-                    start_time_seconds: event.startTimestamp,
+                    start_time_seconds: String(event.startTimestamp),
                     start_time_timestamp: formatDateToSQLTimestamp(
                         new Date(Number(event.startTimestamp) * 1000)
                     ),
                     home_team_id: event.homeTeam.id.toString(),
                     away_team_id: event.awayTeam.id.toString(),
                     slug: event.slug,
+                    winner_code: String(event.winnerCode),
+                    home_score: String(event.homeScore.current),
+                    away_score: String(event.awayScore.current),
                 };
+
+                // console.log(`lastMatch: ${JSON.stringify(lastMatch, null, 4)}`);
+                // return;
 
                 const insertMissingTeams = async () => {
                     for (const team of [event.homeTeam, event.awayTeam]) {
                         const TeamExists = await DB.SELECT<DB.Team>(
-                            FOOTBALL.teams,
+                            CRICKET.teams,
                             {
                                 id: team.id.toString(),
                             }
@@ -358,8 +397,8 @@ async function test() {
                             const insertTeamResult =
                                 await DB.INSERT_BATCH_OVERWRITE<DB.Team>(
                                     [team__DB],
-                                    FOOTBALL.teams,
-                                    false
+                                    CRICKET.teams,
+                                    true
                                 );
 
                             if (!insertTeamResult)
@@ -371,24 +410,26 @@ async function test() {
                 };
 
                 await insertMissingTeams();
-                nextMatches.push(nextMatch);
+                lastMatches.push(lastMatch);
             }
 
-            const insertNextMatchesResult =
-                await DB.INSERT_BATCH_OVERWRITE<DB.Football.NextMatch>(
-                    nextMatches,
-                    FOOTBALL.nextMatches,
-                    false
+            console.log(`Inserting ${lastMatches.length} lastMatches`);
+
+            const insertLastMatchesResult =
+                await DB.INSERT_BATCH_OVERWRITE<DB.Cricket.LastMatch>(
+                    lastMatches,
+                    CRICKET.lastMatches,
+                    true
                 );
 
-            if (insertNextMatchesResult) {
+            if (insertLastMatchesResult) {
                 // let's update the leagueSeason to say that it has standings
                 // and when it was updated
                 await DB.UPDATE(
-                    FOOTBALL.leagueSeasons,
+                    CRICKET.leagueSeasons,
                     {
-                        has_next_matches: true,
-                        last_nextmatches_update: nowTimestamp,
+                        has_last_matches: true,
+                        last_lastmatches_update: nowTimestamp,
                     },
                     { id: ls.id }
                 );
@@ -402,7 +443,7 @@ async function test() {
                     { name: lambdaName }
                 );
                 console.log(
-                    `Inserted ${nextMatches.length} nextMatches successfully`
+                    `Inserted ${lastMatches.length} lastMatches successfully`
                 );
             }
             //} // end else insert standings
@@ -427,5 +468,10 @@ async function test() {
     }
 }
 
-test();
+async function testHit() {
+    const hit = await HIT.Cricket.lastMatches();
+}
+
+testLambda();
+//testHit();
 //main();

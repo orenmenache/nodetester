@@ -3,6 +3,7 @@ export const CRICKET = {
     tournaments: 'Cricket.CORE__TOURNAMENTS',
     leagueSeasons: 'Cricket.CORE__LEAGUESEASONS',
     nextMatches: 'Cricket.RAPID__NEXTMATCHES',
+    lastMatches: 'Cricket.RAPID__LASTMATCHES',
     teams: 'Cricket.CORE__TEAMS',
     standings: 'Cricket.RAPID__STANDINGS',
 };

@@ -1,6 +1,24 @@
 import { AxiosResponse } from 'axios';
 
 export namespace ASA {
+    export type MatchBase = {
+        id: string;
+        name: string;
+        slug: string;
+        type: string;
+        awayScore: Internal.ScoreBase;
+        homeScore: Internal.ScoreBase;
+        status: string;
+        winnerCode: number; // 0 = draw, 1 = home, 2 = away
+        startTimestamp: number;
+        homeTeam: Team;
+        awayTeam: Team;
+    };
+
+    export type NextMatch = MatchBase;
+
+    export type LastMatch = MatchBase;
+
     namespace Internal {
         export type RoundInfo = {
             round: string;
@@ -12,12 +30,12 @@ export namespace ASA {
             type: string;
         };
 
-        export type Score = {
+        export type ScoreBase = {
             current: string;
             display: string;
-            period1: string;
-            period2: string;
-            normaltime: string;
+            // period1: string;
+            // period2: string;
+            // normaltime: string;
         };
 
         export type Time = {
@@ -124,8 +142,8 @@ export namespace ASA {
             winnerCode: string;
             homeTeam: Team;
             awayTeam: Team;
-            homeScore: Internal.Score;
-            awayScore: Internal.Score;
+            homeScore: Internal.ScoreBase;
+            awayScore: Internal.ScoreBase;
             time: Internal.Time;
             changes: Internal.Changes;
             hasGlobalHighlights: boolean;
@@ -149,8 +167,8 @@ export namespace ASA {
             winnerCode: string;
             homeTeam: Team;
             awayTeam: Team;
-            homeScore: Internal.Score;
-            awayScore: Internal.Score;
+            homeScore: Internal.ScoreBase;
+            awayScore: Internal.ScoreBase;
             time: Internal.Time;
             changes: Internal.Changes;
             hasGlobalHighlights: boolean;
@@ -173,11 +191,20 @@ export namespace ASA {
             export type Standings = AxiosResponse<{
                 standings: { rows: ASA.Cricket.Standings[] }[];
             }>;
+            export type NextMatches = AxiosResponse<{
+                events: ASA.Cricket.NextMatch[];
+            }>;
+            export type LastMatches = AxiosResponse<{
+                events: ASA.Cricket.LastMatch[];
+            }>;
         }
 
         export type Standings = ASA.TeamStandingsBase & {
             draws: number;
         };
+
+        export type NextMatch = ASA.NextMatch;
+        export type LastMatch = ASA.LastMatch;
     }
 
     export namespace Tennis {
