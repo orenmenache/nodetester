@@ -472,6 +472,10 @@ async function testHit() {
     const hit = await HIT.Cricket.lastMatches();
 }
 
-testLambda();
+//testLambda();
 //testHit();
 //main();
+
+const now = new Date();
+const twelveWeeksAgo = new Date(now.getTime() - 12 * 7 * 24 * 60 * 60 * 1000);
+console.log(`twelveWeeksAgo: ${formatDateToSQLTimestamp(twelveWeeksAgo)}`);
