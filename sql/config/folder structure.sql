@@ -1,6 +1,6 @@
 -- Here we'll define the general folder structure
 -- for every brand and product.
--- the structure assumes that products are stored in a client folder
+-- the structure assumes that products are stored in a brand folder
 
 DROP TABLE IF EXISTS config.CORE__product_subfolders;
 DROP TABLE IF EXISTS config.CORE__brand_products; -- every brand can have several products
@@ -65,12 +65,12 @@ CREATE TABLE config.CORE__products (
 );
 
 INSERT INTO config.CORE__products (product_name, folder_path) VALUES 
-('AE_Daily_News', '$client_path/AE/'),
-('SNS_AE_Insta', '$client_path/SNS/insta/'),
-('SNS_PS_Schedule', '$client_path/SNS/PS/schedule/'),
-('SNS_PS_News', '$client_path/SNS/PS/news/'),
-('SNS_PS_Ranking', '$client_path/SNS/PS/ranking/'),
-('SNS_PS_Scores', '$client_path/SNS/PS/scores/');
+('AE_Daily_News', '$brand_path/AE/'),
+('SNS_AE_Insta', '$brand_path/SNS/insta/'),
+('SNS_PS_Schedule', '$brand_path/SNS/PS/schedule/'),
+('SNS_PS_News', '$brand_path/SNS/PS/news/'),
+('SNS_PS_Ranking', '$brand_path/SNS/PS/ranking/'),
+('SNS_PS_Scores', '$brand_path/SNS/PS/scores/');
 
 CREATE TABLE config.CORE__brand_products (
     brand_name VARCHAR(50) NOT NULL,
