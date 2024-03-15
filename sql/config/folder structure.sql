@@ -55,8 +55,8 @@ CREATE TABLE config.CORE__brands (
 
 -- folder paths are dynamic, expecting a root_path
 INSERT INTO config.CORE__brands (brand_name, folder_path, root_folder) VALUES 
-('Wolf777', 'Studio/Sports/Wolf777/', 'qnap_path'), 
-('CWINZ', 'Studio/Sports/CWINZ/', 'qnap_path');
+('Wolf777', 'Studio/Sports/S_Brands/Wolf777/', 'qnap_path'), 
+('CWINZ', 'Studio/Sports/S_Brands/CWINZ/', 'qnap_path');
 
 CREATE TABLE config.CORE__products (
     product_name VARCHAR(50) NOT NULL,
