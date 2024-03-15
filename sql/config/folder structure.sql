@@ -2,7 +2,7 @@
 -- for every brand and product.
 -- the structure assumes that products are stored in a client folder
 
-DROP TABLE IF EXISTS config.CORE__product_folders;
+DROP TABLE IF EXISTS config.CORE__product_subfolders;
 DROP TABLE IF EXISTS config.CORE__brand_products; -- every brand can have several products
 DROP TABLE IF EXISTS config.CORE__products;
 DROP TABLE IF EXISTS config.CORE__brands;
@@ -95,7 +95,7 @@ INSERT INTO config.CORE__brand_products (brand_name, product_name) VALUES
 ('CWINZ', 'SNS_PS_Ranking'),
 ('CWINZ', 'SNS_PS_Scores');
 
-CREATE TABLE config.CORE__product_folders (
+CREATE TABLE config.CORE__product_subfolders (
     product_name VARCHAR(50) NOT NULL,
     folder_type VARCHAR(50) NOT NULL,
     folder_path VARCHAR(255) NOT NULL,
@@ -105,12 +105,17 @@ CREATE TABLE config.CORE__product_folders (
 );
 
 -- the following paths will be dynamic,
--- expecting either $client_path / $qnap_path / $drive_path
+-- expecting either $product_path / $qnap_path / $drive_path
+
+-- Note: we're using $product_path and not $brand_path since 
+-- the product general path has been defined in the products table
+-- and it is built upon the brand path
+
 -- or the generic $narration_path / $dynamicBackgrounds_path / $logos_path / $staticBackgrounds_path
 -- in the case of AE products we define narration and dynamicBackgrounds
 -- in the case of PSV products we define logos and staticBackgrounds
 
-INSERT INTO config.CORE__product_folders (product_name, folder_type, folder_path) VALUES 
-('AE_Daily_News', 'saves', '$client_path/AE/Daily News/saves/'),
-('AE_Daily_News', 'exports', '$client_path/AE/Daily News/exports/'),
-('AE_Daily_News', 'templates', '$client_path/AE/Daily News/templates/');
+INSERT INTO config.CORE__product_subfolders (product_name, folder_type, folder_path) VALUES 
+('AE_Daily_News', 'saves', '$product_path/AE/Daily News/saves/'),
+('AE_Daily_News', 'exports', '$product_path/AE/Daily News/exports/'),
+('AE_Daily_News', 'templates', '$product_path/AE/Daily News/templates/');
