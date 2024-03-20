@@ -5,6 +5,23 @@ import { DB } from './types/namespaces/DB';
 import { ASA } from './types/namespaces/ASA';
 import { buildGetRequest } from './functions/Football/functions/buildGetRequest';
 import { headers } from './config/HEADERS';
+import { TopRankingTeam, getTeamIds } from './Ranking';
+import { runFunctionWithRetry } from './functions/RunFunctionWithRetry';
+import { formatDateToSQLTimestamp } from './functions/GEN/formatToMySQLTimestamp';
+
+export type TeamLastMatch = {
+    id: number;
+    start_time_seconds: number;
+    start_time_timestamp: Date;
+    slug: string;
+    home_team_id: number;
+    away_team_id: number;
+    home_team_name: string;
+    away_team_name: string;
+    winner_code: number; // 0: Draw, 1: Home, 2: Away
+    home_score: number;
+    away_score: number;
+};
 
 /**
  * This file is used to test the API calls
@@ -238,5 +255,102 @@ export const HIT = {
                 await CricketDB.pool.end();
             }
         },
+        async teamNextMatches() {
+            const DB = new MYSQL_DB();
+            DB.createPool();
+            try {
+                const teamIdUpdateResult: boolean = await getTeamIds();
+                if (!teamIdUpdateResult) throw `Error in getTeamIds`;
+
+                console.log('Team IDs updated');
+
+                const fn = async () =>
+                    await DB.SELECT<TopRankingTeam>(
+                        `Cricket.CORE_ICC_TEAM_RANKING`
+                    );
+                const topTeams: TopRankingTeam[] = await runFunctionWithRetry(
+                    fn,
+                    5
+                );
+                // sort so that the latest entries are first
+                topTeams.sort((a, b) => {
+                    return Number(a.created_at) - Number(b.created_at);
+                });
+
+                const topThirtyTeams: TopRankingTeam[] = [
+                    ...topTeams
+                        .filter((team) => team.gameType === 'odi')
+                        .slice(-10),
+                    ...topTeams
+                        .filter((team) => team.gameType === 'test')
+                        .slice(-10),
+                    ...topTeams
+                        .filter((team) => team.gameType === 't20')
+                        .slice(-10),
+                ];
+
+                const teamIds: string[] = topThirtyTeams.map(
+                    (team) => team.teamId
+                );
+                const uniqueTeamIds: string[] = [...new Set(teamIds)];
+
+                // for (const team of topThirtyTeams) {
+                //     console.log(team.teamName);
+                //     console.log(team.teamId);
+                // }
+
+                let teamNextMatches: ASA.Cricket.NextMatch[] = [];
+                for (const teamId of uniqueTeamIds) {
+                    const axiosRequest = buildGetRequest(
+                        allSportsAPIURLs.CRICKET.teamNextMatches,
+                        {
+                            teamId,
+                        }
+                    );
+
+                    const response: AxiosResponse<{
+                        events: ASA.Cricket.NextMatch[];
+                    }> = await axios.request(axiosRequest);
+
+                    // console.log(
+                    //     `Team ID: ${teamId}. Matches: ${response.data.events.length}`
+                    // );
+
+                    teamNextMatches = [
+                        ...teamNextMatches,
+                        ...response.data.events,
+                    ];
+                }
+
+                const trimmedObj = teamNextMatches.map((match) => {
+                    return {
+                        id: match.id,
+                        slug: match.slug,
+                        away_team_id: match.awayTeam.id,
+                        home_team_id: match.homeTeam.id,
+                        home_team_name: match.homeTeam.name,
+                        away_team_name: match.awayTeam.name,
+                        start_time_seconds: match.startTimestamp,
+                        start_time_timestamp: formatDateToSQLTimestamp(
+                            new Date(match.startTimestamp * 1000)
+                        ),
+                    };
+                });
+
+                await DB.INSERT_BATCH_OVERWRITE(
+                    trimmedObj,
+                    'Cricket.RAPID__TEAM_NEXTMATCHES',
+                    true
+                );
+
+                return true;
+            } catch (e) {
+                console.warn(`Error in getTeamIds: ${e}`);
+                return false;
+            } finally {
+                await DB.pool.end();
+            }
+        },
+        async teamLastMatches() {},
     },
 };

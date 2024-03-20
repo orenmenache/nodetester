@@ -19,6 +19,7 @@ export const allSportsAPIURLs = {
         topPlayers: `https://allsportsapi2.p.rapidapi.com/api/cricket/tournament/tournamentId/season/seasonId/top-players`,
         lastMatches: `https://allsportsapi2.p.rapidapi.com/api/cricket/tournament/tournamentId/season/seasonId/matches/last/0`,
         nextMatches: `https://allsportsapi2.p.rapidapi.com/api/cricket/tournament/tournamentId/season/seasonId/matches/next/0`,
+        teamNextMatches: `https://allsportsapi2.p.rapidapi.com/api/cricket/team/teamId/matches/next/0`,
     },
     TENNIS: {
         categories: `https://allsportsapi2.p.rapidapi.com/api/tennis/tournament/categories`,

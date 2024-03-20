@@ -31,6 +31,7 @@ import { allSportsAPIURLs } from './config/allSportsAPIURLs';
 import axios from 'axios';
 import { ASA } from './types/namespaces/ASA';
 import { CRICKET } from './config/tables/CRICKET';
+import { getTeamIds } from './Ranking';
 dotenv.config();
 
 async function main() {
@@ -469,13 +470,10 @@ async function testLambda() {
 }
 
 async function testHit() {
-    const hit = await HIT.Cricket.lastMatches();
+    //const hit = await HIT.Cricket.lastMatches();
+    await HIT.Cricket.teamNextMatches();
 }
 
 //testLambda();
-//testHit();
+testHit();
 //main();
-
-const now = new Date();
-const twelveWeeksAgo = new Date(now.getTime() - 12 * 7 * 24 * 60 * 60 * 1000);
-console.log(`twelveWeeksAgo: ${formatDateToSQLTimestamp(twelveWeeksAgo)}`);
