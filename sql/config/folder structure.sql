@@ -162,7 +162,7 @@ INSERT INTO config.CORE_L3_product_subfolders (product_name, folder_type, subfol
 ('AE_Daily_News', 'saves', '$product_path/saves/', '$product_path'),
 ('AE_Daily_News', 'exports', '$product_path/exports/', '$product_path'),
 ('AE_Daily_News', 'templates', '$product_path/templates/', '$product_path'),
-('AE_Daily_News', 'dynamicBackgrounds', '$general_path/', '$general_path'),
+('AE_Daily_News', 'dynamic_backgrounds', '$general_path/', '$general_path'),
 ('AE_Daily_News', 'presenters', '$brand_path/presenters/$lang/', '$brand_path, $lang'),
 ('AE_Daily_News', 'narration', '$general_path/$sport/$lang/', '$general_path, $sport, $lang'),
 ('SNS_AE_News', 'saves', '$product_path/saves/', '$product_path'),
