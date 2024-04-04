@@ -471,7 +471,11 @@ async function testLambda() {
 
 async function testHit() {
     //const hit = await HIT.Cricket.lastMatches();
-    await HIT.Cricket.teamNextMatches();
+    // await HIT.Cricket.teamNextMatches();
+    const DB = new MYSQL_DB();
+    DB.createPool();
+
+    await getLeagueSeasonsByTournament__CRICKET(DB);
 }
 
 //testLambda();

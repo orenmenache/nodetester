@@ -5,6 +5,7 @@
 DROP TABLE IF EXISTS config.CORE_L3_editions;
 DROP TABLE IF EXISTS config.CORE_L3_product_subfolders;
 DROP TABLE IF EXISTS config.CORE_L2_brands;
+-- DROP TABLE IF EXISTS config.CORE_L2_general_folders;
 DROP TABLE IF EXISTS config.CORE_L2_folder_types;
 DROP TABLE IF EXISTS config.CORE_L1_products;
 DROP TABLE IF EXISTS config.CORE_L1_scopes;
@@ -29,12 +30,28 @@ INSERT INTO config.CORE_L1_sports (id, name, short_name) VALUES
 
 CREATE TABLE config.CORE_L1_langs (
     lang VARCHAR(5) NOT NULL,
+    trans_validation__headline_min_chars INT NOT NULL,
+    trans_validation__headline_max_chars INT NOT NULL,
+    trans_validation__sub_headline_min_chars INT NOT NULL,
+    trans_validation__sub_headline_max_chars INT NOT NULL,
+    trans_validation__narration_min_chars INT NOT NULL,
+    trans_validation__narration_max_chars INT NOT NULL,
     PRIMARY KEY (lang)
 );
 
-INSERT INTO config.CORE_L1_langs (lang) VALUES 
-('EN'),
-('HI');
+INSERT INTO config.CORE_L1_langs (
+    lang, 
+    trans_validation__headline_min_chars, 
+    trans_validation__headline_max_chars, 
+    trans_validation__sub_headline_min_chars,
+    trans_validation__sub_headline_max_chars,
+    trans_validation__narration_min_chars,
+    trans_validation__narration_max_chars
+) 
+VALUES 
+('EN', 5, 50, 5, 70, 20, 200),
+('RO', 5, 75, 5, 75, 40, 125)
+('HI', 5, 90, 5, 90, 50, 180);
 
 CREATE TABLE config.CORE_L1_root_folders (
     name VARCHAR(50) NOT NULL,
@@ -86,11 +103,26 @@ INSERT INTO config.CORE_L2_folder_types (name, scope, folder_path, root_folder) 
 ('saves', 'product specific', NULL, NULL),
 ('exports', 'product specific', NULL, NULL),
 ('templates', 'product specific', NULL, NULL), 
-('staticBackgrounds', 'general', 'Sports/S_Studio/S_S_Backgrounds/S_S_B_Static/', 'drive_path'), 
-('dynamicBackgrounds', 'general', 'Sports/S_Studio/S_S_Backgrounds/S_S_B_Dynamic/', 'drive_path'), 
+('static_backgrounds', 'general', 'Sports/S_Studio/S_S_Backgrounds/S_S_B_Static/', 'drive_path'), 
+('dynamic_backgrounds', 'general', 'Sports/S_Studio/S_S_Backgrounds/S_S_B_Dynamic/', 'drive_path'), 
 ('logos', 'general', 'Sports/S_Studio/S_S_Logos/', 'drive_path'), 
 ('narration', 'general', 'Sports/S_Studio/S_S_Narration/S_S_N_Mixed/', 'drive_path'),
 ('presenters', 'brand specific', NULL, NULL);
+
+-- CREATE TABLE config.CORE_L2_general_folders (
+--     folder_name VARCHAR(50) NOT NULL,
+--     folder_path VARCHAR(255) NOT NULL,
+--     root_folder VARCHAR(255) NOT NULL,
+--     PRIMARY KEY (folder_name),
+--     FOREIGN KEY (root_folder) REFERENCES config.CORE_L1_root_folders(name)
+-- );
+
+-- INSERT INTO config.CORE_L2_general_folders (folder_name, folder_path, root_folder) 
+-- VALUES 
+-- ('narration', 'Sports/S_Studio/S_S_Narration/S_S_N_Mixed/', 'drive_path'), -- doesn't include the language
+-- ('dynamicBackgrounds', 'Sports/S_Studio/S_S_Backgrounds/', 'drive_path'),
+-- ('logos', 'Sports/S_Studio/S_S_Logos/', 'drive_path'),
+-- -- ('staticBackgrounds', 'Sports/S_Studio/S_S_Backgrounds/S_S_B_Static/', 'drive_path');
 
 CREATE TABLE config.CORE_L2_brands (
     brand_name VARCHAR(50) NOT NULL,
@@ -182,5 +214,5 @@ INSERT INTO config.CORE_L3_editions (brand_name, product_name, lang, sport) VALU
 ('CWINZ', 'AE_Daily_News', 'HI', 'Cricket'),
 ('CWINZ', 'SNS_AE_News', 'HI', 'General'),
 ('Wolf777', 'AE_Daily_News', 'HI', 'Cricket'),
-('Wolf777', 'SNS_PS_Ranking', 'HI', 'Cricket');
+('Wolf777', 'SNS_PS_News', 'HI', 'Cricket');
 

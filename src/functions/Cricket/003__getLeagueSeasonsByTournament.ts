@@ -17,7 +17,7 @@ type LeagueType = 'T20' | 'ODI' | 'TEST' | 'Unknown';
 export async function getLeagueSeasonsByTournament__CRICKET(DB: MYSQL_DB) {
     const funcName = `getLeagueSeasonsByTournament__CRICKET`;
     try {
-        await DB.cleanTable(TABLES.cricketLeagueSeasons.name);
+        // await DB.cleanTable(TABLES.cricketLeagueSeasons.name);
 
         const tournaments: DB.Tournament[] = await DB.SELECT<DB.Tournament>(
             TABLES.cricketTournaments.name
@@ -99,11 +99,12 @@ export async function getLeagueSeasonsByTournament__CRICKET(DB: MYSQL_DB) {
                         }
                     );
 
-                const insertResult = await DB.INSERT_BATCH<DB.LeagueSeason>(
-                    leagueSeasonsDB,
-                    TABLES.cricketLeagueSeasons.name,
-                    true
-                );
+                const insertResult =
+                    await DB.INSERT_BATCH_OVERWRITE<DB.LeagueSeason>(
+                        leagueSeasonsDB,
+                        TABLES.cricketLeagueSeasons.name,
+                        true
+                    );
                 console.log(
                     `Insert result: ${insertResult} for tournament: ${tournament.id} ${tournament.name}`
                 );
