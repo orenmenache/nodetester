@@ -339,8 +339,7 @@ export const HIT = {
 
                 await DB.INSERT_BATCH_OVERWRITE(
                     trimmedObj,
-                    'Cricket.RAPID__TEAM_NEXTMATCHES',
-                    true
+                    'Cricket.RAPID__TEAM_NEXTMATCHES'
                 );
 
                 return true;

@@ -19,14 +19,16 @@ dotenv.config();
 export async function getLeagueSeasonsByTournament__BASKETBALL(DB: MYSQL_DB) {
     const funcName = `getLeagueSeasonsByTournament__BASKETBALL`;
     try {
-        await DB.cleanTable(TABLES.basketballLeagueSeasons.name);
+        // await DB.cleanTable(TABLES.basketballLeagueSeasons.name);
 
         const now = new Date();
         const thisYear = now.getFullYear();
-        let dudTournaments: DB__Tournament[] = [];
-        let greenTournaments: DB__Tournament[] = [];
+        const thisShortYear = Number(thisYear.toString().slice(2));
 
-        const tournaments: DB__Tournament[] = await DB.SELECT<DB__Tournament>(
+        let dudTournaments: DB.Tournament[] = [];
+        let greenTournaments: DB.Tournament[] = [];
+
+        const tournaments: DB.Tournament[] = await DB.SELECT<DB__Tournament>(
             TABLES.basketballTournaments.name
         );
 
@@ -60,7 +62,8 @@ export async function getLeagueSeasonsByTournament__BASKETBALL(DB: MYSQL_DB) {
                 const filtered = leagueSeasons.filter(
                     (season: ASA.LeagueSeason) =>
                         Number(season.year) >= thisYear ||
-                        season.year === '23/24'
+                        season.year.includes(String(thisShortYear)) ||
+                        season.year.includes(String(thisShortYear + 1))
                 );
 
                 if (filtered.length === 0) {
@@ -83,10 +86,9 @@ export async function getLeagueSeasonsByTournament__BASKETBALL(DB: MYSQL_DB) {
                     })
                 );
 
-                const insertResult = await DB.INSERT_BATCH<DB.LeagueSeason>(
+                const insertResult = await DB.INSERT_BATCH_OVERWRITE(
                     leagueSeasonsDB,
-                    TABLES.basketballLeagueSeasons.name,
-                    true
+                    TABLES.basketballLeagueSeasons.name
                 );
                 console.log(
                     `Insert result: ${insertResult} for tournament: ${tournament.id} ${tournament.name}`

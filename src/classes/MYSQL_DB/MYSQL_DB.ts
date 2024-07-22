@@ -225,112 +225,78 @@ export class MYSQL_DB {
     }
     async INSERT_BATCH_OVERWRITE<T extends Object>(
         data: T[],
-        tableName: string,
-        ignore: boolean
-    ): Promise<boolean> {
+        tableName: string
+    ) {
         if (!this.pool) {
             throw new Error(
                 'Pool was not created. Ensure the pool is created when running the app.'
             );
         }
         try {
-            // Build an array of value placeholders for each data item
+            // Check if data is empty
+            if (!data.length) {
+                throw new Error('No data provided for batch insert.');
+            }
+
+            // Log the incoming data
+            console.log('Data:', JSON.stringify(data, null, 2));
+
+            // Construct the value placeholders and flatten the data
             const numKeys = Object.keys(data[0]).length;
             const oneArrayPlaceHolder = `(${Array(numKeys)
                 .fill('?')
                 .join(', ')})`;
-            //console.warn(`Placeholder: ${oneArrayPlaceHolder}`);
             const valuePlaceholders = data
                 .map(() => oneArrayPlaceHolder)
                 .join(', ');
 
-            // Flatten the data array to create a single array of values
-            // const values = data.flatMap((item) => Object.values(item));
+            // Convert dates and flatten data
             const values = data.flatMap((item) =>
-                Object.values(item).map((value) =>
-                    value !== undefined ? value : null
-                )
+                Object.values(item).map((value) => {
+                    return value !== undefined ? value : null;
+                })
             );
 
-            //console.log(`VALUES: ${JSON.stringify(values)}`);
-
-            // // Define the SQL query with multiple rows
-            // const columns = Object.keys(data[0]).join(', ');
-            // const sql = `INSERT ${
-            //     ignore ? 'IGNORE ' : ''
-            // }INTO ${tableName} (${columns}) VALUES ${valuePlaceholders}`;
-
-            // Define the SQL query with multiple rows
-            const columns = Object.keys(data[0]).join(', ');
-            const updateColumns = Object.keys(data[0])
-                .map((col) => `${col}=VALUES(${col})`)
+            const columns = Object.keys(data[0])
+                .map((col) => `\`${col}\``)
                 .join(', ');
-            let sql = `INSERT`;
-            sql += ignore ? ' IGNORE' : '';
-            sql += ` INTO ${tableName} (${columns}) VALUES ${valuePlaceholders}`;
-            sql += ignore ? '' : ` ON DUPLICATE KEY UPDATE ${updateColumns}`;
-            // Execute the query with all the values
-            await this.pool.execute(sql, values);
+            const updateColumns = Object.keys(data[0])
+                .map((col) => `\`${col}\` = VALUES(\`${col}\`)`)
+                .join(', ');
 
-            //console.log('Data inserted successfully.');
-            return true;
-        } catch (error) {
-            console.error('Error inserting data:', error);
-            return false;
-        }
-    }
-    async cleanTable(tableName: string): Promise<boolean> {
-        try {
-            if (!this.pool) {
-                throw new Error(
-                    'Pool was not created. Ensure the pool is created when running the app.'
-                );
-            }
-            const deleteAllRecordsSql = `DELETE FROM ${tableName};`;
-            await this.pool.execute(deleteAllRecordsSql);
-            return true;
-        } catch (e) {
-            throw `cleanTable failed for table: ${tableName}: ${e}`;
-        }
-    }
-    async INSERT_GETID(
-        table: string,
-        values: { [key: string]: any }
-    ): Promise<
-        [
-            (
-                | RowDataPacket[]
-                | RowDataPacket[][]
-                | OkPacket
-                | OkPacket[]
-                | ResultSetHeader
-            ),
-            FieldPacket[]
-        ]
-    > {
-        console.log(`INSERT_GETID`);
-        if (!this.pool) {
-            throw new Error(
-                'Pool was not created. Ensure pool is created when running the app.'
+            // Construct the SQL query
+            let sql = `INSERT INTO ${tableName} (${columns}) VALUES ${valuePlaceholders}`;
+            sql += ` ON DUPLICATE KEY UPDATE ${updateColumns}`;
+
+            // Detailed logging
+            // console.log('Final SQL Query:', sql);
+            // console.log('Query Parameters:', values);
+
+            // Execute the query
+            const [result]: [ResultSetHeader, any] = await this.pool.execute(
+                sql,
+                values
             );
-        }
 
-        const [setClause, setParams] = this.formatSetClause(values);
-        const sql = `INSERT INTO ${table} SET ${setClause}`;
-        const params = [...setParams];
+            // Log the result object for debugging
+            console.log(
+                'INSERT_BATCH_OVERWRITE result:',
+                JSON.stringify(result, null, 4)
+            );
 
-        // for debuggin we log the simple sql statement
-        const plainSql = sql.replace(/\?/g, (match) =>
-            typeof params[0] === 'string'
-                ? `'${params.shift()}'`
-                : params.shift()
-        );
+            const affected = result.affectedRows || 0;
+            const changed = result.changedRows || 0;
+            const inserted = affected - changed;
 
-        try {
-            return await this.pool.execute(plainSql);
-        } catch (e) {
-            console.error(e);
-            throw new Error(`Error in INSERT_GETID`);
+            console.log(
+                `INSERT_BATCH_OVERWRITE: ${affected} rows affected, ${changed} rows changed, ${inserted} rows inserted.`
+            );
+            return { inserted, affected, changed };
+        } catch (error) {
+            console.error('SQL Execution Error:', error);
+            throw new Error(
+                `INSERT_BATCH_OVERWRITE Error: ${(error as Error).message}`
+            );
         }
     }
     formatWhereClause(whereClause?: ConditionClause): [string, any[]] {

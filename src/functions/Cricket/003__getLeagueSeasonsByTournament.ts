@@ -6,6 +6,7 @@ import { DB__LeagueSeason } from '../../types/allSportsApi/Seasons';
 import { ASA } from '../../types/namespaces/ASA';
 import { DB } from '../../types/namespaces/DB';
 import * as dotenv from 'dotenv';
+import { DB__Tournament } from '../../types/allSportsApi/UniqueTournaments';
 dotenv.config();
 
 type LeagueType = 'T20' | 'ODI' | 'TEST' | 'Unknown';
@@ -18,6 +19,13 @@ export async function getLeagueSeasonsByTournament__CRICKET(DB: MYSQL_DB) {
     const funcName = `getLeagueSeasonsByTournament__CRICKET`;
     try {
         // await DB.cleanTable(TABLES.cricketLeagueSeasons.name);
+
+        const now = new Date();
+        const thisYear = now.getFullYear();
+        const thisShortYear = Number(thisYear.toString().slice(2));
+
+        let dudTournaments: DB.Tournament[] = [];
+        let greenTournaments: DB.Tournament[] = [];
 
         const tournaments: DB.Tournament[] = await DB.SELECT<DB.Tournament>(
             TABLES.cricketTournaments.name
@@ -47,72 +55,63 @@ export async function getLeagueSeasonsByTournament__CRICKET(DB: MYSQL_DB) {
                 const leagueSeasons: ASA.LeagueSeason[] = response.data.seasons;
 
                 if (leagueSeasons.length === 0 || !leagueSeasons) {
-                    console.log(
-                        `%cNo seasons for tournament: ${tournament.id} ${tournament.name}`,
-                        'color: yellow'
-                    );
-                    continue;
+                    throw `No seasons for tournament: ${tournament.id} ${tournament.name}`;
                 }
 
-                const currentlyActiveSeasons: ASA.LeagueSeason[] =
-                    leagueSeasons.filter((leagueSeason: ASA.LeagueSeason) =>
-                        leagueSeason.year.toString().includes('24')
-                    );
+                const filtered = leagueSeasons.filter(
+                    (season: ASA.LeagueSeason) =>
+                        Number(season.year) >= thisYear ||
+                        season.year.includes(String(thisShortYear)) ||
+                        season.year.includes(String(thisShortYear + 1))
+                );
 
-                if (
-                    currentlyActiveSeasons.length === 0 ||
-                    !currentlyActiveSeasons
-                ) {
-                    console.log(
-                        `%cNo currentlyActiveSeasons for tournament: ${tournament.id} ${tournament.name}`,
-                        'color: orange'
-                    );
-                    continue;
+                console.warn(`filtered length: ${filtered.length}`);
+
+                if (filtered.length === 0) {
+                    throw `No leagues THIS YEAR or NEXT YEAR for tournament: ${JSON.stringify(
+                        tournament
+                    )}`;
                 }
 
-                const leagueSeasonsDB: DB.LeagueSeason[] =
-                    currentlyActiveSeasons.map(
-                        (leagueSeason: ASA.LeagueSeason) => {
-                            let type: LeagueType = 'Unknown';
-                            if (leagueSeason.name.indexOf('T20') > -1)
-                                type = 'T20';
-                            if (leagueSeason.name.indexOf('ODI') > -1)
-                                type = 'ODI';
-                            if (
-                                leagueSeason.name
-                                    .toLowerCase()
-                                    .indexOf('test') > -1
-                            )
-                                type = 'TEST';
+                const leagueSeasonsDB: DB.LeagueSeason[] = filtered.map(
+                    (leagueSeason: ASA.LeagueSeason) => {
+                        let type: LeagueType = 'Unknown';
+                        if (leagueSeason.name.indexOf('T20') > -1) type = 'T20';
+                        if (leagueSeason.name.indexOf('ODI') > -1) type = 'ODI';
+                        if (
+                            leagueSeason.name.toLowerCase().indexOf('test') > -1
+                        )
+                            type = 'TEST';
 
-                            return {
-                                id: leagueSeason.id,
-                                name: leagueSeason.name,
-                                year: leagueSeason.year,
-                                tournament_id: tournament.id,
-                                has_last_matches: false, // will be updated in getLastMatches
-                                has_next_matches: false, // will be updated in getNextMatches
-                                has_standings: false, // will be updated in getStandings
-                                has_last_matches_within_last_month: false, // will be updated in getLastMatchesWithinLastMonth
-                                type,
-                            };
-                        }
-                    );
+                        return {
+                            id: leagueSeason.id,
+                            name: leagueSeason.name,
+                            year: leagueSeason.year,
+                            tournament_id: tournament.id,
+                            has_last_matches: false, // will be updated in getLastMatches
+                            has_next_matches: false, // will be updated in getNextMatches
+                            has_standings: false, // will be updated in getStandings
+                            has_last_matches_within_last_month: false, // will be updated in getLastMatchesWithinLastMonth
+                            type,
+                        };
+                    }
+                );
 
-                const insertResult =
-                    await DB.INSERT_BATCH_OVERWRITE<DB.LeagueSeason>(
-                        leagueSeasonsDB,
-                        TABLES.cricketLeagueSeasons.name,
-                        true
-                    );
+                const insertResult = await DB.INSERT_BATCH_OVERWRITE(
+                    leagueSeasonsDB,
+                    TABLES.cricketLeagueSeasons.name
+                );
                 console.log(
                     `Insert result: ${insertResult} for tournament: ${tournament.id} ${tournament.name}`
                 );
+                if (insertResult) greenTournaments.push(tournament);
+                else throw `!insertResult`;
             } catch (e) {
-                console.log(
-                    `%cFailed to get data for tournament: ${tournament.id} ${tournament.name}`,
-                    'color: orange'
-                );
+                // console.log(
+                //     `%cFailed to get data for tournament: ${tournament.id} ${tournament.name}`,
+                //     'color: orange'
+                // );
+                dudTournaments.push(tournament as DB__Tournament);
             }
         }
         return true;

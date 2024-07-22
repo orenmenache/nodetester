@@ -76,10 +76,10 @@ async function main() {
             FOOTBALL.leagueSeasons
         );
 
-        if (leagueSeasons.length === allLeagueSeasons.length) {
-            console.log(`This is a fresh start. So we delete all standings`);
-            await DB.cleanTable(FOOTBALL.standings);
-        }
+        // if (leagueSeasons.length === allLeagueSeasons.length) {
+        //     console.log(`This is a fresh start. So we delete all standings`);
+        //     await DB.cleanTable(FOOTBALL.standings);
+        // }
 
         if (leagueSeasons.length === 0) {
             console.log(`No leagueSeasons to update @ ${nowTimestamp}`);
@@ -398,8 +398,8 @@ async function testLambda() {
                             const insertTeamResult =
                                 await DB.INSERT_BATCH_OVERWRITE<DB.Team>(
                                     [team__DB],
-                                    CRICKET.teams,
-                                    true
+                                    CRICKET.teams
+                                    // true
                                 );
 
                             if (!insertTeamResult)
@@ -419,8 +419,8 @@ async function testLambda() {
             const insertLastMatchesResult =
                 await DB.INSERT_BATCH_OVERWRITE<DB.Cricket.LastMatch>(
                     lastMatches,
-                    CRICKET.lastMatches,
-                    true
+                    CRICKET.lastMatches
+                    // true
                 );
 
             if (insertLastMatchesResult) {
@@ -475,7 +475,10 @@ async function testHit() {
     const DB = new MYSQL_DB();
     DB.createPool();
 
-    await getLeagueSeasonsByTournament__CRICKET(DB);
+    await getLeagueSeasonsByTournament__BASKETBALL(DB);
+    // await getLeagueSeasonsByTournament__CRICKET(DB);
+
+    await DB.pool.end();
 }
 
 //testLambda();
