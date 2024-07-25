@@ -475,7 +475,7 @@ async function testHit() {
     const DB = new MYSQL_DB();
     DB.createPool();
 
-    await getLeagueSeasonsByTournament__BASKETBALL(DB);
+    await getLeagueSeasonsByTournament__FOOTBALL(DB);
     // await getLeagueSeasonsByTournament__CRICKET(DB);
 
     await DB.pool.end();
