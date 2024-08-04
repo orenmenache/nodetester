@@ -6,6 +6,14 @@ export namespace DB {
         name_code: string;
     };
 
+    export type SportName =
+        | 'Football'
+        | 'Cricket'
+        | 'Basketball'
+        | 'Tennis'
+        | 'Motorsport'
+        | 'AmericanFootball';
+
     export type Category = ASA.CategoryBase & {
         sport_id: string;
     };

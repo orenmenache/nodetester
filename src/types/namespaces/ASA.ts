@@ -105,14 +105,31 @@ export namespace ASA {
         year: string;
     };
 
+    export type Country = {
+        alpha2: string;
+        alpha3: string;
+        name: string;
+    };
+
     export type Player = {
-        id: string;
         name: string;
         slug: string;
         shortName: string;
-        position: string;
-        userCount: string;
+        team: {
+            position: string;
+            jerseyNumber: string;
+        };
+        height: number;
+        retired: boolean;
+        userCount: number;
+        deceased: boolean;
+        gender: string;
+        id: number;
+        country: Country;
+        shirtNumber: number;
+        dateOfBirthTimestamp: number;
     };
+
     export namespace Football {
         export namespace Responses {
             export type TeamPlayers = AxiosResponse<{

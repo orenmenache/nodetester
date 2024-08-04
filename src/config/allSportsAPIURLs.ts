@@ -40,4 +40,9 @@ export const allSportsAPIURLs = {
         stages: `https://allsportsapi2.p.rapidapi.com/api/motorsport/category/categoryId/stages/all`, //expects category number at the end
         seasons: `https://allsportsapi2.p.rapidapi.com/api/motorsport/unique-stage/stageId/season`, //replace stageId
     },
+    AMERICANFOOTBALL: {
+        categories: `https://allsportsapi2.p.rapidapi.com/api/american-football/tournament/categories`,
+        tournaments: `https://allsportsapi2.p.rapidapi.com/api/american-football/tournament/all/category/`,
+        leagueseasons: `https://allsportsapi2.p.rapidapi.com/api/american-football/tournament/tournamentId/seasons`, //replace tournamentId
+    },
 };

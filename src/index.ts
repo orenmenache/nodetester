@@ -32,6 +32,7 @@ import axios from 'axios';
 import { ASA } from './types/namespaces/ASA';
 import { CRICKET } from './config/tables/CRICKET';
 import { getTeamIds } from './Ranking';
+import { getTeams__GENERIC } from './functions/GEN/getTeams';
 dotenv.config();
 
 async function main() {
@@ -475,8 +476,10 @@ async function testHit() {
     const DB = new MYSQL_DB();
     DB.createPool();
 
-    await getLeagueSeasonsByTournament__FOOTBALL(DB);
-    // await getLeagueSeasonsByTournament__CRICKET(DB);
+    // await HIT.AmericanFootball.categories(DB);
+    // await HIT.AmericanFootball.tournaments(DB);
+    // await HIT.AmericanFootball.leagueSeasons(DB);
+    await getTeams__GENERIC('AmericanFootball', DB);
 
     await DB.pool.end();
 }

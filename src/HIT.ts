@@ -8,6 +8,7 @@ import { headers } from './config/HEADERS';
 import { TopRankingTeam, getTeamIds } from './Ranking';
 import { runFunctionWithRetry } from './functions/RunFunctionWithRetry';
 import { formatDateToSQLTimestamp } from './functions/GEN/formatToMySQLTimestamp';
+import { AMERICANFOOTBALL } from './config/tables/AMERICANFOOTBALL';
 
 export type TeamLastMatch = {
     id: number;
@@ -351,5 +352,165 @@ export const HIT = {
             }
         },
         async teamLastMatches() {},
+    },
+    AmericanFootball: {
+        /**
+         * "id": 1370, USA
+         */
+        async categories(DB: MYSQL_DB) {
+            const url = allSportsAPIURLs.AMERICANFOOTBALL.categories;
+            const headers = {
+                'X-RapidAPI-Key': process.env.ALLSPORTS_KEY!,
+                'X-RapidAPI-Host': allSportsAPIURLs.hostHeader,
+            };
+
+            const axiosRequest = {
+                method: 'GET',
+                url,
+                headers,
+            };
+
+            const response: AxiosResponse<{ categories: ASA.Category[] }> =
+                await axios.request(axiosRequest);
+            const categories: ASA.Category[] = response.data.categories;
+
+            console.log(JSON.stringify(categories, null, 4));
+        },
+        /**
+         * "id": 9464, NFL
+         */
+        async tournaments(DB: MYSQL_DB) {
+            const americanFootballCategory = {
+                id: 1370,
+            };
+
+            const url = `${allSportsAPIURLs.AMERICANFOOTBALL.tournaments}${americanFootballCategory.id}`;
+            const headers = {
+                'X-RapidAPI-Key': process.env.ALLSPORTS_KEY!,
+                'X-RapidAPI-Host': allSportsAPIURLs.hostHeader,
+            };
+
+            const axiosRequest = {
+                method: 'GET',
+                url,
+                headers,
+            };
+
+            const response: AxiosResponse<{
+                groups: { uniqueTournaments: ASA.Tournament[] }[];
+            }> = await axios.request(axiosRequest);
+
+            // console.log(JSON.stringify(response.data.groups, null, 4));
+            // return;
+            for (const group of response.data.groups) {
+                const tournaments: ASA.Tournament[] = group.uniqueTournaments;
+
+                const filteredTournaments: ASA.Tournament[] =
+                    tournaments.filter(
+                        (tournament: ASA.Tournament) =>
+                            !tournament.name.toLowerCase().includes('women')
+                    );
+
+                console.log(
+                    `Filtered tournaments: ${filteredTournaments.length}`
+                );
+                console.log(
+                    `First tournament: ${JSON.stringify(
+                        filteredTournaments[0],
+                        null,
+                        4
+                    )}`
+                );
+
+                // const tournamentsDB: DB.Tournament[] =
+                //     filteredTournaments.map(
+                //         (tournament: ASA.Tournament) => ({
+                //             id: tournament.id,
+                //             name: tournament.name,
+                //             slug: tournament.slug,
+                //             category_id: tournament.category.id,
+                //         })
+                //     );
+
+                // const insertResult = await DB.INSERT_BATCH<DB.Tournament>(
+                //     tournamentsDB,
+                //     TABLES.cricketTournaments.name,
+                //     true
+                // );
+                // console.log(
+                //     `Insert result: ${insertResult} for category: ${category.id} ${category.name}`
+                // );
+            }
+        },
+        async leagueSeasons(DB: MYSQL_DB) {
+            const NFLTournamentId = '9464';
+            const thisYear = new Date().getFullYear();
+            const thisShortYear = Number(thisYear.toString().slice(2));
+
+            const url = allSportsAPIURLs.AMERICANFOOTBALL.leagueseasons.replace(
+                'tournamentId',
+                NFLTournamentId
+            );
+            const headers = {
+                'X-RapidAPI-Key': process.env.ALLSPORTS_KEY!,
+                'X-RapidAPI-Host': allSportsAPIURLs.hostHeader,
+            };
+
+            const axiosRequest = {
+                method: 'GET',
+                url,
+                headers,
+            };
+
+            const response: AxiosResponse<{
+                seasons: ASA.LeagueSeason[];
+            }> = await axios.request(axiosRequest);
+
+            const leagueSeasons: ASA.LeagueSeason[] = response.data.seasons;
+
+            if (leagueSeasons.length === 0 || !leagueSeasons) {
+                throw `No seasons for tournament: ${NFLTournamentId} NFL`;
+            }
+
+            const filtered: ASA.LeagueSeason[] = leagueSeasons.filter(
+                (season: ASA.LeagueSeason) =>
+                    Number(season.year) >= thisYear ||
+                    season.year.includes(String(thisShortYear)) ||
+                    season.year.includes(String(thisShortYear + 1))
+            );
+
+            console.warn(`filtered length: ${filtered.length}`);
+
+            if (filtered.length === 0)
+                throw `No leagues THIS YEAR or NEXT YEAR for NFL`;
+
+            const leagueSeasonsDB: DB.LeagueSeason[] = filtered.map(
+                ({ id, name, year }: ASA.LeagueSeason) => {
+                    return {
+                        id,
+                        name,
+                        year,
+                        has_last_matches: false,
+                        has_last_matches_within_last_month: false,
+                        has_next_matches: false,
+                        has_standings: false,
+                        tournament_id: NFLTournamentId,
+                        last_nextmatches_update: null,
+                        last_standings_update: null,
+                    };
+                }
+            );
+
+            const { inserted, affected, changed } =
+                await DB.INSERT_BATCH_OVERWRITE(
+                    leagueSeasonsDB,
+                    AMERICANFOOTBALL.leagueSeasons
+                );
+            console.log(
+                `inserted ${inserted} affected ${affected} changed ${changed}`
+            );
+            // if (insertResult) greenTournaments.push(tournament);
+            // else throw `!insertResult`;
+        },
     },
 };
