@@ -33,6 +33,8 @@ export async function getTeams__GENERIC(
         if (leagueSeasons.length === 0 || !leagueSeasons)
             throw `leagueSeasons.length === 0 || !leagueSeasons`;
 
+        // console.warn(`leagueSeasons: ${leagueSeasons.length}`);
+        // return;
         for (const ls of leagueSeasons) {
             try {
                 const url = templateUrl
@@ -79,13 +81,13 @@ export async function getTeams__GENERIC(
                         name_code: team.nameCode,
                     }));
 
-                    const insertResult =
+                    const { affected } =
                         await DB.INSERT_BATCH_OVERWRITE<DB.Team>(
                             dbTeams,
                             teamTableName
                         );
-                    console.log(`Insert result: ${insertResult}`);
-                    if (insertResult) {
+                    console.log(`Insert result: ${affected}`);
+                    if (affected) {
                         console.log(`%c${JSON.stringify(ls)}`, 'color: cyan');
                         leaguesWithStandings.push(ls);
                     }

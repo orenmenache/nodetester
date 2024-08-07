@@ -239,7 +239,7 @@ export class MYSQL_DB {
             }
 
             // Log the incoming data
-            console.log('Data:', JSON.stringify(data, null, 2));
+            // console.log('Data:', JSON.stringify(data, null, 2));
 
             // Construct the value placeholders and flatten the data
             const numKeys = Object.keys(data[0]).length;
@@ -279,18 +279,18 @@ export class MYSQL_DB {
             );
 
             // Log the result object for debugging
-            console.log(
-                'INSERT_BATCH_OVERWRITE result:',
-                JSON.stringify(result, null, 4)
-            );
+            // console.log(
+            //     'INSERT_BATCH_OVERWRITE result:',
+            //     JSON.stringify(result, null, 4)
+            // );
 
             const affected = result.affectedRows || 0;
             const changed = result.changedRows || 0;
             const inserted = affected - changed;
 
-            console.log(
-                `INSERT_BATCH_OVERWRITE: ${affected} rows affected, ${changed} rows changed, ${inserted} rows inserted.`
-            );
+            // console.log(
+            //     `INSERT_BATCH_OVERWRITE: ${affected} rows affected, ${changed} rows changed, ${inserted} rows inserted.`
+            // );
             return { inserted, affected, changed };
         } catch (error) {
             console.error('SQL Execution Error:', error);

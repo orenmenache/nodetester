@@ -9,6 +9,7 @@ import { TopRankingTeam, getTeamIds } from './Ranking';
 import { runFunctionWithRetry } from './functions/RunFunctionWithRetry';
 import { formatDateToSQLTimestamp } from './functions/GEN/formatToMySQLTimestamp';
 import { AMERICANFOOTBALL } from './config/tables/AMERICANFOOTBALL';
+import { generateAxiosRequest } from './functions/GEN/hitEndpoint';
 
 export type TeamLastMatch = {
     id: number;
@@ -444,12 +445,13 @@ export const HIT = {
         },
         async leagueSeasons(DB: MYSQL_DB) {
             const NFLTournamentId = '9464';
+            const NFLPRESEASONTournamentId = '9465';
             const thisYear = new Date().getFullYear();
             const thisShortYear = Number(thisYear.toString().slice(2));
 
             const url = allSportsAPIURLs.AMERICANFOOTBALL.leagueseasons.replace(
                 'tournamentId',
-                NFLTournamentId
+                NFLPRESEASONTournamentId
             );
             const headers = {
                 'X-RapidAPI-Key': process.env.ALLSPORTS_KEY!,
@@ -469,8 +471,13 @@ export const HIT = {
             const leagueSeasons: ASA.LeagueSeason[] = response.data.seasons;
 
             if (leagueSeasons.length === 0 || !leagueSeasons) {
-                throw `No seasons for tournament: ${NFLTournamentId} NFL`;
+                throw `No seasons for tournament: ${NFLPRESEASONTournamentId} NFL`;
             }
+
+            // for (const season of leagueSeasons) {
+            //     console.log(season.name);
+            //     console.log(season.year);
+            // }
 
             const filtered: ASA.LeagueSeason[] = leagueSeasons.filter(
                 (season: ASA.LeagueSeason) =>
@@ -494,9 +501,10 @@ export const HIT = {
                         has_last_matches_within_last_month: false,
                         has_next_matches: false,
                         has_standings: false,
-                        tournament_id: NFLTournamentId,
+                        tournament_id: NFLPRESEASONTournamentId,
                         last_nextmatches_update: null,
                         last_standings_update: null,
+                        // last_matches_update: '',
                     };
                 }
             );
@@ -509,8 +517,94 @@ export const HIT = {
             console.log(
                 `inserted ${inserted} affected ${affected} changed ${changed}`
             );
+
             // if (insertResult) greenTournaments.push(tournament);
             // else throw `!insertResult`;
+        },
+    },
+    categories: {
+        async ALL(DB: MYSQL_DB) {
+            let sports = await DB.SELECT<DB.Sport>(`config.CORE_L1_sports`);
+            const excludePseudoSports = ['General', 'Misc', 'Mixed', 'Soccer'];
+            sports = sports.filter(
+                (sport) => !excludePseudoSports.includes(sport.name)
+            );
+
+            const templateUrl = `https://allsportsapi2.p.rapidapi.com/api/sport/sportName/categories`;
+
+            for (const sport of sports) {
+                console.log(
+                    `%csport: ${JSON.stringify(sport, null, 4)}`,
+                    'color: pink'
+                );
+
+                try {
+                    const tableName = `${sport.name}.CORE__CATEGORIES`;
+
+                    /**
+                     * Endpoint will usually look like this:
+                     * https://allsportsapi2.p.rapidapi.com/api/cricket/tournament/categories
+                     * but in the case of motorsport it will look like this:
+                     * https://allsportsapi2.p.rapidapi.com/api/motorsport/categories
+                     */
+                    const sportName =
+                        sport.name === 'AmericanFootball'
+                            ? 'american-football'
+                            : sport.name.toLowerCase();
+
+                    let url = '';
+                    switch (sportName) {
+                        case 'motorsport': {
+                            url = `https://allsportsapi2.p.rapidapi.com/api/motorsport/categories`;
+                            break;
+                        }
+                        case 'football': {
+                            url = `https://allsportsapi2.p.rapidapi.com/api/tournament/categories`;
+                            break;
+                        }
+                        default: {
+                            url = `https://allsportsapi2.p.rapidapi.com/api/${sportName}/tournament/categories`;
+                        }
+                    }
+
+                    const axiosRequest: AxiosRequestConfig =
+                        generateAxiosRequest(url, {}, false);
+
+                    console.log(
+                        `axiosRequest: ${JSON.stringify(axiosRequest, null, 4)}`
+                    );
+                    // return;
+                    const response = await axios.request(axiosRequest);
+                    if (!response.data) throw `!response.data`;
+                    if (!response.data.categories)
+                        throw `!response.data.categories`;
+                    const categories: ASA.Category[] = response.data.categories;
+                    const dbCategories: DB.Category[] = categories.map(
+                        (category) => {
+                            return {
+                                id: category.id,
+                                name: category.name,
+                                sport_id: String(sport.id),
+                                priority: category.priority || '0',
+                                slug: category.slug || '',
+                                flag: category.flag || '',
+                            };
+                        }
+                    );
+
+                    const { affected } = await DB.INSERT_BATCH_OVERWRITE(
+                        dbCategories,
+                        tableName
+                    );
+
+                    console.log(
+                        `%c${sport.name} affected: ${affected}`,
+                        'color: green'
+                    );
+                } catch (e) {
+                    console.warn(`Error in ${sport.name}: ${e}`);
+                }
+            }
         },
     },
 };

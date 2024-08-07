@@ -33,6 +33,12 @@ import { ASA } from './types/namespaces/ASA';
 import { CRICKET } from './config/tables/CRICKET';
 import { getTeamIds } from './Ranking';
 import { getTeams__GENERIC } from './functions/GEN/getTeams';
+import { getTeamsPlayers__GENERIC } from './functions/GEN/getTeamPlayers';
+import { getPlayerStats__GENERIC } from './functions/GEN/getPlayerStats';
+import { getLastMatches__GENERIC } from './functions/GEN/getLastMatches';
+import { getNextMatches__GENERIC } from './functions/GEN/getNextMatches';
+import { getPlayerStatsByMatch__GENERIC } from './functions/GEN/getPlayerStatsByMatch';
+import { getMatchStats__GENERIC } from './functions/GEN/getMatchStats';
 dotenv.config();
 
 async function main() {
@@ -476,11 +482,17 @@ async function testHit() {
     const DB = new MYSQL_DB();
     DB.createPool();
 
+    // await getMatchStats__GENERIC('AmericanFootball', DB);
     // await HIT.AmericanFootball.categories(DB);
     // await HIT.AmericanFootball.tournaments(DB);
     // await HIT.AmericanFootball.leagueSeasons(DB);
-    await getTeams__GENERIC('AmericanFootball', DB);
-
+    // await getTeams__GENERIC('AmericanFootball', DB);
+    // await getTeamsPlayers__GENERIC('AmericanFootball', DB);
+    // await getPlayerStats__GENERIC('AmericanFootball', DB);
+    // await getLastMatches__GENERIC('AmericanFootball', DB);
+    // await getNextMatches__GENERIC('AmericanFootball', DB);
+    // await getPlayerStatsByMatch__GENERIC('AmericanFootball', DB);
+    await HIT.categories.ALL(DB);
     await DB.pool.end();
 }
 

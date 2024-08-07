@@ -119,17 +119,120 @@ export namespace ASA {
             position: string;
             jerseyNumber: string;
         };
-        height: number;
+        height: string;
         retired: boolean;
-        userCount: number;
+        userCount: string;
         deceased: boolean;
+        position: string;
         gender: string;
-        id: number;
+        id: string;
         country: Country;
-        shirtNumber: number;
-        dateOfBirthTimestamp: number;
+        shirtNumber: string;
+        jerseyNumber: string;
+        dateOfBirthTimestamp: string;
     };
 
+    export type PlayerStatistics = {
+        id: string;
+        fumbleRecovery?: string;
+        fumbleSafety?: string;
+        fumbleTouchdownReturns?: string;
+        fumbleFumblesTouchback?: string;
+        kickingTotalPoints?: string;
+        passingTouchdownPercentage?: string;
+        passingInterceptionPercentage?: string;
+        passingTwentyPlus?: string;
+        passingFortyPlus?: string;
+        passingYardsLostPerSack?: string;
+        passingFirstDownPercentage?: string;
+        passingYardsPerGame?: string;
+        passingTouchdownInterceptionRatio?: string;
+
+        kickingExtraAttempts?: string;
+        kickingExtraMade?: string;
+        kickingExtraPercentage?: string;
+        kickingFgAttempts?: string;
+        kickingFgAttempts20to29?: string;
+        kickingFgAttempts30to39?: string;
+        kickingFgAttempts40to49?: string;
+        kickingFgAttempts50plus?: string;
+        kickingFgBlocked?: string;
+        kickingFgLong?: string;
+        kickingFgMade?: string;
+        kickingFgMade20to29?: string;
+        puntReturnsLong?: string;
+        puntReturnsTotal?: string;
+        puntReturnsTouchdowns?: string;
+        puntReturnsYards?: string;
+        puntReturnsFairCatches?: string;
+        puntReturnsLgtd?: string;
+        kickReturnsAverageYards?: string;
+        kickReturnsLong?: string;
+        kickReturnsTotal?: string;
+        kickReturnsTouchdowns?: string;
+        kickReturnsYards?: string;
+        kickReturnsFairCatches?: string;
+        kickReturnsLgtd?: string;
+        passingAttempts?: string;
+        passingCompletionPercentage?: string;
+        passingCompletions?: string;
+        passingInterceptions?: string;
+        passingLongest?: string;
+        passingNetYards?: string;
+        passingSacked?: string;
+        passingTouchdowns?: string;
+        passingYards?: string;
+        passingYardsPerAttempt?: string;
+        passingLongTouchdown?: string;
+        passingSackedYardsLost?: string;
+        passingFirstDowns?: string;
+        passingPasserRating?: string;
+        receivingFirstDowns?: string;
+        receivingLongest?: string;
+        receivingReceptions?: string;
+        receivingTouchdowns?: string;
+        receivingYards?: string;
+        receivingYardsPerReception?: string;
+        receivingTargets?: string;
+        receivingLongTouchdowns?: string;
+        rushingAttempts?: string;
+        rushingLongest?: string;
+        rushingTouchdowns?: string;
+        rushingYards?: string;
+        rushingYardsPerAttempt?: string;
+        rushingFirstDowns?: string;
+        rushingLongTouchdown?: string;
+        fumbleFumbles?: string;
+        fumbleLost?: string;
+        fumbleOpponentFumbleRecovery?: string;
+        fumbleTeammateFumbleRecovery?: string;
+        fumbleFumblesOutbounds?: string;
+        fumbleTeammateFumbleYards?: string;
+        fumbleTeammateFumbleTd?: string;
+        fumbleOpponentFumbleYards?: string;
+        fumbleOpponentFumbleTd?: string;
+        defensiveAssistTackles?: string;
+        defensiveCombineTackles?: string;
+        defensiveForcedFumbles?: string;
+        defensiveInterceptions?: string;
+        defensivePassesDefensed?: string;
+        defensiveSacks?: string;
+        defensiveSafeties?: string;
+        defensiveTotalTackles?: string;
+        puntingBlocked?: string;
+        puntingInside20?: string;
+        puntingLongest?: string;
+        puntingNetYards?: string;
+        puntingTotal?: string;
+        puntingTouchbacks?: string;
+        puntingYards?: string;
+        puntingYardsPerPuntAvg?: string;
+        puntsNetYardsPerPuntAvg?: string;
+        puntingReturnYards?: string;
+
+        type?: string;
+        appearances?: string;
+    };
     export namespace Football {
         export namespace Responses {
             export type TeamPlayers = AxiosResponse<{
@@ -260,6 +363,68 @@ export namespace ASA {
         export type Season = SeasonBase & {
             startDateTimestamp: string;
             endDateTimestamp: string;
+        };
+    }
+
+    export namespace AmericanFootball {
+        export type Score = {
+            current: string;
+            display: string;
+            period1: string;
+            period2: string;
+            period3: string;
+            period4: string;
+            normaltime: string;
+        };
+
+        export type Match = {
+            winnerCode: string;
+            id: string;
+            startTimestamp: string;
+            slug: string;
+            finalResultOnly: string;
+            tournament: {};
+            season: {};
+            roundInfo: {
+                round: string;
+            };
+            status: {
+                code: string;
+                description: string;
+                type: string;
+            };
+            homeTeam: {
+                id: string;
+            };
+            awayTeam: {
+                id: string;
+            };
+            homeScore: Score;
+            awayScore: Score;
+            time: {
+                played: string;
+                periodLength: string;
+                overtimeLength: string;
+                totalPeriodCount: string;
+                currentPeriodTimestamp: string;
+            };
+            changes: {};
+            periods: {
+                current: string;
+                period1: string;
+                period2: string;
+                period3: string;
+                period4: string;
+                overtime: string;
+            };
+            homeTeamSeasonHistoricalForm: {
+                wins: string;
+                losses: string;
+            };
+            awayTeamSeasonHistoricalForm: {
+                wins: string;
+                losses: string;
+            };
         };
     }
 }

@@ -44,5 +44,8 @@ export const allSportsAPIURLs = {
         categories: `https://allsportsapi2.p.rapidapi.com/api/american-football/tournament/categories`,
         tournaments: `https://allsportsapi2.p.rapidapi.com/api/american-football/tournament/all/category/`,
         leagueseasons: `https://allsportsapi2.p.rapidapi.com/api/american-football/tournament/tournamentId/seasons`, //replace tournamentId
+        lastMatches: `https://allsportsapi2.p.rapidapi.com/api/american-football/tournament/tournamentId/season/seasonId/matches/last/0`,
+        nextMatches: `https://allsportsapi2.p.rapidapi.com/api/american-football/tournament/tournamentId/season/seasonId/matches/next/0`,
+        teamNextMatches: `https://allsportsapi2.p.rapidapi.com/api/american-football/team/teamId/matches/next/0`,
     },
 };
