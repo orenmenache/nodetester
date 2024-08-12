@@ -20,7 +20,7 @@ export async function getLastMatches__GENERIC(
 
     const leagueTableName = `${sportName}.CORE__LEAGUESEASONS`;
     const lastMatchesTableName = `${sportName}.RAPID__LASTMATCHES`;
-    const NFLTournamentId = 9464;
+    // const NFLTournamentId = 9464;
 
     const hyphenated: string =
         sportName === 'AmericanFootball'
@@ -63,7 +63,7 @@ export async function getLastMatches__GENERIC(
                         events.map((event: ASA.AmericanFootball.Match) => {
                             return {
                                 id: event.id,
-                                tournament_id: NFLTournamentId.toString(),
+                                tournament_id: ls.tournament_id.toString(),
                                 league_season_id: ls.id,
                                 home_team_id: event.homeTeam.id,
                                 away_team_id: event.awayTeam.id,

@@ -53,6 +53,10 @@ export namespace DB {
 
     export type Tournament = ASA.TournamentBase & {
         category_id: string;
+        start_date_timestamp?: string | null;
+        end_date_timestamp?: string | null;
+        start_date_seconds?: string | null;
+        end_date_seconds?: string | null;
     };
 
     export type StandingsBase = {

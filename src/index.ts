@@ -492,7 +492,9 @@ async function testHit() {
     // await getLastMatches__GENERIC('AmericanFootball', DB);
     // await getNextMatches__GENERIC('AmericanFootball', DB);
     // await getPlayerStatsByMatch__GENERIC('AmericanFootball', DB);
-    await HIT.categories.ALL(DB);
+    // await HIT.categories.ALL(DB);
+    await HIT.tournaments.ALL(DB);
+    // await HIT.leagueSeasons.ALL(DB);
     await DB.pool.end();
 }
 

@@ -607,4 +607,384 @@ export const HIT = {
             }
         },
     },
+    tournaments: {
+        async ALL(DB: MYSQL_DB) {
+            let sports = await DB.SELECT<DB.Sport>(`config.CORE_L1_sports`);
+
+            // Motorsport has no tournaments
+            const excludePseudoSports = [
+                'Motorsport',
+                'General',
+                'Misc',
+                'Mixed',
+                'Soccer',
+            ];
+            sports = sports.filter(
+                (sport) => !excludePseudoSports.includes(sport.name)
+            );
+            // const sport = sports.find((sport) => sport.name === 'Tennis');
+            // if (!sport) throw `!sport`;
+
+            // const addAFIfDoesntExist = () => {
+            //     const AmericanFootballSport: DB.Sport = {
+            //         id: '1370',
+            //         name: 'AmericanFootball',
+            //         short_name: 'AF',
+            //         has_schedule: '1',
+            //         has_standings: '1',
+            //     };
+            //     if (!sports.find((sport) => sport.name === 'AmericanFootball'))
+            //         sports.unshift(AmericanFootballSport);
+            // };
+
+            // addAFIfDoesntExist();
+
+            for (const sport of sports) {
+                if (sport.name !== 'AmericanFootball') continue;
+                console.log(`%c${sport.name}`, 'color: pink');
+
+                try {
+                    const categoryTableName = `${sport.name}.CORE__CATEGORIES`;
+                    const tournamentsTableName = `${sport.name}.CORE__TOURNAMENTS`;
+
+                    const categories: DB.Category[] =
+                        await DB.SELECT<DB.Category>(categoryTableName);
+
+                    /*
+                    https://allsportsapi2.p.rapidapi.com/api/tournament/all/category/785
+
+                    tournaments: `https://allsportsapi2.p.rapidapi.com/api/sportName/tournament/all/category/`, //expects category number at the end
+                    tournaments: `https://allsportsapi2.p.rapidapi.com/api/sportName/tournament/all/category/`, //expects category number at the end
+                    tournaments: `https://allsportsapi2.p.rapidapi.com/api/sportName/tournament/all/category/`, //expects category number at the end
+                    tournaments: `https://allsportsapi2.p.rapidapi.com/api/sportName/tournament/all/category/`,
+
+                    */
+
+                    const sportName =
+                        sport.name === 'AmericanFootball'
+                            ? 'american-football'
+                            : sport.name.toLowerCase();
+
+                    for (const category of categories) {
+                        // in Tennis there are negative category IDs
+                        if (Number(category.id) < 0) continue;
+
+                        console.log(`%c${category.name}`, 'color: blue');
+
+                        let url = `https://allsportsapi2.p.rapidapi.com/api/${sportName}/tournament/all/category/${category.id}`;
+                        // football has no sportName in the URL
+                        if (sportName === 'football')
+                            url = url.replace('/football', '');
+
+                        const axiosRequest: AxiosRequestConfig =
+                            generateAxiosRequest(url, {}, false);
+
+                        // console.log(
+                        //     `axiosRequest: ${JSON.stringify(axiosRequest, null, 4)}`
+                        // );
+                        // return;
+                        const response = await axios.request(axiosRequest);
+                        if (!response.data) throw `!response.data`;
+                        if (!response.data.groups)
+                            throw `!response.data.groups`;
+
+                        // if ('activeUniqueTournamentIds' in response.data) {
+                        //     console.log(
+                        //         `activeUniqueTournamentIds: ${response.data.activeUniqueTournamentIds.length}`
+                        //     );
+                        // }
+                        // continue;
+                        const groups = response.data.groups as {
+                            uniqueTournaments: ASA.Tournament[];
+                        }[];
+
+                        let dbTournaments: DB.Tournament[] = [];
+
+                        for (const group of groups) {
+                            const tournaments: ASA.Tournament[] =
+                                group.uniqueTournaments;
+
+                            for (const tournament of tournaments) {
+                                /**
+                                 * Now let's get the start time and end time of the tournament
+                                 */
+                                let tournamentDetailsUrl = `https://allsportsapi2.p.rapidapi.com/api/${sportName}/tournament/${tournament.id}`;
+                                if (sportName === 'football')
+                                    tournamentDetailsUrl =
+                                        tournamentDetailsUrl.replace(
+                                            '/football',
+                                            ''
+                                        );
+
+                                console.log(
+                                    `tournamentDetailsUrl: ${tournamentDetailsUrl}`
+                                );
+                                const tournamentDetailsRequest =
+                                    generateAxiosRequest(
+                                        tournamentDetailsUrl,
+                                        {},
+                                        false
+                                    );
+
+                                const tournamentDetailsResponse =
+                                    await axios.request(
+                                        tournamentDetailsRequest
+                                    );
+
+                                if (
+                                    !(
+                                        'uniqueTournament' in
+                                        tournamentDetailsResponse.data
+                                    )
+                                )
+                                    throw `!uniqueTournament`;
+
+                                const times: {
+                                    startDateTimestamp: string;
+                                    endDateTimestamp: string;
+                                } =
+                                    tournamentDetailsResponse.data
+                                        .uniqueTournament;
+
+                                if (
+                                    !times.startDateTimestamp ||
+                                    !times.endDateTimestamp ||
+                                    !(Number(times.startDateTimestamp) > 0) ||
+                                    !(Number(times.endDateTimestamp) > 0)
+                                ) {
+                                    console.warn(
+                                        `No start or end time for tournament: ${tournament.id}`
+                                    );
+                                    const dbTournament: DB.Tournament = {
+                                        id: tournament.id,
+                                        name: tournament.name,
+                                        slug: tournament.slug || '',
+                                        category_id: category.id,
+                                        start_date_seconds: null,
+                                        end_date_seconds: null,
+                                        start_date_timestamp: null,
+                                        end_date_timestamp: null,
+                                    };
+
+                                    dbTournaments.push(dbTournament);
+                                    continue;
+                                }
+
+                                const startDateTimestamp =
+                                    formatDateToSQLTimestamp(
+                                        new Date(
+                                            Number(times.startDateTimestamp) *
+                                                1000
+                                        )
+                                    );
+                                const endDateTimestamp =
+                                    formatDateToSQLTimestamp(
+                                        new Date(
+                                            Number(times.endDateTimestamp) *
+                                                1000
+                                        )
+                                    );
+
+                                const dbTournament: DB.Tournament = {
+                                    id: tournament.id,
+                                    name: tournament.name,
+                                    slug: tournament.slug || '',
+                                    category_id: category.id,
+                                    start_date_timestamp: startDateTimestamp,
+                                    end_date_timestamp: endDateTimestamp,
+                                    start_date_seconds:
+                                        times.startDateTimestamp,
+                                    end_date_seconds: times.endDateTimestamp,
+                                };
+
+                                dbTournaments.push(dbTournament);
+                            }
+                        }
+
+                        // console.log(`dbTournaments: ${dbTournaments.length}`);
+                        // continue;
+
+                        const { affected } = await DB.INSERT_BATCH_OVERWRITE(
+                            dbTournaments,
+                            tournamentsTableName
+                        );
+
+                        console.log(
+                            `%c${sport.name} affected: ${affected} for category: ${category.name} sport: ${sportName}`,
+                            'color: green'
+                        );
+                    }
+                } catch (e) {
+                    console.warn(`Error in ${sport.name}: ${e}`);
+                }
+            }
+        },
+    },
+    leagueSeasons: {
+        async ALL(DB: MYSQL_DB) {
+            let sports = await DB.SELECT<DB.Sport>(`config.CORE_L1_sports`);
+
+            // Motorsport has no tournaments
+            // const excludePseudoSports = [
+            //     'Motorsport',
+            //     'General',
+            //     'Misc',
+            //     'Mixed',
+            //     'Soccer',
+            // ];
+            // sports = sports.filter(
+            //     (sport) => !excludePseudoSports.includes(sport.name)
+            // );
+            const sport = sports.find((sport) => sport.name === 'Cricket');
+            if (!sport) throw `!sport`;
+
+            const addAFIfDoesntExist = () => {
+                const AmericanFootballSport: DB.Sport = {
+                    id: '1370',
+                    name: 'AmericanFootball',
+                    short_name: 'AF',
+                    has_schedule: '1',
+                    has_standings: '1',
+                };
+                if (!sports.find((sport) => sport.name === 'AmericanFootball'))
+                    sports.unshift(AmericanFootballSport);
+            };
+
+            addAFIfDoesntExist();
+
+            // for (const sport of sports) {
+            console.log(`%c${sport.name}`, 'color: pink');
+
+            try {
+                const tournamentsTableName = `${sport.name}.CORE__TOURNAMENTS`;
+                const leagueSeasonsTableName = `${sport.name}.CORE__LEAGUESEASONS`;
+
+                const tournaments: DB.Tournament[] =
+                    await DB.SELECT<DB.Tournament>(tournamentsTableName);
+
+                /*
+                    https://allsportsapi2.p.rapidapi.com/api/tournament/all/category/785
+
+                    tournaments: `https://allsportsapi2.p.rapidapi.com/api/sportName/tournament/all/category/`, //expects category number at the end
+                    tournaments: `https://allsportsapi2.p.rapidapi.com/api/sportName/tournament/all/category/`, //expects category number at the end
+                    tournaments: `https://allsportsapi2.p.rapidapi.com/api/sportName/tournament/all/category/`, //expects category number at the end
+                    tournaments: `https://allsportsapi2.p.rapidapi.com/api/sportName/tournament/all/category/`,
+
+                    */
+
+                const sportName =
+                    sport.name === 'AmericanFootball'
+                        ? 'american-football'
+                        : sport.name.toLowerCase();
+
+                const thisYear = new Date().getFullYear();
+                const thisShortYear = Number(thisYear.toString().slice(2));
+
+                for (const tournament of tournaments) {
+                    try {
+                        let url = `https://allsportsapi2.p.rapidapi.com/api/${sportName}/tournament/${tournament.id}/seasons`;
+
+                        // football has no sportName in the URL
+                        if (sportName === 'football')
+                            url = url.replace('/football', '');
+
+                        const axiosRequest = generateAxiosRequest(
+                            url,
+                            {},
+                            false
+                        );
+                        // console.log(
+                        //     `axiosRequest: ${JSON.stringify(
+                        //         axiosRequest,
+                        //         null,
+                        //         4
+                        //     )}`
+                        // );
+                        // return;
+
+                        const response: AxiosResponse<{
+                            seasons: ASA.LeagueSeason[];
+                        }> = await axios.request(axiosRequest);
+
+                        const leagueSeasons: ASA.LeagueSeason[] =
+                            response.data.seasons;
+
+                        if (leagueSeasons.length === 0 || !leagueSeasons) {
+                            console.warn(
+                                `No seasons for tournament: ${tournament.id}`
+                            );
+                            continue;
+                        }
+
+                        // for (const season of leagueSeasons) {
+                        //     console.log(season.name);
+                        //     console.log(season.year);
+                        // }
+
+                        const filtered: ASA.LeagueSeason[] =
+                            leagueSeasons.filter(
+                                (season: ASA.LeagueSeason) =>
+                                    Number(season.year) >= thisYear ||
+                                    season.year.includes(
+                                        String(thisShortYear)
+                                    ) ||
+                                    season.year.includes(
+                                        String(thisShortYear + 1)
+                                    )
+                            );
+
+                        // console.log(
+                        //     `%cfiltered seasons length for sport ${sportName} ${tournament.name}: ${filtered.length}`,
+                        //     'color: orange'
+                        // );
+
+                        if (filtered.length === 0) {
+                            console.log(
+                                `%cNo leagues THIS YEAR or NEXT YEAR for ${sportName} ${tournament.name}`,
+                                'color: orange'
+                            );
+                            continue;
+                        }
+
+                        const leagueSeasonsDB: DB.LeagueSeason[] = filtered.map(
+                            ({ id, name, year }: ASA.LeagueSeason) => {
+                                return {
+                                    id,
+                                    name,
+                                    year,
+                                    has_last_matches: false,
+                                    has_last_matches_within_last_month: false,
+                                    has_next_matches: false,
+                                    has_standings: false,
+                                    tournament_id: tournament.id,
+                                    // last_nextmatches_update: null,
+                                    // last_standings_update: null,
+                                    // last_matches_update: null,
+                                };
+                            }
+                        );
+
+                        const { inserted, affected, changed } =
+                            await DB.INSERT_BATCH_OVERWRITE(
+                                leagueSeasonsDB,
+                                leagueSeasonsTableName
+                            );
+                        console.log(
+                            `affected ${affected} for sport ${sportName} ${tournament.name}`
+                        );
+                    } catch (e) {
+                        console.warn(
+                            `A strange error in ${sport.name} ${tournament.name}: ${e}`
+                        );
+                    }
+                }
+
+                // if (insertResult) greenTournaments.push(tournament);
+                // else throw `!insertResult`;
+            } catch (e) {
+                console.warn(`Error in ${sport.name}: ${e}`);
+            }
+            // }
+        },
+    },
 };
