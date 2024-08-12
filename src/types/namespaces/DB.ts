@@ -46,9 +46,9 @@ export namespace DB {
         has_last_matches: boolean;
         has_standings: boolean;
         has_last_matches_within_last_month: boolean;
-        last_nextmatches_update?: string;
-        last_standings_update?: string;
-        last_lastmatches_update?: string;
+        last_nextmatches_update?: string | null;
+        last_standings_update?: string | null;
+        last_lastmatches_update?: string | null;
     };
 
     export type Tournament = ASA.TournamentBase & {

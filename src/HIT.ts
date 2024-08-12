@@ -504,7 +504,6 @@ export const HIT = {
                         tournament_id: NFLPRESEASONTournamentId,
                         last_nextmatches_update: null,
                         last_standings_update: null,
-                        // last_matches_update: '',
                     };
                 }
             );
