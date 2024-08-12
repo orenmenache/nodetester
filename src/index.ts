@@ -39,6 +39,7 @@ import { getLastMatches__GENERIC } from './functions/GEN/getLastMatches';
 import { getNextMatches__GENERIC } from './functions/GEN/getNextMatches';
 import { getPlayerStatsByMatch__GENERIC } from './functions/GEN/getPlayerStatsByMatch';
 import { getMatchStats__GENERIC } from './functions/GEN/getMatchStats';
+import { getStandings__GENERIC } from './functions/GEN/getStandings';
 dotenv.config();
 
 async function main() {
@@ -486,15 +487,17 @@ async function testHit() {
     // await HIT.AmericanFootball.categories(DB);
     // await HIT.AmericanFootball.tournaments(DB);
     // await HIT.AmericanFootball.leagueSeasons(DB);
-    // await getTeams__GENERIC('AmericanFootball', DB);
+    // await getTeams__GENERIC('Baseball', DB);
+    await getStandings__GENERIC('Baseball', DB);
     // await getTeamsPlayers__GENERIC('AmericanFootball', DB);
     // await getPlayerStats__GENERIC('AmericanFootball', DB);
     // await getLastMatches__GENERIC('AmericanFootball', DB);
     // await getNextMatches__GENERIC('AmericanFootball', DB);
     // await getPlayerStatsByMatch__GENERIC('AmericanFootball', DB);
     // await HIT.categories.ALL(DB);
-    await HIT.tournaments.ALL(DB);
+    // await HIT.tournaments.ALL(DB);
     // await HIT.leagueSeasons.ALL(DB);
+
     await DB.pool.end();
 }
 

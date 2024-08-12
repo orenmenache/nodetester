@@ -11,5 +11,7 @@ CREATE TABLE CORE__TOURNAMENTS (
     end_date_seconds VARCHAR(20),
     end_date_timestamp TIMESTAMP,
 
+    covered BOOLEAN DEFAULT TRUE,
+
     FOREIGN KEY (category_id) REFERENCES CORE__CATEGORIES(id)
 );

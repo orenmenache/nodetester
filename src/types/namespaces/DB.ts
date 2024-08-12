@@ -16,10 +16,12 @@ export namespace DB {
         | 'Basketball'
         | 'Tennis'
         | 'Motorsport'
-        | 'AmericanFootball';
+        | 'AmericanFootball'
+        | 'Baseball';
 
     export type Category = ASA.CategoryBase & {
-        sport_id: string;
+        sport_id?: string;
+        sport_name?: SportName;
     };
 
     export type Player = {
@@ -60,15 +62,24 @@ export namespace DB {
     };
 
     export type StandingsBase = {
-        id: string;
-        tournament_id: string;
-        league_season_id: string;
         team_id: string;
+        league_season_id: string;
+
         position: string;
-        matches: string;
-        wins: string;
-        losses: string;
-        points: string;
+        matches: string | null;
+        scores_for: string | null;
+        scores_against: string | null;
+
+        wins: string | null;
+        losses: string | null;
+        draws: string | null;
+        points: string | null;
+
+        // sport specific
+        net_run_rate: string | null;
+        percentage: string | null;
+        streak: string | null;
+
         when_created: string;
     };
 

@@ -1,8 +1,9 @@
 USE ***dbName***;
-DROP TABLE IF EXISTS CORE__STANDINGS;
-CREATE TABLE CORE__STANDINGS (
+DROP TABLE IF EXISTS RAPID__STANDINGS;
+CREATE TABLE RAPID__STANDINGS (
     team_id INT NOT NULL,
     league_season_id INT NOT NULL,
+    
     position INT NOT NULL,
     matches INT,
     scores_for INT,

@@ -64,12 +64,21 @@ export namespace ASA {
 
     export type TeamStandingsBase = {
         team: Team;
-        position: number;
-        matches: number;
-        wins: number;
-        id: number;
-        losses: number;
-        points: number;
+        tournament: {
+            [key: string]: string;
+        };
+        position: string;
+        matches?: string;
+        wins?: string;
+        draws?: string;
+        losses?: string;
+        points?: string;
+
+        scoresFor?: string;
+        scoresAgainst?: string;
+        percentage?: string;
+        streak?: string;
+        netRunRate?: string;
     };
 
     export type CategoryBase = {

@@ -7,18 +7,15 @@ import { ASA } from '../../types/namespaces/ASA';
 import { buildGetRequest } from '../Football/functions/buildGetRequest';
 dotenv.config();
 
-/**
- * We get the standings for every league
- * and with that we get the ids and info of the teams
- */
-export async function getTeams__GENERIC(
+export async function getStandings__GENERIC(
     sportName: DB.SportName,
     DB: MYSQL_DB
 ): Promise<boolean> {
-    const funcName = `getTeamsBySeason__${sportName}`;
+    const funcName = `getStandings__${sportName}`;
 
     const leagueTableName = `${sportName}.CORE__LEAGUESEASONS`;
     const teamTableName = `${sportName}.CORE__TEAMS`;
+
     const hyphenated: string =
         sportName === 'AmericanFootball'
             ? 'american-football'
@@ -55,35 +52,42 @@ export async function getTeams__GENERIC(
                     throw `!response || !response.data || !response.data.standings || response.data.standings.length`;
 
                 for (const standing of response.data.standings) {
-                    const teams: ASA.Team[] = standing.rows.map(
-                        (row: ASA.TeamStandingsBase) => row.team
+                    const dbStandings: DB.StandingsBase[] = standing.rows.map(
+                        (row: ASA.TeamStandingsBase) => {
+                            // console.log(
+                            //     `ls.tournament_id: ${ls.tournament_id}`
+                            // );
+                            // console.log(Object.keys(row).join(', '));
+
+                            // throw 'stop';
+
+                            return {
+                                league_season_id: ls.id,
+                                team_id: row.team.id,
+                                position: row.position,
+                                points: row.points ?? null,
+                                matches: row.matches ?? null,
+                                wins: row.wins ?? null,
+                                draws: row.draws ?? null,
+                                losses: row.losses ?? null,
+                                scores_for: row.scoresFor ?? null,
+                                percentage: row.percentage ?? null,
+                                net_run_rate: row.netRunRate ?? null,
+                                streak: row.streak ?? null,
+                            };
+                        }
                     );
 
-                    if (teams.length === 0 || !teams)
-                        throw `teams.length === 0 || !teams for leagueSeason: ${ls.id} ${ls.name} ${ls.year}`;
-
-                    // console.log(
-                    //     `first team: ${JSON.stringify(teams[0], null, 2)}`
-                    // );
-
-                    const dbTeams: DB.Team[] = teams.map((team: ASA.Team) => ({
-                        id: team.id,
-                        name: team.name,
-                        slug: team.slug,
-                        short_name: team.shortName,
-                        name_code: team.nameCode,
-                    }));
+                    if (dbStandings.length === 0 || !dbStandings)
+                        throw `dbStandings.length === 0 || !dbStandings for leagueSeason: ${ls.id} ${ls.name} ${ls.year}`;
 
                     const { affected } =
-                        await DB.INSERT_BATCH_OVERWRITE<DB.Team>(
-                            dbTeams,
-                            teamTableName
+                        await DB.INSERT_BATCH_OVERWRITE<DB.StandingsBase>(
+                            dbStandings,
+                            `${sportName}.CORE__STANDINGS`
                         );
+
                     console.log(`Insert result: ${affected}`);
-                    if (affected) {
-                        console.log(`%c${JSON.stringify(ls)}`, 'color: cyan');
-                        leaguesWithStandings.push(ls);
-                    }
                 }
             } catch (e) {
                 console.log(
